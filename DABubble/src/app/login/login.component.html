@@ -1,0 +1,34 @@
+<mat-card class="login-card">
+  <h1>Anmeldung</h1>
+  <p class="hint-text">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
+
+  <form>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>E-Mail-Adresse</mat-label>
+      <input matInput placeholder="beispielname@email.com" type="email" required>
+      <mat-icon matPrefix>mail</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Passwort</mat-label>
+      <input matInput placeholder="Passwort" type="password" required>
+      <mat-icon matPrefix>lock</mat-icon>
+    </mat-form-field>
+
+    <a class="forgot-password" href="#">Passwort vergessen?</a>
+
+    <div class="divider"><span>ODER</span></div>
+
+    <button mat-stroked-button color="primary" class="full-width google-btn">
+      <mat-icon>login</mat-icon> Anmelden mit Google
+    </button>
+
+    <div class="login-actions">
+      <button mat-flat-button color="primary">Anmelden</button>
+      <button mat-stroked-button (click)="loginAsGuest()">
+  Gäste-Login
+</button>
+
+    </div>
+  </form>
+</mat-card>

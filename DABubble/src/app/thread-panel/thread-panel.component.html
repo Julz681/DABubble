@@ -1,0 +1,53 @@
+<div class="thread-header">
+  <div class="title">
+    <strong>Thread</strong>
+    <span class="channel"># Entwicklerteam</span>
+  </div>
+  <button mat-icon-button aria-label="Schließen">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="thread-body">
+  <div class="original-message">
+    <div class="user">
+      <img src="../../assets/Noah Braun.png" alt="Avatar">
+      <div class="info">
+        <strong>Noah Braun</strong>
+        <span class="time">14:25 Uhr</span>
+      </div>
+    </div>
+    <div class="content">
+      Welche Version ist aktuell von Angular?
+    </div>
+  </div>
+
+  <div class="replies">
+    <div class="reply" *ngFor="let r of [1,2]">
+      <div class="user">
+        <img src="../../assets/Sofia Müller.png" alt="Avatar">
+        <div class="info">
+          <strong>Sofia Müller</strong>
+          <span class="time">14:30 Uhr</span>
+        </div>
+      </div>
+      <div class="content">
+        Ich habe die gleiche Frage. Ich habe gegoogelt und es scheint ...
+      </div>
+      <div class="reactions">
+        <span>👍 1</span>
+        <span>😄</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="thread-input">
+  <mat-form-field appearance="outline" class="input-field">
+    <input matInput placeholder="Antworten…" />
+  </mat-form-field>
+  <div class="actions">
+    <button mat-icon-button><mat-icon>mood</mat-icon></button>
+    <button mat-icon-button color="primary"><mat-icon>send</mat-icon></button>
+  </div>
+</div>

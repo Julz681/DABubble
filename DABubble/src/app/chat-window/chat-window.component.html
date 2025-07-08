@@ -1,0 +1,45 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <h2># Entwicklerteam</h2>
+  </div>
+
+  <div class="chat-messages">
+    <p class="date-label">Dienstag, 14 Januar</p>
+
+    <div
+      *ngFor="let message of messages"
+      class="message-wrapper"
+      [ngClass]="{ 'self': message.isSelf }"
+    >
+      <div class="message">
+        <div class="meta">
+          <span class="author">{{ message.author }}</span>
+          <span class="time">{{ message.time }}</span>
+        </div>
+        <div class="content">{{ message.content }}</div>
+
+        <div class="reactions" *ngIf="message.reactions?.length">
+          <span *ngFor="let r of message.reactions">{{ r }}</span>
+        </div>
+      </div>
+
+      <img *ngIf="message.isSelf" class="avatar" src="assets/Frederik Beck.png" alt="Avatar">
+    </div>
+
+    <p class="date-label">Heute</p>
+  </div>
+
+  <div class="chat-input">
+    <mat-form-field appearance="outline" class="input-field">
+      <input
+        matInput
+        [(ngModel)]="newMessage"
+        placeholder="Nachricht schreiben…"
+        (keydown.enter)="sendMessage()"
+      />
+    </mat-form-field>
+    <button mat-icon-button color="primary" (click)="sendMessage()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</div>

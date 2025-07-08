@@ -1,0 +1,47 @@
+.login-card {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .hint-text {
+    margin-bottom: 2rem;
+    color: #666;
+  }
+
+  .forgot-password {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #3f51b5;
+  }
+
+  .divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    span {
+      background: white;
+      padding: 0 0.5rem;
+    }
+    &::before,
+    &::after {
+      content: '';
+      display: inline-block;
+      width: 40%;
+      border-top: 1px solid #ccc;
+      vertical-align: middle;
+    }
+  }
+
+  .login-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+  }
+}

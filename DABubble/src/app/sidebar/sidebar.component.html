@@ -1,0 +1,37 @@
+<div class="sidebar-header">
+  <img src="../../assets/Logo_small.png" alt="Logo" class="logo">
+  <span class="brand-name">Devspace</span>
+  <mat-icon class="edit-icon">edit</mat-icon>
+</div>
+
+<mat-divider></mat-divider>
+
+<div class="section">
+  <h3>
+    <mat-icon class="section-icon">group_work</mat-icon>
+    Channels
+    <span class="add-icon" (click)="openChannelDialog()">
+      <mat-icon>add</mat-icon>
+    </span>
+  </h3>
+  <mat-nav-list>
+    <mat-list-item class="active-channel">
+      <mat-icon matListIcon>tag</mat-icon>
+      <span># Entwicklerteam</span>
+    </mat-list-item>
+  </mat-nav-list>
+</div>
+
+<div class="section">
+  <h3>
+    <mat-icon class="section-icon">person</mat-icon>
+    Direktnachrichten
+  </h3>
+  <mat-nav-list>
+    <mat-list-item *ngFor="let user of users">
+      <img [src]="user.avatar" class="avatar" alt="avatar">
+      <span class="username">{{ user.name }}</span>
+      <mat-icon class="online-icon" color="primary">circle</mat-icon>
+    </mat-list-item>
+  </mat-nav-list>
+</div>

@@ -1,0 +1,14 @@
+.app-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.empty-chat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #666;
+  background-color: #f8f8f8;
+}

@@ -1,0 +1,83 @@
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+
+  .logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-left: 0.5rem;
+    flex-grow: 1;
+  }
+
+  .edit-icon {
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+  }
+}
+
+.section {
+  padding: 1rem;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+
+    .section-icon {
+      margin-right: 0.5rem;
+      font-size: 18px;
+    }
+
+    .add-icon {
+      margin-left: auto;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+
+      mat-icon {
+        font-size: 18px;
+      }
+    }
+  }
+
+  .active-channel {
+    background-color: #e5e8ff;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+
+    span {
+      color: #3a47e1;
+      font-weight: 500;
+    }
+  }
+
+  mat-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .username {
+      flex-grow: 1;
+    }
+
+    .online-icon {
+      font-size: 12px;
+    }
+  }
+}
