@@ -3,22 +3,32 @@
   grid-template-columns: 260px 1fr 320px;
   height: 100vh;
   position: relative;
+  transition: grid-template-columns 0.3s ease;
 
   &.sidebar-collapsed {
     grid-template-columns: 0 1fr 320px;
+  }
+
+  &.thread-closed {
+    grid-template-columns: 260px 1fr 0;
+
+    &.sidebar-collapsed {
+      grid-template-columns: 0 1fr 0;
+    }
   }
 
   .sidebar {
     background-color: white;
     border-right: 1px solid #ddd;
     overflow: hidden;
-    transition: width 0.3s ease;
+    transition: all 0.3s ease;
   }
 
   .main {
     background: #f8f9fd;
     padding: 1rem;
     overflow-y: auto;
+    transition: all 0.3s ease;
   }
 
   .thread {
@@ -26,9 +36,9 @@
     border-left: 1px solid #ddd;
     padding: 1rem;
     overflow-y: auto;
+    transition: all 0.3s ease;
   }
 }
-
 
 .sidebar-toggle {
   position: fixed;

@@ -6,6 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { EventEmitter, Output } from '@angular/core';
+
 
 @Component({
   selector: 'app-thread-panel',
@@ -142,4 +144,11 @@ export class ThreadPanelComponent {
   getLastReplyTime(): string {
     return this.threadMessages[this.threadMessages.length - 1].time;
   }
+
+  @Output() closePanel = new EventEmitter<void>();
+
+closeThreadPanel() {
+  this.closePanel.emit();
+}
+
 }

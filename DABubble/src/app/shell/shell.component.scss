@@ -1,0 +1,58 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f3f4ff;
+  padding: 0.8rem 1.2rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.logo-bar {
+  display: flex;
+  align-items: center;
+
+  .logo {
+    width: 32px;
+    margin-right: 0.5rem;
+  }
+
+  .title {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.1);
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    margin-right: 0.5rem;
+  }
+
+  mat-icon {
+    font-size: 20px;
+  }
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .avatar {
+    width: 36px;
+    border-radius: 50%;
+  }
+}
+
+.app-main {
+  height: calc(100vh - 60px); /* Restliche Höhe */
+}

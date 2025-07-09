@@ -5,15 +5,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
+import { FormsModule } from '@angular/forms'; // neu
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule, // neu
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -24,9 +24,22 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
+  email = '';
+  password = '';
+
   constructor(private router: Router) {}
 
+  login() {
+    if (this.email && this.password) {
+      localStorage.setItem('username', this.email);
+      this.router.navigate(['/app']);
+    } else {
+      alert('Bitte E-Mail und Passwort eingeben');
+    }
+  }
+
   loginAsGuest() {
-    this.router.navigate(['/chat']);
+    localStorage.setItem('username', 'Gast');
+    this.router.navigate(['/app']);
   }
 }

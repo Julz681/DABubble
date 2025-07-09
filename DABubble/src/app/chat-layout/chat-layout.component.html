@@ -1,20 +1,20 @@
-
 <button class="sidebar-toggle" (click)="toggleSidebar()">
   {{ isSidebarCollapsed ? 'Workspace Menü öffnen' : 'Workspace Menü schließen' }}
 </button>
 
-<div class="layout" [class.sidebar-collapsed]="isSidebarCollapsed">
+<div class="layout" 
+     [class.sidebar-collapsed]="isSidebarCollapsed" 
+     [class.thread-closed]="!isThreadPanelOpen">
 
   <aside class="sidebar">
     <app-sidebar *ngIf="!isSidebarCollapsed"></app-sidebar>
   </aside>
 
-
   <main class="main">
     <app-chat-window></app-chat-window>
   </main>
 
-  <section class="thread">
-    <app-thread-panel></app-thread-panel>
+  <section class="thread" *ngIf="isThreadPanelOpen">
+    <app-thread-panel (closePanel)="closeThreadPanel()"></app-thread-panel>
   </section>
 </div>

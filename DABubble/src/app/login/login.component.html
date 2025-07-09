@@ -2,16 +2,16 @@
   <h1>Anmeldung</h1>
   <p class="hint-text">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
 
-  <form>
+  <form (ngSubmit)="login()">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>E-Mail-Adresse</mat-label>
-      <input matInput placeholder="beispielname@email.com" type="email" required>
+      <input matInput placeholder="beispielname@email.com" type="email" [(ngModel)]="email" name="email" required>
       <mat-icon matPrefix>mail</mat-icon>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Passwort</mat-label>
-      <input matInput placeholder="Passwort" type="password" required>
+      <input matInput placeholder="Passwort" type="password" [(ngModel)]="password" name="password" required>
       <mat-icon matPrefix>lock</mat-icon>
     </mat-form-field>
 
@@ -24,11 +24,8 @@
     </button>
 
     <div class="login-actions">
-      <button mat-flat-button color="primary">Anmelden</button>
-      <button mat-stroked-button (click)="loginAsGuest()">
-  Gäste-Login
-</button>
-
+      <button mat-flat-button color="primary" type="submit">Anmelden</button>
+      <button mat-stroked-button type="button" (click)="loginAsGuest()">Gäste-Login</button>
     </div>
   </form>
 </mat-card>
