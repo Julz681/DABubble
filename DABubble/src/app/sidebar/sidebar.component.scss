@@ -31,10 +31,12 @@
     align-items: center;
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
+    cursor: pointer;
 
     .section-icon {
       margin-right: 0.5rem;
       font-size: 18px;
+      transition: transform 0.2s;
     }
 
     .add-icon {
@@ -79,5 +81,20 @@
     .online-icon {
       font-size: 12px;
     }
+  }
+}
+
+.toggle-icon {
+  font-size: 16px;
+  margin-right: 4px;
+  cursor: pointer;
+}
+
+.add-channel {
+  cursor: pointer;
+
+  span {
+    color: #5c6bc0;
+    font-weight: 500;
   }
 }

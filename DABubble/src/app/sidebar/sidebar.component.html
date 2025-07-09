@@ -1,35 +1,50 @@
 <div class="sidebar-header">
-  <img src="../../assets/Logo_small.png" alt="Logo" class="logo">
+  <img src="../../assets/Dev.png" alt="Logo" class="logo">
   <span class="brand-name">Devspace</span>
-  <mat-icon class="edit-icon">edit</mat-icon>
+  <mat-icon class="edit-icon">edit_square</mat-icon>
+
 </div>
 
 <mat-divider></mat-divider>
 
+<!-- CHANNELS -->
 <div class="section">
-  <h3>
+  <h3 (click)="toggleChannels()">
+    <mat-icon class="toggle-icon">
+      {{ showChannels ? 'expand_more' : 'chevron_right' }}
+    </mat-icon>
     <mat-icon class="section-icon">group_work</mat-icon>
     Channels
-    <span class="add-icon" (click)="openChannelDialog()">
+    <span class="add-icon" (click)="openChannelDialog(); $event.stopPropagation()">
       <mat-icon>add</mat-icon>
     </span>
   </h3>
-  <mat-nav-list>
+
+  <mat-nav-list *ngIf="showChannels">
     <mat-list-item class="active-channel">
       <mat-icon matListIcon>tag</mat-icon>
-      <span># Entwicklerteam</span>
+      <span>Entwicklerteam</span>
+    </mat-list-item>
+    <mat-list-item class="add-channel" (click)="openChannelDialog()">
+      <mat-icon matListIcon>add_circle_outline</mat-icon>
+      <span>Channel hinzufügen</span>
     </mat-list-item>
   </mat-nav-list>
 </div>
 
+<!-- DIREKTNACHRICHTEN -->
 <div class="section">
-  <h3>
+  <h3 (click)="toggleDMs()">
+    <mat-icon class="toggle-icon">
+      {{ showDMs ? 'expand_more' : 'chevron_right' }}
+    </mat-icon>
     <mat-icon class="section-icon">person</mat-icon>
     Direktnachrichten
   </h3>
-  <mat-nav-list>
+
+  <mat-nav-list *ngIf="showDMs">
     <mat-list-item *ngFor="let user of users">
-      <img [src]="user.avatar" class="avatar" alt="avatar">
+      <img [src]="user.avatar" class="avatar" alt="avatar" />
       <span class="username">{{ user.name }}</span>
       <mat-icon class="online-icon" color="primary">circle</mat-icon>
     </mat-list-item>

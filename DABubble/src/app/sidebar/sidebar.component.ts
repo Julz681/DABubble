@@ -29,7 +29,18 @@ export class SidebarComponent {
     { name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' },
   ];
 
+  showChannels = true;
+  showDMs = true;
+
   constructor(private dialog: MatDialog) {}
+
+toggleChannels() {
+  this.showChannels = !this.showChannels;
+}
+
+  toggleDMs() {
+    this.showDMs = !this.showDMs;
+  }
 
   openChannelDialog() {
     this.dialog.open(ChannelDialogComponent, {
@@ -38,3 +49,4 @@ export class SidebarComponent {
     });
   }
 }
+

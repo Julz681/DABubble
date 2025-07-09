@@ -79,7 +79,7 @@ export class ChatWindowComponent implements OnInit {
       author: 'Frederik Beck (Du)',
       userId: 'frederik',
       time: '15:06 Uhr',
-      content: 'Lorem ipsum dolor sit amet...',
+      content: 'Lorem ipsum dolor sit amet...blablablablablabla',
       avatar: 'assets/Frederik Beck.png',
       reactions: [
         { emoji: '🚀', count: 1, users: ['sofia'] },

@@ -4,6 +4,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { ChatWindowComponent } from '../chat-window/chat-window.component';
 import { ThreadPanelComponent } from '../thread-panel/thread-panel.component';
 
+
 @Component({
   selector: 'app-chat-layout',
   standalone: true,
@@ -11,7 +12,9 @@ import { ThreadPanelComponent } from '../thread-panel/thread-panel.component';
     CommonModule,
     SidebarComponent,
     ChatWindowComponent,
-    ThreadPanelComponent
+    ThreadPanelComponent,
+
+
   ],
   templateUrl: './chat-layout.component.html',
   styleUrls: ['./chat-layout.component.scss']
