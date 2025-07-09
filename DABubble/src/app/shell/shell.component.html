@@ -9,9 +9,15 @@
     <mat-icon>search</mat-icon>
   </div>
 
-  <div class="user-profile">
-    <span>Frederik Beck</span>
+  <div class="user-profile" (click)="toggleDropdown()">
+    <span>{{ userName }}</span>
+    <mat-icon>expand_more</mat-icon>
     <img src="assets/Frederik Beck.png" class="avatar" />
+
+    <div class="dropdown-menu" *ngIf="dropdownOpen">
+      <button (click)="openProfileDialog()">Profil</button>
+      <button (click)="logout()">Logout</button>
+    </div>
   </div>
 </header>
 
