@@ -2,20 +2,46 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  background-color: #f6f7ff;
   padding: 1rem;
-  background-color: #f8f9ff;
+  font-family: 'Segoe UI', sans-serif;
 
   .chat-header {
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    padding-bottom: 1rem;
+
+    .left h2 {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .avatars {
+        display: flex;
+
+        img {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          margin-left: -8px;
+          border: 2px solid white;
+        }
+      }
+
+      span {
+        font-size: 0.9rem;
+      }
+    }
   }
 
   .chat-messages {
-    flex-grow: 1;
+    flex: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -24,11 +50,11 @@
     .date-label {
       align-self: center;
       background: white;
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      padding: 0.2rem 1rem;
+      padding: 0.25rem 1rem;
       font-size: 0.8rem;
-      color: #555;
+      color: #666;
+      border-radius: 999px;
+      border: 1px solid #ddd;
     }
 
     .message-wrapper {
@@ -41,47 +67,12 @@
         flex-direction: row-reverse;
 
         .message {
-          background-color: #7c82ff;
+          background: #7c82ff;
           color: white;
-          text-align: left;
-        }
 
-        .reactions span {
-          background-color: white;
-          color: black;
-        }
-      }
-
-      .message {
-        background-color: #f0f0f0;
-        border-radius: 20px;
-        padding: 1rem;
-        max-width: 60%;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-
-        .meta {
-          display: flex;
-          justify-content: space-between;
-          font-size: 0.85rem;
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-        }
-
-        .content {
-          font-size: 0.95rem;
-        }
-
-        .reactions {
-          margin-top: 0.5rem;
-          display: flex;
-          gap: 0.5rem;
-
-          span {
-            background-color: white;
-            border-radius: 12px;
-            padding: 0.2rem 0.6rem;
-            font-size: 0.85rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+          .reactions span {
+            background: white;
+            color: black;
           }
         }
       }
@@ -91,31 +82,165 @@
         height: 40px;
         border-radius: 50%;
       }
+
+      .message {
+        max-width: 60%;
+        background: #eff1fc;
+        padding: 1rem;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        position: relative;
+
+        .meta {
+          font-size: 0.75rem;
+          font-weight: 600;
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0.25rem;
+
+          .time {
+            color: #666;
+          }
+        }
+
+        .content {
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+
+        .reply-meta {
+          margin-top: 0.4rem;
+          font-size: 0.75rem;
+          color: #999;
+
+          a {
+            color: #5c6bc0;
+            font-weight: 500;
+            text-decoration: none;
+            margin-right: 4px;
+          }
+        }
+
+        .reactions {
+          display: flex;
+          gap: 0.4rem;
+          margin-top: 0.5rem;
+
+          span {
+            background: #fff;
+            border-radius: 12px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.85rem;
+            border: 1px solid #ddd;
+            cursor: pointer;
+          }
+        }
+
+        .reaction-toolbar {
+          position: absolute;
+          top: -30px;
+          right: 10px;
+          display: flex;
+          gap: 0.5rem;
+          background: white;
+          border: 1px solid #ccc;
+          padding: 0.25rem 0.5rem;
+          border-radius: 20px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+          span {
+            cursor: pointer;
+            font-size: 1rem;
+          }
+
+          .reply-icon {
+            font-size: 1rem;
+          }
+        }
+      }
     }
   }
 
   .chat-input {
     display: flex;
     align-items: center;
-    margin-top: 1rem;
+    background: white;
     border: 1px solid #ccc;
     border-radius: 12px;
-    padding: 0.5rem;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    gap: 0.5rem;
 
-    .input-field {
-      flex-grow: 1;
-      margin-right: 0.5rem;
+    input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 0.95rem;
+      background: transparent;
     }
 
     button {
-      background-color: #5c6bc0;
-      color: white;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
 
-      mat-icon {
-        font-size: 20px;
+      &.send {
+        background: #5c6bc0;
+        color: white;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  .emoji-picker,
+  .mention-picker {
+    position: absolute;
+    bottom: 80px;
+    background: white;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+
+  .emoji-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    span {
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+  }
+
+  .mention-picker {
+    width: 220px;
+    max-height: 200px;
+    overflow-y: auto;
+
+    .user-option {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      cursor: pointer;
+
+      img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+
+      &:hover {
+        background: #f2f2f2;
       }
     }
   }
