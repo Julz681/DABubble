@@ -2,21 +2,36 @@
   <!-- Header -->
   <div class="chat-header">
     <div class="left">
-      <h2># Entwicklerteam</h2>
+      <h2># {{ activeChannelName }}</h2>
     </div>
     <div class="right">
-      <div class="avatars">
-        <img *ngFor="let user of teamUsers" [src]="user.avatar" [alt]="user.name" />
+      <div class="avatars" (click)="toggleUserDropdown()">
+        <img *ngFor="let user of currentChannelUsers.slice(0, 3)" [src]="user.avatar" [alt]="user.name" />
+        <ng-container *ngIf="currentChannelUsers.length > 3">
+          <div class="more-users">+{{ currentChannelUsers.length - 3 }}</div>
+        </ng-container>
       </div>
-      <span>{{ teamUsers.length }}</span>
+      <span>{{ currentChannelUsers.length }}</span>
+    </div>
+  </div>
+
+  <!-- Nutzerliste -->
+  <div *ngIf="showFullUserList" class="user-dropdown">
+    <div *ngFor="let user of currentChannelUsers" class="user-option">
+      <img [src]="user.avatar" />
+      <span>{{ user.name }}</span>
     </div>
   </div>
 
   <!-- Nachrichtenbereich -->
   <div class="chat-messages">
+    <div *ngIf="!groupedMessages.length" class="empty-state">
+      <h3># {{ activeChannelName }}</h3>
+      <p>Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels <strong># {{ activeChannelName }}</strong>.</p>
+    </div>
+
     <ng-container *ngFor="let group of groupedMessages">
       <p class="date-label">{{ group.dateLabel }}</p>
-
       <div *ngFor="let message of group.messages"
            class="message-wrapper"
            [ngClass]="{ 'self': message.isSelf }"
@@ -29,27 +44,20 @@
             <span class="author">{{ message.author }}</span>
             <span class="time">{{ message.time }}</span>
           </div>
-
           <div class="content">{{ message.content }}</div>
-
           <div class="reply-meta" *ngIf="message.replies?.length">
             <a href="#" (click)="replyTo(message)">
               {{ message.replies?.length || 0 }} Antworten
-
             </a>
             –
-            <span *ngIf="message.replies?.length">
-              Letzte Antwort {{ getLastReplyTime(message) }}
-            </span>
+            <span>Letzte Antwort {{ getLastReplyTime(message) }}</span>
           </div>
-
           <div class="reactions" *ngIf="message.reactions?.length">
             <span *ngFor="let r of message.reactions"
                   [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
               {{ r.emoji }} {{ r.count }}
             </span>
           </div>
-
           <div class="reaction-toolbar" *ngIf="hoveredMessage === message">
             <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(message, emoji)">
               {{ emoji }}
@@ -63,22 +71,17 @@
 
   <!-- Eingabe -->
   <div class="chat-input">
-    <input
-      [(ngModel)]="newMessage"
-      placeholder="Nachricht an #Entwicklerteam"
-      (keydown.enter)="sendMessage()" />
+    <input [(ngModel)]="newMessage" [placeholder]="'Nachricht an #' + activeChannelName" (keydown.enter)="sendMessage()" />
     <button (click)="toggleEmojiPicker()">😊</button>
     <button (click)="toggleUserList()">&#64;</button>
     <button class="send" (click)="sendMessage()">➤</button>
 
-    <!-- Emoji Picker -->
     <div class="emoji-picker" *ngIf="showEmojis">
       <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
     </div>
 
-    <!-- Mention Picker -->
     <div class="mention-picker" *ngIf="showUsers">
-      <div class="user-option" *ngFor="let user of teamUsers" (click)="mentionUser(user)">
+      <div class="user-option" *ngFor="let user of currentChannelUsers" (click)="mentionUser(user)">
         <img [src]="user.avatar" />
         <span>{{ user.name }}</span>
       </div>

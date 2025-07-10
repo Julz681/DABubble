@@ -1,0 +1,30 @@
+<h2>Leute hinzufügen</h2>
+
+<mat-radio-group [(ngModel)]="mode">
+  <mat-radio-button value="all">Alle Mitglieder hinzufügen</mat-radio-button>
+  <mat-radio-button value="selected">Bestimmte Leute hinzufügen</mat-radio-button>
+</mat-radio-group>
+
+<div *ngIf="mode === 'selected'">
+  <mat-form-field appearance="outline" class="full-width">
+    <input matInput [(ngModel)]="search" placeholder="Name eingeben" />
+  </mat-form-field>
+
+  <div class="autocomplete" *ngIf="search">
+    <div
+      class="user-option"
+      *ngFor="let user of filteredUsers()"
+      (click)="addUser(user)">
+      <img [src]="user.avatar" class="avatar" />
+      <span>{{ user.name }}</span>
+    </div>
+  </div>
+
+  <div class="selected-users">
+    <span *ngFor="let user of selectedUsers">{{ user.name }}</span>
+  </div>
+</div>
+
+<div class="actions">
+  <button mat-flat-button color="primary" (click)="confirm()">Erstellen</button>
+</div>

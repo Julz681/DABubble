@@ -1,8 +1,7 @@
 <div class="sidebar-header">
-  <img src="../../assets/Dev.png" alt="Logo" class="logo">
+  <img src="../../assets/Dev.png" alt="Logo" class="logo" />
   <span class="brand-name">Devspace</span>
   <mat-icon class="edit-icon">edit_square</mat-icon>
-
 </div>
 
 <mat-divider></mat-divider>
@@ -21,10 +20,14 @@
   </h3>
 
   <mat-nav-list *ngIf="showChannels">
-    <mat-list-item class="active-channel">
+    <mat-list-item
+      *ngFor="let channel of channels"
+      class="active-channel"
+      (click)="selectChannel(channel)">
       <mat-icon matListIcon>tag</mat-icon>
-      <span>Entwicklerteam</span>
+      <span>{{ channel.name }}</span>
     </mat-list-item>
+
     <mat-list-item class="add-channel" (click)="openChannelDialog()">
       <mat-icon matListIcon>add_circle_outline</mat-icon>
       <span>Channel hinzufügen</span>

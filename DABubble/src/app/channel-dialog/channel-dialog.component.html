@@ -5,20 +5,18 @@
   </button>
 </div>
 
-<p>
-  Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum Beispiel.
-</p>
+<p>Channels dienen deinem Team zur Kommunikation...</p>
 
 <mat-form-field appearance="outline" class="full-width">
   <mat-label>Channel-Name</mat-label>
-  <input matInput placeholder="# z.B. Kooperationsprojekte">
+  <input matInput [(ngModel)]="channelName" placeholder="# z.B. Kooperationsprojekte" />
 </mat-form-field>
 
 <mat-form-field appearance="outline" class="full-width">
   <mat-label>Beschreibung (optional)</mat-label>
-  <textarea matInput placeholder="Dein Text hier"></textarea>
+  <textarea matInput [(ngModel)]="description" placeholder="Dein Text hier"></textarea>
 </mat-form-field>
 
 <div class="actions">
-  <button mat-flat-button color="primary">Erstellen</button>
+  <button mat-flat-button color="primary" (click)="nextStep()">Erstellen</button>
 </div>

@@ -2,9 +2,7 @@
   {{ isSidebarCollapsed ? 'Workspace Menü öffnen' : 'Workspace Menü schließen' }}
 </button>
 
-<div class="layout" 
-     [class.sidebar-collapsed]="isSidebarCollapsed" 
-     [class.thread-closed]="!isThreadPanelOpen">
+<div class="layout" [class.sidebar-collapsed]="isSidebarCollapsed">
 
   <aside class="sidebar">
     <app-sidebar *ngIf="!isSidebarCollapsed"></app-sidebar>

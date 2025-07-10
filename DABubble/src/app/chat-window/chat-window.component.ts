@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ChannelService } from '../services/channel.service';
 
 interface ChatUser {
   id: string;
@@ -28,13 +29,7 @@ interface ChatMessage {
 @Component({
   selector: 'app-chat-window',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
-  ],
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatTooltipModule],
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.scss']
 })
@@ -42,26 +37,44 @@ export class ChatWindowComponent implements OnInit {
   newMessage = '';
   showEmojis = false;
   showUsers = false;
+  showFullUserList = false;
   hoveredMessage: ChatMessage | null = null;
   replyingTo: ChatMessage | null = null;
 
+  activeChannelName = '';
   groupedMessages: { dateLabel: string; messages: ChatMessage[] }[] = [];
+  currentChannelMessages: ChatMessage[] = [];
+  currentChannelUsers: ChatUser[] = [];
 
-  currentUser: ChatUser = {
-    id: 'frederik',
-    name: 'Frederik Beck (Du)',
-    avatar: 'assets/Frederik Beck.png'
-  };
+  channelMessages: { [channelName: string]: ChatMessage[] } = {};
+  channelUsers: { [channelName: string]: ChatUser[] } = {};
+
+  allUsers: ChatUser[] = [
+    { id: 'frederik', name: 'Frederik Beck (Du)', avatar: 'assets/Frederik Beck.png' },
+    { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
+    { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+    { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
+    { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
+    { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
+  ];
+
+  currentUser: ChatUser = this.allUsers.find(u => u.id === 'frederik')!;
 
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
 
-  teamUsers: ChatUser[] = [
+  constructor(private channelService: ChannelService) {}
+
+// chat-window.component.ts – Abschnitt ngOnInit anpassen:
+ngOnInit(): void {
+  // Entwicklerteam initialisieren
+  const devUsers: ChatUser[] = [
     this.currentUser,
     { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
     { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+    { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' }
   ];
 
-  messages: ChatMessage[] = [
+  const devMessages: ChatMessage[] = [
     {
       id: 1,
       author: 'Noah Braun',
@@ -72,14 +85,14 @@ export class ChatWindowComponent implements OnInit {
       reactions: [{ emoji: '👍', count: 1, users: ['sofia'] }],
       isSelf: false,
       replies: [],
-      createdAt: new Date(new Date().setDate(new Date().getDate() - 1)) // gestern
+      createdAt: new Date(new Date().setDate(new Date().getDate() - 1))
     },
     {
       id: 2,
       author: 'Frederik Beck (Du)',
       userId: 'frederik',
       time: '15:06 Uhr',
-      content: 'Lorem ipsum dolor sit amet...blablablablablabla',
+      content: 'Ich glaube es ist Version 17.2. Aber ich checke nochmal.',
       avatar: 'assets/Frederik Beck.png',
       reactions: [
         { emoji: '🚀', count: 1, users: ['sofia'] },
@@ -88,25 +101,41 @@ export class ChatWindowComponent implements OnInit {
       ],
       isSelf: true,
       replies: [],
-      createdAt: new Date() // heute
+      createdAt: new Date()
     }
   ];
 
-  ngOnInit(): void {
+  this.channelUsers['Entwicklerteam'] = devUsers;
+  this.channelMessages['Entwicklerteam'] = devMessages;
+
+  this.channelService.activeChannel$.subscribe(channel => {
+    this.activeChannelName = channel.name;
+
+    // Channel Users richtig setzen
+    if (channel.members?.length) {
+      this.channelUsers[this.activeChannelName] = [this.currentUser, ...channel.members.filter(u => u.name !== this.currentUser.name)];
+    } else if (!this.channelUsers[this.activeChannelName]) {
+      this.channelUsers[this.activeChannelName] = [this.currentUser];
+    }
+
+    if (!this.channelMessages[this.activeChannelName]) {
+      this.channelMessages[this.activeChannelName] = [];
+    }
+
+    this.currentChannelUsers = this.channelUsers[this.activeChannelName];
+    this.currentChannelMessages = this.channelMessages[this.activeChannelName];
     this.groupMessagesByDate();
-  }
+  });
+}
+
 
   groupMessagesByDate(): void {
     const groups: { [key: string]: ChatMessage[] } = {};
-
-    for (const message of this.messages) {
+    for (const message of this.currentChannelMessages) {
       const dateKey = this.getDateKey(message.createdAt);
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
-      }
+      if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(message);
     }
-
     this.groupedMessages = Object.keys(groups).map(key => ({
       dateLabel: this.formatDateLabel(key),
       messages: groups[key]
@@ -114,19 +143,17 @@ export class ChatWindowComponent implements OnInit {
   }
 
   getDateKey(date: Date): string {
-    return date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+    return date.toISOString().split('T')[0];
   }
 
   formatDateLabel(dateKey: string): string {
     const today = new Date();
     const date = new Date(dateKey);
-    const isToday = date.toDateString() === today.toDateString();
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
 
-    if (isToday) return 'Heute';
+    if (date.toDateString() === today.toDateString()) return 'Heute';
     if (date.toDateString() === yesterday.toDateString()) return 'Gestern';
-
     return date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
   }
 
@@ -136,7 +163,7 @@ export class ChatWindowComponent implements OnInit {
 
     const now = new Date();
     const newMsg: ChatMessage = {
-      id: this.messages.length + 1,
+      id: this.currentChannelMessages.length + 1,
       author: this.currentUser.name,
       userId: this.currentUser.id,
       time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -150,45 +177,45 @@ export class ChatWindowComponent implements OnInit {
 
     if (this.replyingTo) {
       newMsg.replyToId = this.replyingTo.id;
-      const parent = this.messages.find(m => m.id === this.replyingTo?.id);
+      const parent = this.currentChannelMessages.find(m => m.id === this.replyingTo?.id);
       parent?.replies?.push(newMsg);
       this.replyingTo = null;
     } else {
-      this.messages.push(newMsg);
+      this.currentChannelMessages.push(newMsg);
     }
 
     this.newMessage = '';
     this.showEmojis = false;
     this.showUsers = false;
-    this.groupMessagesByDate(); 
+    this.groupMessagesByDate();
   }
 
-  toggleEmojiPicker(): void {
+  toggleEmojiPicker() {
     this.showEmojis = !this.showEmojis;
     this.showUsers = false;
   }
 
-  toggleUserList(): void {
+  toggleUserList() {
     this.showUsers = !this.showUsers;
     this.showEmojis = false;
   }
 
-  addEmoji(emoji: string): void {
+  addEmoji(emoji: string) {
     this.newMessage += emoji;
     this.showEmojis = false;
   }
 
-  mentionUser(user: ChatUser): void {
+  mentionUser(user: ChatUser) {
     this.newMessage += `@${user.name} `;
     this.showUsers = false;
   }
 
-  replyTo(message: ChatMessage): void {
+  replyTo(message: ChatMessage) {
     this.replyingTo = message;
     this.newMessage = `@${message.author} `;
   }
 
-  toggleReaction(message: ChatMessage, emoji: string): void {
+  toggleReaction(message: ChatMessage, emoji: string) {
     const existing = message.reactions?.find(r => r.emoji === emoji);
     if (existing) {
       const hasReacted = existing.users.includes(this.currentUser.id);
@@ -211,6 +238,10 @@ export class ChatWindowComponent implements OnInit {
   }
 
   getUserNamesFromIds(ids: string[]): string[] {
-    return this.teamUsers.filter(u => ids.includes(u.id)).map(u => u.name);
+    return this.currentChannelUsers.filter(u => ids.includes(u.id)).map(u => u.name);
+  }
+
+  toggleUserDropdown() {
+    this.showFullUserList = !this.showFullUserList;
   }
 }
