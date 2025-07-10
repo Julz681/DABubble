@@ -27,7 +27,8 @@
     }
   }
 
-  .profile-info {
+  .profile-info,
+  .edit-form {
     .name-row {
       display: flex;
       justify-content: space-between;
@@ -83,6 +84,21 @@
       .value {
         color: #5a65ea;
       }
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+
+      button {
+        flex: 1;
+        margin: 0 0.25rem;
+      }
+    }
+
+    .full-width {
+      width: 100%;
     }
   }
 }

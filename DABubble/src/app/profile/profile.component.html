@@ -1,6 +1,7 @@
 <mat-card class="profile-card">
   <div class="card-header">
-    <h2>Profil</h2>
+    <h2 *ngIf="!isEditing">Profil</h2>
+    <h2 *ngIf="isEditing">Dein Profil bearbeiten</h2>
     <button mat-icon-button (click)="close()">
       <mat-icon>close</mat-icon>
     </button>
@@ -10,10 +11,10 @@
     <img src="assets/Frederik Beck.png" alt="Profilbild" />
   </div>
 
-  <div class="profile-info">
+  <div class="profile-info" *ngIf="!isEditing">
     <div class="name-row">
-      <h3>Frederik Beck</h3>
-      <a class="edit-link" href="#">Bearbeiten</a>
+      <h3>{{ fullName }}</h3>
+      <a class="edit-link" (click)="edit()">Bearbeiten</a>
     </div>
 
     <div class="status">
@@ -27,6 +28,18 @@
         <div class="label">E-Mail-Adresse</div>
         <div class="value">fred.beck&#64;email.com</div>
       </div>
+    </div>
+  </div>
+
+  <div class="edit-form" *ngIf="isEditing">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Vollständiger Name</mat-label>
+      <input matInput [(ngModel)]="editedName" />
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-stroked-button color="primary" (click)="cancel()">Abbrechen</button>
+      <button mat-flat-button color="primary" (click)="save()">Speichern</button>
     </div>
   </div>
 </mat-card>

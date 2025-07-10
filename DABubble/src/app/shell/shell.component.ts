@@ -29,15 +29,26 @@ export class ShellComponent {
     this.router.navigate(['/login']);
   }
 
-  openProfileDialog() {
-    this.dropdownOpen = false;
-    this.dialog.open(ProfileComponent, {
-      width: '360px',
-      panelClass: 'custom-dialog-container'
-    });
-  }
+openProfileDialog() {
+  this.dropdownOpen = false;
 
-  get userName(): string {
-    return localStorage.getItem('username') || 'Unbekannt';
-  }
+  const dialogRef = this.dialog.open(ProfileComponent, {
+    width: '360px',
+    panelClass: 'custom-dialog-container'
+  });
+
+  dialogRef.afterClosed().subscribe((result: string | undefined) => {
+    if (result) {
+
+      this._userName = result;
+    }
+  });
+}
+
+
+_userName = localStorage.getItem('username') || 'Unbekannt';
+
+get userName(): string {
+  return this._userName;
+}
 }
