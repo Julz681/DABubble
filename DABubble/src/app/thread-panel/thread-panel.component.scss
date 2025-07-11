@@ -236,3 +236,32 @@
 .chat-layout:not(.thread-open) .chat-area {
   flex: 1 1 100%;
 }
+
+.more-options, .more-icon {
+  cursor: pointer;
+  padding: 0 8px;
+  font-size: 18px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.04);
+  transition: background 0.2s;
+}
+
+.more-options:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.edit-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+
+  input {
+    flex: 1;
+    padding: 4px;
+  }
+
+  button {
+    padding: 4px 8px;
+  }
+}

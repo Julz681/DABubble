@@ -41,61 +41,70 @@
       </p>
     </div>
 
-<ng-container *ngFor="let group of groupedMessages">
-  <p class="date-label">{{ group.dateLabel }}</p>
-  <div
-    *ngFor="let message of group.messages"
-    class="message-wrapper"
-    [ngClass]="{ self: message.isSelf }"
-    (mouseenter)="hoveredMessage = message"
-    (mouseleave)="hoveredMessage = null"
-  >
-    <img class="avatar" [src]="message.avatar" [alt]="message.author" />
-    <div class="message">
-      <div class="meta">
-        <span class="author">{{ message.author }}</span>
-        <span class="time">{{ message.time }}</span>
+    <ng-container *ngFor="let group of groupedMessages">
+      <p class="date-label">{{ group.dateLabel }}</p>
+
+      <div
+        *ngFor="let message of group.messages"
+        class="message-wrapper"
+        [ngClass]="{ self: message.isSelf }"
+        (mouseenter)="hoveredMessage = message"
+        (mouseleave)="hoveredMessage = null"
+      >
+        <img class="avatar" [src]="message.avatar" [alt]="message.author" />
+        <div class="message">
+          <div class="message-toolbar" *ngIf="hoveredMessage === message">
+            <span
+              *ngFor="let emoji of emojis.slice(4, 7)"
+              (click)="toggleReaction(message, emoji)"
+            >
+              {{ emoji }}
+            </span>
+            <button class="reply-icon" (click)="replyTo(message)">💬</button>
+            <button
+              *ngIf="message.isSelf && editingMessageId !== message.id"
+              class="message-menu-button"
+              (click)="startEditing(message)"
+              matTooltip="Nachricht bearbeiten"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </div>
+
+          <div class="meta">
+            <span class="author">{{ message.author }}</span>
+            <span class="time">{{ message.time }}</span>
+          </div>
+
+          <div class="content" *ngIf="editingMessageId !== message.id">
+            {{ message.content }}
+          </div>
+          <div *ngIf="editingMessageId === message.id" class="edit-form">
+            <input [(ngModel)]="editedMessageContent" />
+            <button (click)="saveEdit(message)">Speichern</button>
+            <button (click)="cancelEdit()">Abbrechen</button>
+          </div>
+
+          <div class="reply-meta" *ngIf="message.replies?.length">
+            <a href="#" (click)="replyTo(message); $event.preventDefault()">
+              {{ message.replies?.length || 0 }} Antworten
+            </a>
+            – <span>Letzte Antwort {{ getLastReplyTime(message) }}</span>
+          </div>
+
+          <div class="reactions" *ngIf="message.reactions?.length">
+            <span
+              *ngFor="let r of message.reactions"
+              [matTooltip]="getUserNamesFromIds(r.users).join(', ')"
+            >
+              {{ r.emoji }} {{ r.count }}
+            </span>
+          </div>
+        </div>
       </div>
-      <div class="content">{{ message.content }}</div>
-
-      <!-- Antwort-Meta -->
-      <div class="reply-meta" *ngIf="message.replies?.length">
-        <a href="#" (click)="replyTo(message); $event.preventDefault()">
-          {{ message.replies?.length || 0 }} Antworten
-        </a>
-        –
-        <span>Letzte Antwort {{ getLastReplyTime(message) }}</span>
-      </div>
-
-      <!-- Reaktionen -->
-      <div class="reactions" *ngIf="message.reactions?.length">
-        <span
-          *ngFor="let r of message.reactions"
-          [matTooltip]="getUserNamesFromIds(r.users).join(', ')"
-        >
-          {{ r.emoji }} {{ r.count }}
-        </span>
-      </div>
-
-      <!-- Toolbar -->
-      <div class="reaction-toolbar" *ngIf="hoveredMessage === message">
-        <span
-          *ngFor="let emoji of emojis.slice(4, 7)"
-          (click)="toggleReaction(message, emoji)"
-        >
-          {{ emoji }}
-        </span>
-        <span class="reply-icon" (click)="replyTo(message)">💬</span>
-      </div>
-
-
-    </div>
+    </ng-container>
   </div>
-</ng-container>
 
-  </div>
-
-  <!-- Eingabe -->
   <div class="chat-input">
     <input
       [(ngModel)]="newMessage"
