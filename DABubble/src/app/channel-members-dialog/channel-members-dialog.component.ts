@@ -1,11 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatRadioModule } from '@angular/material/radio';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-channel-members-dialog',
@@ -14,17 +14,17 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     FormsModule,
     MatDialogModule,
-    MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatRadioModule
   ],
   templateUrl: './channel-members-dialog.component.html',
   styleUrls: ['./channel-members-dialog.component.scss']
 })
 export class ChannelMembersDialogComponent {
   allUsers = [
-    { name: 'Frederik Beck', avatar: 'assets/Frederik Beck.png' },
+    { name: 'Frederik Beck (Du)', avatar: 'assets/Frederik Beck.png' },
     { name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
     { name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
     { name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
@@ -32,29 +32,48 @@ export class ChannelMembersDialogComponent {
     { name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
   ];
 
-  mode: 'selected' | 'all' = 'selected';
   search = '';
   selectedUsers: any[] = [];
 
+  mode: 'all' | 'selected' = 'selected';
+
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialogRef: MatDialogRef<ChannelMembersDialogComponent>
-  ) {}
+    public dialogRef: MatDialogRef<ChannelMembersDialogComponent>,
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      channelName?: string;
+      mode: 'creation' | 'add';
+      existingMembers?: string[];
+    }
+  ) {
+    if (data.mode === 'creation') {
+      this.mode = 'all';
+    }
+  }
 
   filteredUsers() {
-    return this.allUsers.filter(u =>
-      u.name.toLowerCase().includes(this.search.toLowerCase()) &&
-      !this.selectedUsers.includes(u)
+    const alreadyInChannel = this.data.existingMembers || [];
+
+    return this.allUsers.filter(user =>
+      user.name !== 'Frederik Beck (Du)' &&
+      !alreadyInChannel.includes(user.name) &&
+      !this.selectedUsers.some(s => s.name === user.name) &&
+      user.name.toLowerCase().includes(this.search.toLowerCase())
     );
   }
 
   addUser(user: any) {
-    this.selectedUsers.push(user);
-    this.search = '';
+    if (!this.selectedUsers.some(u => u.name === user.name)) {
+      this.selectedUsers.push(user);
+      this.search = '';
+    }
   }
 
   confirm() {
-    const members = this.mode === 'all' ? this.allUsers : this.selectedUsers;
-    this.dialogRef.close(members);
+    const result = this.mode === 'all'
+      ? this.allUsers.filter(u => u.name !== 'Frederik Beck (Du)')
+      : this.selectedUsers;
+
+    this.dialogRef.close(result);
   }
 }

@@ -12,11 +12,14 @@
         </ng-container>
       </div>
       <span>{{ currentChannelUsers.length }}</span>
+      <button class="add-user-btn" (click)="openAddUserDialog()">
+        <mat-icon>person_add</mat-icon>
+      </button>
     </div>
   </div>
 
   <!-- Nutzerliste -->
-  <div *ngIf="showFullUserList" class="user-dropdown">
+  <div *ngIf="showFullUserList" class="user-dropdown" #userDropdownRef>
     <div *ngFor="let user of currentChannelUsers" class="user-option">
       <img [src]="user.avatar" />
       <span>{{ user.name }}</span>
@@ -27,7 +30,10 @@
   <div class="chat-messages">
     <div *ngIf="!groupedMessages.length" class="empty-state">
       <h3># {{ activeChannelName }}</h3>
-      <p>Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels <strong># {{ activeChannelName }}</strong>.</p>
+      <p>
+        Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels
+        <strong># {{ activeChannelName }}</strong>.
+      </p>
     </div>
 
     <ng-container *ngFor="let group of groupedMessages">
@@ -37,7 +43,6 @@
            [ngClass]="{ 'self': message.isSelf }"
            (mouseenter)="hoveredMessage = message"
            (mouseleave)="hoveredMessage = null">
-
         <img class="avatar" [src]="message.avatar" [alt]="message.author" />
         <div class="message">
           <div class="meta">
@@ -71,7 +76,9 @@
 
   <!-- Eingabe -->
   <div class="chat-input">
-    <input [(ngModel)]="newMessage" [placeholder]="'Nachricht an #' + activeChannelName" (keydown.enter)="sendMessage()" />
+    <input [(ngModel)]="newMessage"
+           [placeholder]="'Nachricht an #' + activeChannelName"
+           (keydown.enter)="sendMessage()" />
     <button (click)="toggleEmojiPicker()">😊</button>
     <button (click)="toggleUserList()">&#64;</button>
     <button class="send" (click)="sendMessage()">➤</button>

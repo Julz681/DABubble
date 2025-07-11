@@ -4,7 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  MatDialogModule,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
 
@@ -18,14 +22,18 @@ import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './channel-dialog.component.html',
-  styleUrls: ['./channel-dialog.component.scss']
+  styleUrls: ['./channel-dialog.component.scss'],
 })
 export class ChannelDialogComponent {
   channelName = '';
   description = '';
+  currentUser = {
+    name: 'Frederik Beck (Du)',
+    avatar: 'assets/Frederik Beck.png',
+  };
 
   constructor(
     private dialogRef: MatDialogRef<ChannelDialogComponent>,
@@ -37,7 +45,9 @@ export class ChannelDialogComponent {
 
     const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
       width: '500px',
-      data: { name: this.channelName, description: this.description }
+      data: {
+        mode: 'creation',
+      },
     });
 
     dialogRef.afterClosed().subscribe((members) => {
@@ -45,7 +55,7 @@ export class ChannelDialogComponent {
         this.dialogRef.close({
           name: this.channelName,
           description: this.description,
-          members
+          members,
         });
       }
     });

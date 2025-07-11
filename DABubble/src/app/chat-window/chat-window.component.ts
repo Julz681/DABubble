@@ -5,6 +5,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChannelService } from '../services/channel.service';
+import { ElementRef, HostListener, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
+
+
 
 interface ChatUser {
   id: string;
@@ -62,9 +67,13 @@ export class ChatWindowComponent implements OnInit {
 
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
 
-  constructor(private channelService: ChannelService) {}
+  constructor(
+  private channelService: ChannelService,
+  private dialog: MatDialog
+) {}
 
-// chat-window.component.ts – Abschnitt ngOnInit anpassen:
+
+
 ngOnInit(): void {
   // Entwicklerteam initialisieren
   const devUsers: ChatUser[] = [
@@ -241,7 +250,48 @@ ngOnInit(): void {
     return this.currentChannelUsers.filter(u => ids.includes(u.id)).map(u => u.name);
   }
 
-  toggleUserDropdown() {
+toggleUserDropdown() {
+  setTimeout(() => {
     this.showFullUserList = !this.showFullUserList;
+  });
+}
+
+
+  @ViewChild('userDropdownRef') userDropdownRef!: ElementRef;
+
+@HostListener('document:click', ['$event'])
+onClickOutside(event: MouseEvent) {
+  if (!this.showFullUserList || !this.userDropdownRef) return;
+
+  const clickedInside = this.userDropdownRef.nativeElement.contains(event.target);
+  if (!clickedInside) {
+    this.showFullUserList = false;
   }
+}
+openAddUserDialog() {
+  const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
+    width: '500px',
+    data: {
+      mode: 'add', 
+      channelName: this.activeChannelName,
+      existingMembers: this.currentChannelUsers.map(u => u.name)
+    }
+  });
+
+  dialogRef.afterClosed().subscribe((newUsers: ChatUser[]) => {
+    if (newUsers && newUsers.length) {
+      const filtered = newUsers.filter(
+        user => !this.currentChannelUsers.some(existing => existing.name === user.name)
+      );
+      this.currentChannelUsers = [...this.currentChannelUsers, ...filtered];
+      this.channelUsers[this.activeChannelName] = this.currentChannelUsers;
+    }
+  });
+}
+
+
+
+
+
+
 }
