@@ -8,7 +8,7 @@ import { ChannelService } from '../services/channel.service';
 import { ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
-
+import { ThreadPanelService } from '../services/thread.panel.service';
 
 
 interface ChatUser {
@@ -34,9 +34,15 @@ interface ChatMessage {
 @Component({
   selector: 'app-chat-window',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+  ],
   templateUrl: './chat-window.component.html',
-  styleUrls: ['./chat-window.component.scss']
+  styleUrls: ['./chat-window.component.scss'],
 })
 export class ChatWindowComponent implements OnInit {
   newMessage = '';
@@ -55,88 +61,99 @@ export class ChatWindowComponent implements OnInit {
   channelUsers: { [channelName: string]: ChatUser[] } = {};
 
   allUsers: ChatUser[] = [
-    { id: 'frederik', name: 'Frederik Beck (Du)', avatar: 'assets/Frederik Beck.png' },
+    {
+      id: 'frederik',
+      name: 'Frederik Beck (Du)',
+      avatar: 'assets/Frederik Beck.png',
+    },
     { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
     { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
     { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
     { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
-    { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
+    {
+      id: 'steffen',
+      name: 'Steffen Hoffmann',
+      avatar: 'assets/Steffen Hoffmann.png',
+    },
   ];
 
-  currentUser: ChatUser = this.allUsers.find(u => u.id === 'frederik')!;
+  currentUser: ChatUser = this.allUsers.find((u) => u.id === 'frederik')!;
 
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
 
-  constructor(
+constructor(
   private channelService: ChannelService,
-  private dialog: MatDialog
+  private dialog: MatDialog,
+  private threadPanelService: ThreadPanelService,
 ) {}
 
 
+  ngOnInit(): void {
+    // Entwicklerteam initialisieren
+    const devUsers: ChatUser[] = [
+      this.currentUser,
+      { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
+      { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+      { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
+    ];
 
-ngOnInit(): void {
-  // Entwicklerteam initialisieren
-  const devUsers: ChatUser[] = [
-    this.currentUser,
-    { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
-    { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
-    { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' }
-  ];
+    const devMessages: ChatMessage[] = [
+      {
+        id: 1,
+        author: 'Noah Braun',
+        userId: 'noah',
+        time: '14:25 Uhr',
+        content: 'Welche Version ist aktuell von Angular?',
+        avatar: 'assets/Noah Braun.png',
+        reactions: [{ emoji: '👍', count: 1, users: ['sofia'] }],
+        isSelf: false,
+        replies: [],
+        createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+      },
+      {
+        id: 2,
+        author: 'Frederik Beck (Du)',
+        userId: 'frederik',
+        time: '15:06 Uhr',
+        content: 'Ich glaube es ist Version 17.2. Aber ich checke nochmal.',
+        avatar: 'assets/Frederik Beck.png',
+        reactions: [
+          { emoji: '🚀', count: 1, users: ['sofia'] },
+          { emoji: '✅', count: 1, users: ['sofia'] },
+          { emoji: '😂', count: 1, users: ['noah'] },
+        ],
+        isSelf: true,
+        replies: [],
+        createdAt: new Date(),
+      },
+    ];
 
-  const devMessages: ChatMessage[] = [
-    {
-      id: 1,
-      author: 'Noah Braun',
-      userId: 'noah',
-      time: '14:25 Uhr',
-      content: 'Welche Version ist aktuell von Angular?',
-      avatar: 'assets/Noah Braun.png',
-      reactions: [{ emoji: '👍', count: 1, users: ['sofia'] }],
-      isSelf: false,
-      replies: [],
-      createdAt: new Date(new Date().setDate(new Date().getDate() - 1))
-    },
-    {
-      id: 2,
-      author: 'Frederik Beck (Du)',
-      userId: 'frederik',
-      time: '15:06 Uhr',
-      content: 'Ich glaube es ist Version 17.2. Aber ich checke nochmal.',
-      avatar: 'assets/Frederik Beck.png',
-      reactions: [
-        { emoji: '🚀', count: 1, users: ['sofia'] },
-        { emoji: '✅', count: 1, users: ['sofia'] },
-        { emoji: '😂', count: 1, users: ['noah'] }
-      ],
-      isSelf: true,
-      replies: [],
-      createdAt: new Date()
-    }
-  ];
+    this.channelUsers['Entwicklerteam'] = devUsers;
+    this.channelMessages['Entwicklerteam'] = devMessages;
 
-  this.channelUsers['Entwicklerteam'] = devUsers;
-  this.channelMessages['Entwicklerteam'] = devMessages;
+    this.channelService.activeChannel$.subscribe((channel) => {
+      this.activeChannelName = channel.name;
 
-  this.channelService.activeChannel$.subscribe(channel => {
-    this.activeChannelName = channel.name;
+      // Channel Users richtig setzen
+      if (channel.members?.length) {
+        this.channelUsers[this.activeChannelName] = [
+          this.currentUser,
+          ...channel.members.filter((u) => u.name !== this.currentUser.name),
+        ];
+      } else if (!this.channelUsers[this.activeChannelName]) {
+        this.channelUsers[this.activeChannelName] = [this.currentUser];
+      }
 
-    // Channel Users richtig setzen
-    if (channel.members?.length) {
-      this.channelUsers[this.activeChannelName] = [this.currentUser, ...channel.members.filter(u => u.name !== this.currentUser.name)];
-    } else if (!this.channelUsers[this.activeChannelName]) {
-      this.channelUsers[this.activeChannelName] = [this.currentUser];
-    }
+      if (!this.channelMessages[this.activeChannelName]) {
+        this.channelMessages[this.activeChannelName] = [];
+      }
 
-    if (!this.channelMessages[this.activeChannelName]) {
-      this.channelMessages[this.activeChannelName] = [];
-    }
-
-    this.currentChannelUsers = this.channelUsers[this.activeChannelName];
-    this.currentChannelMessages = this.channelMessages[this.activeChannelName];
-    this.groupMessagesByDate();
-  });
-}
-
+      this.currentChannelUsers = this.channelUsers[this.activeChannelName];
+      this.currentChannelMessages =
+        this.channelMessages[this.activeChannelName];
+      this.groupMessagesByDate();
+    });
+  }
 
   groupMessagesByDate(): void {
     const groups: { [key: string]: ChatMessage[] } = {};
@@ -145,9 +162,9 @@ ngOnInit(): void {
       if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(message);
     }
-    this.groupedMessages = Object.keys(groups).map(key => ({
+    this.groupedMessages = Object.keys(groups).map((key) => ({
       dateLabel: this.formatDateLabel(key),
-      messages: groups[key]
+      messages: groups[key],
     }));
   }
 
@@ -163,41 +180,50 @@ ngOnInit(): void {
 
     if (date.toDateString() === today.toDateString()) return 'Heute';
     if (date.toDateString() === yesterday.toDateString()) return 'Gestern';
-    return date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+    return date.toLocaleDateString('de-DE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
   }
 
-  sendMessage(): void {
-    const content = this.newMessage.trim();
-    if (!content) return;
+sendMessage(): void {
+  const content = this.newMessage.trim();
+  if (!content) return;
 
-    const now = new Date();
-    const newMsg: ChatMessage = {
-      id: this.currentChannelMessages.length + 1,
-      author: this.currentUser.name,
-      userId: this.currentUser.id,
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      content,
-      avatar: this.currentUser.avatar,
-      reactions: [],
-      isSelf: true,
-      replies: [],
-      createdAt: now
-    };
+  const now = new Date();
+  const newMsg: ChatMessage = {
+    id: this.currentChannelMessages.length + 1,
+    author: this.currentUser.name,
+    userId: this.currentUser.id,
+    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    content,
+    avatar: this.currentUser.avatar,
+    reactions: [],
+    isSelf: true,
+    replies: [],
+    createdAt: now
+  };
 
-    if (this.replyingTo) {
-      newMsg.replyToId = this.replyingTo.id;
-      const parent = this.currentChannelMessages.find(m => m.id === this.replyingTo?.id);
-      parent?.replies?.push(newMsg);
-      this.replyingTo = null;
-    } else {
-      this.currentChannelMessages.push(newMsg);
+  if (this.replyingTo) {
+    newMsg.replyToId = this.replyingTo.id;
+    const parent = this.currentChannelMessages.find(m => m.id === this.replyingTo?.id);
+    if (parent) {
+      if (!parent.replies) parent.replies = [];
+      parent.replies.push(newMsg);
     }
-
-    this.newMessage = '';
-    this.showEmojis = false;
-    this.showUsers = false;
-    this.groupMessagesByDate();
+    this.replyingTo = null;
+  } else {
+    this.currentChannelMessages.push(newMsg);
   }
+
+  this.newMessage = '';
+  this.showEmojis = false;
+  this.showUsers = false;
+
+  this.groupMessagesByDate();
+}
+
 
   toggleEmojiPicker() {
     this.showEmojis = !this.showEmojis;
@@ -219,17 +245,21 @@ ngOnInit(): void {
     this.showUsers = false;
   }
 
-  replyTo(message: ChatMessage) {
-    this.replyingTo = message;
-    this.newMessage = `@${message.author} `;
-  }
+replyTo(message: ChatMessage) {
+  const mention = `@${message.author} `;
+  this.threadPanelService.openThread(message, mention);
+}
+
+
 
   toggleReaction(message: ChatMessage, emoji: string) {
-    const existing = message.reactions?.find(r => r.emoji === emoji);
+    const existing = message.reactions?.find((r) => r.emoji === emoji);
     if (existing) {
       const hasReacted = existing.users.includes(this.currentUser.id);
       if (hasReacted) {
-        existing.users = existing.users.filter(u => u !== this.currentUser.id);
+        existing.users = existing.users.filter(
+          (u) => u !== this.currentUser.id
+        );
         existing.count--;
       } else {
         existing.users.push(this.currentUser.id);
@@ -247,51 +277,51 @@ ngOnInit(): void {
   }
 
   getUserNamesFromIds(ids: string[]): string[] {
-    return this.currentChannelUsers.filter(u => ids.includes(u.id)).map(u => u.name);
+    return this.currentChannelUsers
+      .filter((u) => ids.includes(u.id))
+      .map((u) => u.name);
   }
 
-toggleUserDropdown() {
-  setTimeout(() => {
-    this.showFullUserList = !this.showFullUserList;
-  });
-}
-
+  toggleUserDropdown() {
+    setTimeout(() => {
+      this.showFullUserList = !this.showFullUserList;
+    });
+  }
 
   @ViewChild('userDropdownRef') userDropdownRef!: ElementRef;
 
-@HostListener('document:click', ['$event'])
-onClickOutside(event: MouseEvent) {
-  if (!this.showFullUserList || !this.userDropdownRef) return;
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent) {
+    if (!this.showFullUserList || !this.userDropdownRef) return;
 
-  const clickedInside = this.userDropdownRef.nativeElement.contains(event.target);
-  if (!clickedInside) {
-    this.showFullUserList = false;
+    const clickedInside = this.userDropdownRef.nativeElement.contains(
+      event.target
+    );
+    if (!clickedInside) {
+      this.showFullUserList = false;
+    }
   }
-}
-openAddUserDialog() {
-  const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
-    width: '500px',
-    data: {
-      mode: 'add', 
-      channelName: this.activeChannelName,
-      existingMembers: this.currentChannelUsers.map(u => u.name)
-    }
-  });
+  openAddUserDialog() {
+    const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
+      width: '500px',
+      data: {
+        mode: 'add',
+        channelName: this.activeChannelName,
+        existingMembers: this.currentChannelUsers.map((u) => u.name),
+      },
+    });
 
-  dialogRef.afterClosed().subscribe((newUsers: ChatUser[]) => {
-    if (newUsers && newUsers.length) {
-      const filtered = newUsers.filter(
-        user => !this.currentChannelUsers.some(existing => existing.name === user.name)
-      );
-      this.currentChannelUsers = [...this.currentChannelUsers, ...filtered];
-      this.channelUsers[this.activeChannelName] = this.currentChannelUsers;
-    }
-  });
-}
-
-
-
-
-
-
+    dialogRef.afterClosed().subscribe((newUsers: ChatUser[]) => {
+      if (newUsers && newUsers.length) {
+        const filtered = newUsers.filter(
+          (user) =>
+            !this.currentChannelUsers.some(
+              (existing) => existing.name === user.name
+            )
+        );
+        this.currentChannelUsers = [...this.currentChannelUsers, ...filtered];
+        this.channelUsers[this.activeChannelName] = this.currentChannelUsers;
+      }
+    });
+  }
 }
