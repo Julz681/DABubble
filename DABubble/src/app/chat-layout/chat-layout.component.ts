@@ -27,4 +27,8 @@ export class ChatLayoutComponent {
   closeThreadPanel() {
     this.isThreadPanelOpen = false;
   }
+
+  openThreadPanel() {
+    this.isThreadPanelOpen = true;
+  }
 }

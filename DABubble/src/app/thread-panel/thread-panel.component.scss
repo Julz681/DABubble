@@ -217,3 +217,22 @@
     }
   }
 }
+
+.chat-layout {
+  display: flex;
+  height: 100%;
+}
+
+.chat-area {
+  flex: 1;
+  transition: width 0.3s ease;
+}
+
+.thread-area {
+  width: 400px;
+  border-left: 1px solid #ccc;
+}
+
+.chat-layout:not(.thread-open) .chat-area {
+  flex: 1 1 100%;
+}

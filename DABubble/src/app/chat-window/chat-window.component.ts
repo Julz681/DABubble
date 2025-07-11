@@ -9,6 +9,8 @@ import { ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
 import { ThreadPanelService } from '../services/thread.panel.service';
+import { Input } from '@angular/core';
+
 
 
 interface ChatUser {
@@ -51,6 +53,8 @@ export class ChatWindowComponent implements OnInit {
   showFullUserList = false;
   hoveredMessage: ChatMessage | null = null;
   replyingTo: ChatMessage | null = null;
+  @Input() threadToggle?: () => void;
+
 
   activeChannelName = '';
   groupedMessages: { dateLabel: string; messages: ChatMessage[] }[] = [];
@@ -89,7 +93,7 @@ constructor(
 
 
   ngOnInit(): void {
-    // Entwicklerteam initialisieren
+
     const devUsers: ChatUser[] = [
       this.currentUser,
       { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
@@ -97,36 +101,73 @@ constructor(
       { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
     ];
 
-    const devMessages: ChatMessage[] = [
+const devMessages: ChatMessage[] = [
+  {
+    id: 1,
+    author: 'Noah Braun',
+    userId: 'noah',
+    time: '14:25 Uhr',
+    content: 'Welche Version ist aktuell von Angular?',
+    avatar: 'assets/Noah Braun.png',
+    reactions: [],
+    isSelf: false,
+    replies: [
       {
-        id: 1,
-        author: 'Noah Braun',
-        userId: 'noah',
-        time: '14:25 Uhr',
-        content: 'Welche Version ist aktuell von Angular?',
-        avatar: 'assets/Noah Braun.png',
-        reactions: [{ emoji: '👍', count: 1, users: ['sofia'] }],
+        id: 11,
+        author: 'Sofia Müller',
+        userId: 'sofia',
+        time: '14:30 Uhr',
+        content:
+          'Ich habe die gleiche Frage. Ich habe gegoogelt und es scheint, dass die aktuelle Version Angular 13 ist. Vielleicht weiß Frederik, ob es wahr ist.',
+        avatar: 'assets/Sofia Müller.png',
+        reactions: [
+          {
+            emoji: '🤓',
+            count: 1,
+            users: ['frederik']
+          }
+        ],
         isSelf: false,
-        replies: [],
-        createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+        createdAt: new Date()
       },
       {
-        id: 2,
+        id: 12,
         author: 'Frederik Beck (Du)',
         userId: 'frederik',
         time: '15:06 Uhr',
-        content: 'Ich glaube es ist Version 17.2. Aber ich checke nochmal.',
+        content: 'Ja das ist es.',
         avatar: 'assets/Frederik Beck.png',
         reactions: [
-          { emoji: '🚀', count: 1, users: ['sofia'] },
-          { emoji: '✅', count: 1, users: ['sofia'] },
-          { emoji: '😂', count: 1, users: ['noah'] },
+          {
+            emoji: '👍',
+            count: 2,
+            users: ['sofia', 'noah']
+          }
         ],
         isSelf: true,
-        replies: [],
-        createdAt: new Date(),
-      },
-    ];
+        createdAt: new Date()
+      }
+    ],
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 1))
+  },
+  {
+    id: 2,
+    author: 'Frederik Beck (Du)',
+    userId: 'frederik',
+    time: '15:06 Uhr',
+    content: 'Ich glaube es ist Version 17.2. Aber ich checke nochmal.',
+    avatar: 'assets/Frederik Beck.png',
+    reactions: [
+      { emoji: '🚀', count: 1, users: ['sofia'] },
+      { emoji: '✅', count: 1, users: ['sofia'] },
+      { emoji: '😂', count: 1, users: ['noah'] },
+    ],
+    isSelf: true,
+    replies: [],
+    createdAt: new Date(),
+  },
+];
+
 
     this.channelUsers['Entwicklerteam'] = devUsers;
     this.channelMessages['Entwicklerteam'] = devMessages;
@@ -134,7 +175,7 @@ constructor(
     this.channelService.activeChannel$.subscribe((channel) => {
       this.activeChannelName = channel.name;
 
-      // Channel Users richtig setzen
+  
       if (channel.members?.length) {
         this.channelUsers[this.activeChannelName] = [
           this.currentUser,
@@ -245,31 +286,47 @@ sendMessage(): void {
     this.showUsers = false;
   }
 
-replyTo(message: ChatMessage) {
+replyTo(message: ChatMessage): void {
   const mention = `@${message.author} `;
   this.threadPanelService.openThread(message, mention);
+  this.threadToggle?.();
 }
 
 
 
-  toggleReaction(message: ChatMessage, emoji: string) {
-    const existing = message.reactions?.find((r) => r.emoji === emoji);
-    if (existing) {
-      const hasReacted = existing.users.includes(this.currentUser.id);
-      if (hasReacted) {
-        existing.users = existing.users.filter(
-          (u) => u !== this.currentUser.id
-        );
-        existing.count--;
-      } else {
-        existing.users.push(this.currentUser.id);
-        existing.count++;
+
+toggleReaction(message: ChatMessage, emoji: string) {
+  if (!message.reactions) {
+    message.reactions = [];
+  }
+
+  const reaction = message.reactions.find(r => r.emoji === emoji);
+
+  if (reaction) {
+    const index = reaction.users.indexOf(this.currentUser.id);
+    if (index !== -1) {
+      // Nutzer hat schon reagiert -> Reaktion entfernen
+      reaction.users.splice(index, 1);
+      reaction.count--;
+
+      // Wenn niemand mehr reagiert hat -> ganze Reaktion entfernen
+      if (reaction.count === 0) {
+        const idx = message.reactions.indexOf(reaction);
+        if (idx !== -1) {
+          message.reactions.splice(idx, 1);
+        }
       }
     } else {
-      if (!message.reactions) message.reactions = [];
-      message.reactions.push({ emoji, count: 1, users: [this.currentUser.id] });
+      // Nutzer reagiert neu
+      reaction.users.push(this.currentUser.id);
+      reaction.count++;
     }
+  } else {
+    // Erste Reaktion mit diesem Emoji
+    message.reactions.push({ emoji, count: 1, users: [this.currentUser.id] });
   }
+}
+
 
   getLastReplyTime(message: ChatMessage): string {
     if (!message.replies?.length) return '';
@@ -324,4 +381,16 @@ replyTo(message: ChatMessage) {
       }
     });
   }
+
+highlightLastReply(message: ChatMessage): void {
+  const lastReply = message.replies?.[message.replies.length - 1];
+  if (!lastReply) return;
+
+  this.threadPanelService.openThread(message);
+
+
+  this.threadToggle?.();
+}
+
+
 }

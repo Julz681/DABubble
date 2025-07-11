@@ -60,3 +60,51 @@
     background: #f0f0f0;
   }
 }
+
+.chat-layout {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+app-chat-window {
+  flex: 1;
+  transition: flex 0.3s ease;
+}
+
+app-thread-panel {
+  width: 400px;
+  border-left: 1px solid #ccc;
+}
+
+
+.layout {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  transition: all 0.3s ease;
+
+  &.sidebar-collapsed .sidebar {
+    width: 0;
+    overflow: hidden;
+  }
+
+  &.thread-open .main {
+    flex: 1;
+  }
+
+  .sidebar {
+    width: 220px;
+    transition: width 0.3s ease;
+  }
+
+  .main {
+    flex: 1;
+    transition: flex 0.3s ease;
+  }
+
+  .thread {
+    width: 400px;
+    border-left: 1px solid #ccc;
+  }
+}

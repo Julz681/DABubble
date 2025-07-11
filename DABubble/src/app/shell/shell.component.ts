@@ -58,7 +58,7 @@ export class ShellComponent {
     });
   }
 
-  // ✅ Klick außerhalb des Dropdowns schließt das Menü
+
   @HostListener('document:click', ['$event.target'])
   onClickOutside(targetElement: HTMLElement) {
     const clickedInside = this.dropdownRef?.nativeElement.contains(targetElement);
