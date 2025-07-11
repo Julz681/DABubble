@@ -5,7 +5,7 @@ import {
   EventEmitter,
   Output,
   ViewChild,
-  ElementRef
+  ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -50,7 +50,7 @@ interface ChatMessage {
     MatTooltipModule,
   ],
   templateUrl: './thread-panel.component.html',
-  styleUrls: ['./thread-panel.component.scss']
+  styleUrls: ['./thread-panel.component.scss'],
 })
 export class ThreadPanelComponent implements OnInit, OnDestroy {
   @Output() closePanel = new EventEmitter<void>();
@@ -62,49 +62,70 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   showUsers = false;
   replyToUser: string | null = null;
   hoveredMessageId: number | null = null;
+  editingMessageId: number | null = null;
+  editedMessageContent: string = '';
 
   rootMessage: ChatMessage | null = null;
   replies: ChatMessage[] = [];
 
   private subscriptions: Subscription[] = [];
 
-  emojis: string[] = ['😀', '😂', '😅', '😍', '😎', '😢', '👍', '👎', '❤️', '🔥', '🎯', '👏'];
+  emojis: string[] = [
+    '😀',
+    '😂',
+    '😅',
+    '😍',
+    '😎',
+    '😢',
+    '👍',
+    '👎',
+    '❤️',
+    '🔥',
+    '🎯',
+    '👏',
+  ];
 
   allUsers: ChatUser[] = [
-    { id: 'frederik', name: 'Frederik Beck (Du)', avatar: 'assets/Frederik Beck.png' },
+    {
+      id: 'frederik',
+      name: 'Frederik Beck (Du)',
+      avatar: 'assets/Frederik Beck.png',
+    },
     { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
     { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
   ];
 
   constructor(private threadService: ThreadPanelService) {}
 
+  ngOnInit(): void {
+    this.subscriptions.push(
+      this.threadService.threadRootMessage$.subscribe((msg) => {
+        this.rootMessage = msg;
+      })
+    );
 
-ngOnInit(): void {
-  this.subscriptions.push(
-    this.threadService.threadRootMessage$.subscribe(msg => {
-      this.rootMessage = msg;
-    })
-  );
+    this.subscriptions.push(
+      this.threadService.threadReplies$.subscribe(
+        (replies) => (this.replies = replies)
+      )
+    );
 
-  this.subscriptions.push(
-    this.threadService.threadReplies$.subscribe(replies => this.replies = replies)
-  );
-
-  this.subscriptions.push(
-    this.threadService.initialReplyText$.subscribe(text => {
-      this.setInitialReplyText(text);
-    })
-  );
-}
-
+    this.subscriptions.push(
+      this.threadService.initialReplyText$.subscribe((text) => {
+        this.setInitialReplyText(text);
+      })
+    );
+  }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   toggleEmojiPicker(): void {
     this.showEmojis = !this.showEmojis;
-    this.showUsers = false;
+    if (this.showEmojis) {
+      this.showUsers = false;
+    }
   }
 
   toggleUserList(): void {
@@ -122,25 +143,24 @@ ngOnInit(): void {
     this.showUsers = false;
   }
 
-replyTo(user: string): void {
-  const mention = `@${user} `;
+  replyTo(user: string): void {
+    const mention = `@${user} `;
 
-  if (!this.newMessage.startsWith(mention)) {
-    this.newMessage = mention;
-  }
-
-  this.replyToUser = user;
-
-  setTimeout(() => {
-    const input = this.messageInput?.nativeElement;
-    if (input) {
-      input.focus();
-      const pos = this.newMessage.length;
-      input.setSelectionRange(pos, pos);
+    if (!this.newMessage.startsWith(mention)) {
+      this.newMessage = mention;
     }
-  }, 0);
-}
 
+    this.replyToUser = user;
+
+    setTimeout(() => {
+      const input = this.messageInput?.nativeElement;
+      if (input) {
+        input.focus();
+        const pos = this.newMessage.length;
+        input.setSelectionRange(pos, pos);
+      }
+    }, 0);
+  }
 
   sendMessage(): void {
     const trimmed = this.newMessage.trim();
@@ -156,7 +176,7 @@ replyTo(user: string): void {
       avatar: 'assets/Frederik Beck.png',
       createdAt: now,
       reactions: [],
-      isSelf: true
+      isSelf: true,
     };
 
     this.threadService.addReply(newReply);
@@ -169,25 +189,39 @@ replyTo(user: string): void {
   }
 
   toggleReaction(message: ChatMessage, emoji: string): void {
-    const existing = message.reactions?.find(r => r.emoji === emoji);
+    if (!message.reactions) message.reactions = [];
+
+    const existing = message.reactions.find((r) => r.emoji === emoji);
+
     if (existing) {
-      const hasReacted = existing.users.includes(this.currentUserId);
-      if (!hasReacted) {
+      const index = existing.users.indexOf(this.currentUserId);
+
+      if (index > -1) {
+        existing.users.splice(index, 1);
+        existing.count--;
+
+        if (existing.count === 0) {
+          message.reactions = message.reactions.filter((r) => r !== existing);
+        }
+      } else {
         existing.users.push(this.currentUserId);
         existing.count++;
       }
     } else {
-      if (!message.reactions) message.reactions = [];
-      message.reactions.push({ emoji, count: 1, users: [this.currentUserId] });
+      message.reactions.push({
+        emoji,
+        count: 1,
+        users: [this.currentUserId],
+      });
     }
   }
 
   getUserNameFromId(id: string): string {
-    return this.allUsers.find(u => u.id === id)?.name || id;
+    return this.allUsers.find((u) => u.id === id)?.name || id;
   }
 
   getUserNamesFromIds(ids: string[]): string[] {
-    return ids.map(id => this.getUserNameFromId(id));
+    return ids.map((id) => this.getUserNameFromId(id));
   }
 
   getLastReplyTime(): string {
@@ -201,15 +235,33 @@ replyTo(user: string): void {
   }
 
   setInitialReplyText(text: string): void {
-  this.newMessage = text;
-  setTimeout(() => {
-    const input = this.messageInput?.nativeElement;
-    if (input) {
-      input.focus();
-      const pos = this.newMessage.length;
-      input.setSelectionRange(pos, pos);
-    }
-  }, 0);
-}
+    this.newMessage = text;
+    setTimeout(() => {
+      const input = this.messageInput?.nativeElement;
+      if (input) {
+        input.focus();
+        const pos = this.newMessage.length;
+        input.setSelectionRange(pos, pos);
+      }
+    }, 0);
+  }
 
+  startEditing(msg: ChatMessage): void {
+    this.editingMessageId = msg.id;
+    this.editedMessageContent = msg.content;
+  }
+
+  cancelEdit(): void {
+    this.editingMessageId = null;
+    this.editedMessageContent = '';
+  }
+
+  saveEdit(msg: ChatMessage): void {
+    const trimmed = this.editedMessageContent.trim();
+    if (!trimmed) return;
+
+    msg.content = trimmed;
+    this.editingMessageId = null;
+    this.editedMessageContent = '';
+  }
 }
