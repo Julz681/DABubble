@@ -1,7 +1,8 @@
 <div class="sidebar-header">
   <img src="../../assets/Dev.png" alt="Logo" class="logo" />
   <span class="brand-name">Devspace</span>
-  <mat-icon class="edit-icon">edit_square</mat-icon>
+  <mat-icon class="edit-icon" (click)="openNewMessageDialog()">edit_square</mat-icon>
+
 </div>
 
 <mat-divider></mat-divider>
@@ -46,10 +47,11 @@
   </h3>
 
   <mat-nav-list *ngIf="showDMs">
-    <mat-list-item *ngFor="let user of users">
-      <img [src]="user.avatar" class="avatar" alt="avatar" />
-      <span class="username">{{ user.name }}</span>
-      <mat-icon class="online-icon" color="primary">circle</mat-icon>
-    </mat-list-item>
+<mat-list-item *ngFor="let user of users" (click)="selectUser(user)">
+  <img [src]="user.avatar" class="avatar" alt="avatar" />
+  <span class="username">{{ user.name }}</span>
+  <mat-icon class="online-icon" color="primary">circle</mat-icon>
+</mat-list-item>
+
   </mat-nav-list>
 </div>

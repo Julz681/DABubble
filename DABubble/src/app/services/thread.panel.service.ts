@@ -13,6 +13,8 @@ export interface ChatMessage {
   replies?: ChatMessage[];
   replyToId?: number;
   createdAt: Date;
+  edited?: boolean;
+
 }
 
 @Injectable({ providedIn: 'root' })

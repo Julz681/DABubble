@@ -2,7 +2,14 @@
   <!-- Header -->
   <div class="chat-header">
     <div class="left">
-      <h2># {{ activeChannelName }}</h2>
+      <h2>
+        <ng-container *ngIf="activeUser; else channelHeader">
+          {{ activeUser.name }}
+        </ng-container>
+        <ng-template #channelHeader>
+          # {{ activeChannelName }}
+        </ng-template>
+      </h2>
     </div>
     <div class="right">
       <div class="avatars" (click)="toggleUserDropdown()">
@@ -33,12 +40,20 @@
   <!-- Nachrichtenbereich -->
   <div class="chat-messages">
     <div *ngIf="!groupedMessages.length" class="empty-state">
-      <h3># {{ activeChannelName }}</h3>
-      <p>
-        Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels
-        <strong># {{ activeChannelName }}</strong
-        >.
-      </p>
+      <ng-container *ngIf="activeUser; else fallbackChannelInfo">
+        <h3>{{ activeUser.name }}</h3>
+        <p>
+          Diese Unterhaltung findet nur zwischen
+          <strong>{{ activeUser.name }}</strong> und dir statt.
+        </p>
+      </ng-container>
+      <ng-template #fallbackChannelInfo>
+        <h3># {{ activeChannelName }}</h3>
+        <p>
+          Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels
+          <strong># {{ activeChannelName }}</strong>.
+        </p>
+      </ng-template>
     </div>
 
     <ng-container *ngFor="let group of groupedMessages">
@@ -73,24 +88,52 @@
 
           <div class="meta">
             <span class="author">{{ message.author }}</span>
-            <span class="time">{{ message.time }}</span>
+            <span class="time">
+  {{ message.time }}
+  <span *ngIf="message.edited" class="edited-flag">· bearbeitet</span>
+</span>
+
           </div>
 
           <div class="content" *ngIf="editingMessageId !== message.id">
             {{ message.content }}
           </div>
+
           <div *ngIf="editingMessageId === message.id" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
             <button (click)="saveEdit(message)">Speichern</button>
             <button (click)="cancelEdit()">Abbrechen</button>
           </div>
 
-          <div class="reply-meta" *ngIf="message.replies?.length">
-            <a href="#" (click)="replyTo(message); $event.preventDefault()">
-              {{ message.replies?.length || 0 }} Antworten
-            </a>
-            – <span>Letzte Antwort {{ getLastReplyTime(message) }}</span>
+<div class="reply-meta" *ngIf="message.replies?.length">
+  <ng-container *ngIf="activeUser; else threadLink">
+    <div class="dm-replies">
+      <div
+        *ngFor="let reply of message.replies"
+        class="message-wrapper reply"
+        [ngClass]="{ self: reply.isSelf }"
+      >
+        <img class="avatar" [src]="reply.avatar" [alt]="reply.author" />
+        <div class="message">
+          <div class="meta">
+            <span class="author">{{ reply.author }}</span>
+            <span class="time">{{ reply.time }}</span>
           </div>
+          <div class="content">{{ reply.content }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #threadLink>
+    <a href="#" (click)="replyTo(message); $event.preventDefault()">
+      {{ message.replies?.length }} Antworten
+    </a>
+    – <span>Letzte Antwort {{ getLastReplyTime(message) }}</span>
+  </ng-template>
+</div>
+
+
 
           <div class="reactions" *ngIf="message.reactions?.length">
             <span
@@ -105,10 +148,11 @@
     </ng-container>
   </div>
 
+  <!-- Eingabe -->
   <div class="chat-input">
     <input
       [(ngModel)]="newMessage"
-      [placeholder]="'Nachricht an #' + activeChannelName"
+      [placeholder]="activeUser ? 'Nachricht an ' + activeUser.name : 'Nachricht an #' + activeChannelName"
       (keydown.enter)="sendMessage()"
     />
     <button (click)="toggleEmojiPicker()">😊</button>
@@ -116,9 +160,9 @@
     <button class="send" (click)="sendMessage()">➤</button>
 
     <div class="emoji-picker" *ngIf="showEmojis">
-      <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{
-        emoji
-      }}</span>
+      <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">
+        {{ emoji }}
+      </span>
     </div>
 
     <div class="mention-picker" *ngIf="showUsers">

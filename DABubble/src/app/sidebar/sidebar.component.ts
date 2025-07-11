@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ChannelDialogComponent } from '../channel-dialog/channel-dialog.component';
 import { ChannelService } from '../services/channel.service';
+import { NewMessageDialogComponent } from '../new-message-dialog/new-message-dialog.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -66,20 +67,32 @@ export class SidebarComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Channel speichern
         this.channels.push({ name: result.name, members: result.members });
 
-        // Mitglieder im Service speichern
         this.channelService.setMembersForChannel(result.name, result.members);
 
-        // Channel aktiv setzen
+
         this.selectChannel({ name: result.name, members: result.members });
       }
     });
   }
 
-  selectChannel(channel: { name: string; members?: any[] }) {
-    const members = this.channelService.getMembersForChannel(channel.name);
-    this.channelService.setActiveChannel({ name: channel.name, members });
-  }
+selectChannel(channel: { name: string; members?: any[] }) {
+  const members = this.channelService.getMembersForChannel(channel.name);
+  this.channelService.setActiveUser(null);  
+  this.channelService.setActiveChannel({ name: channel.name, members });
+}
+
+
+  openNewMessageDialog() {
+  this.dialog.open(NewMessageDialogComponent, {
+    width: '500px',
+    panelClass: 'custom-dialog'
+  });
+}
+
+selectUser(user: any) {
+  this.channelService.setActiveUser(user);
+}
+
 }

@@ -24,4 +24,13 @@ export class ChannelService {
   setMembersForChannel(name: string, members: any[]) {
     this.channelMembers[name] = members;
   }
+
+  private activeUserSubject = new BehaviorSubject<any | null>(null);
+activeUser$ = this.activeUserSubject.asObservable();
+
+setActiveUser(user: any) {
+  this.activeUserSubject.next(user);
+}
+
+  
 }

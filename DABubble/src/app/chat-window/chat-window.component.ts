@@ -1,15 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ElementRef,
+  ViewChild,
+  HostListener,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ChannelService } from '../services/channel.service';
-import { ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
+import { ChannelService } from '../services/channel.service';
 import { ThreadPanelService } from '../services/thread.panel.service';
-import { Input } from '@angular/core';
+import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
 
 interface ChatUser {
   id: string;
@@ -29,6 +34,7 @@ interface ChatMessage {
   replies?: ChatMessage[];
   replyToId?: number;
   createdAt: Date;
+  edited?: boolean;
 }
 
 @Component({
@@ -45,21 +51,28 @@ interface ChatMessage {
   styleUrls: ['./chat-window.component.scss'],
 })
 export class ChatWindowComponent implements OnInit {
+  @Input() threadToggle?: () => void;
+
   newMessage = '';
   showEmojis = false;
   showUsers = false;
   showFullUserList = false;
   hoveredMessage: ChatMessage | null = null;
   replyingTo: ChatMessage | null = null;
-  @Input() threadToggle?: () => void;
   editingMessageId: number | null = null;
   editedMessageContent: string = '';
+  mentionMode: 'user' | 'channel' | null = null;
+  filteredUsers: ChatUser[] = [];
+  filteredChannels: string[] = [];
 
+  activeUser: ChatUser | null = null;
   activeChannelName = '';
-  groupedMessages: { dateLabel: string; messages: ChatMessage[] }[] = [];
+
   currentChannelMessages: ChatMessage[] = [];
   currentChannelUsers: ChatUser[] = [];
+  groupedMessages: { dateLabel: string; messages: ChatMessage[] }[] = [];
 
+  directMessages: { [userId: string]: ChatMessage[] } = {};
   channelMessages: { [channelName: string]: ChatMessage[] } = {};
   channelUsers: { [channelName: string]: ChatUser[] } = {};
 
@@ -91,14 +104,17 @@ export class ChatWindowComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const devUsers: ChatUser[] = [
+    const defaultChannel = 'Entwicklerteam';
+    this.activeChannelName = defaultChannel;
+
+    this.channelUsers[defaultChannel] = [
       this.currentUser,
-      { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
-      { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
-      { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
+      this.allUsers.find((u) => u.id === 'sofia')!,
+      this.allUsers.find((u) => u.id === 'noah')!,
+      this.allUsers.find((u) => u.id === 'elise')!,
     ];
 
-    const devMessages: ChatMessage[] = [
+    this.channelMessages[defaultChannel] = [
       {
         id: 1,
         author: 'Noah Braun',
@@ -110,97 +126,151 @@ export class ChatWindowComponent implements OnInit {
         isSelf: false,
         replies: [
           {
-            id: 11,
+            id: 2,
             author: 'Sofia Müller',
             userId: 'sofia',
-            time: '14:30 Uhr',
-            content:
-              'Ich habe die gleiche Frage. Ich habe gegoogelt und es scheint, dass die aktuelle Version Angular 13 ist. Vielleicht weiß Frederik, ob es wahr ist.',
+            time: '14:26 Uhr',
+            content: 'Ich glaube 17.1, oder?',
             avatar: 'assets/Sofia Müller.png',
-            reactions: [
-              {
-                emoji: '🤓',
-                count: 1,
-                users: ['frederik'],
-              },
-            ],
+            reactions: [],
             isSelf: false,
             createdAt: new Date(),
           },
           {
-            id: 12,
+            id: 3,
             author: 'Frederik Beck (Du)',
             userId: 'frederik',
-            time: '15:06 Uhr',
-            content: 'Ja das ist es.',
+            time: '14:27 Uhr',
+            content: 'Die aktuelle Version ist 17.2.1.',
             avatar: 'assets/Frederik Beck.png',
-            reactions: [
-              {
-                emoji: '👍',
-                count: 2,
-                users: ['sofia', 'noah'],
-              },
-            ],
+            reactions: [],
             isSelf: true,
             createdAt: new Date(),
           },
         ],
+
         createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-      },
-      {
-        id: 2,
-        author: 'Frederik Beck (Du)',
-        userId: 'frederik',
-        time: '15:06 Uhr',
-        content: 'Ich glaube es ist Version 17.2. Aber ich checke nochmal.',
-        avatar: 'assets/Frederik Beck.png',
-        reactions: [
-          { emoji: '🚀', count: 1, users: ['sofia'] },
-          { emoji: '✅', count: 1, users: ['sofia'] },
-          { emoji: '😂', count: 1, users: ['noah'] },
-        ],
-        isSelf: true,
-        replies: [],
-        createdAt: new Date(),
       },
     ];
 
-    this.channelUsers['Entwicklerteam'] = devUsers;
-    this.channelMessages['Entwicklerteam'] = devMessages;
+    this.currentChannelMessages = this.channelMessages[defaultChannel];
+    this.currentChannelUsers = this.channelUsers[defaultChannel];
+
+    this.groupMessagesByDate();
+
+    this.channelService.activeUser$.subscribe((user) => {
+      if (user) {
+        this.activeUser = user;
+        const userId = user.id;
+
+        if (!this.directMessages[userId]) {
+          this.directMessages[userId] = [];
+        }
+
+        this.currentChannelMessages = this.directMessages[userId];
+        this.currentChannelUsers = [this.currentUser, user];
+        this.activeChannelName = user.name;
+
+        this.groupMessagesByDate();
+      }
+    });
 
     this.channelService.activeChannel$.subscribe((channel) => {
-      this.activeChannelName = channel.name;
+      if (channel) {
+        this.activeUser = null;
+        const name = channel.name;
 
-      if (channel.members?.length) {
-        this.channelUsers[this.activeChannelName] = [
-          this.currentUser,
-          ...channel.members.filter((u) => u.name !== this.currentUser.name),
-        ];
-      } else if (!this.channelUsers[this.activeChannelName]) {
-        this.channelUsers[this.activeChannelName] = [this.currentUser];
+        this.activeChannelName = name;
+        this.currentChannelUsers = this.channelUsers[name] || [];
+        this.currentChannelMessages = this.channelMessages[name] || [];
+
+        this.groupMessagesByDate();
       }
-
-      if (!this.channelMessages[this.activeChannelName]) {
-        this.channelMessages[this.activeChannelName] = [];
-      }
-
-      this.currentChannelUsers = this.channelUsers[this.activeChannelName];
-      this.currentChannelMessages =
-        this.channelMessages[this.activeChannelName];
-      this.groupMessagesByDate();
     });
+    this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
+      if (!updatedRoot) return;
+
+      const channel = this.activeChannelName;
+      const messages = this.channelMessages[channel];
+
+      const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
+      if (index !== -1) {
+        this.channelMessages[channel] = [
+          ...messages.slice(0, index),
+          updatedRoot,
+          ...messages.slice(index + 1),
+        ];
+        this.currentChannelMessages = this.channelMessages[channel];
+
+        this.groupMessagesByDate();
+      }
+    });
+  }
+
+  sendMessage(): void {
+    const content = this.newMessage.trim();
+    if (!content) return;
+
+    const now = new Date();
+    const isDirectMessage = !!this.activeUser;
+
+    if (isDirectMessage) {
+      this.replyingTo = null;
+    }
+
+    const message: ChatMessage = {
+      id: this.currentChannelMessages.length + 1,
+      author: this.currentUser.name,
+      userId: this.currentUser.id,
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      content,
+      avatar: this.currentUser.avatar,
+      reactions: [],
+      isSelf: true,
+      replies: [],
+      createdAt: now,
+    };
+
+    if (isDirectMessage) {
+      const userId = this.activeUser!.id;
+      if (!this.directMessages[userId]) {
+        this.directMessages[userId] = [];
+      }
+      this.directMessages[userId].push(message);
+      this.currentChannelMessages = this.directMessages[userId];
+    } else {
+      if (this.replyingTo) {
+        if (!this.replyingTo.replies) this.replyingTo.replies = [];
+        this.replyingTo.replies.push(message);
+      } else {
+        const channel = this.activeChannelName;
+        if (!this.channelMessages[channel]) {
+          this.channelMessages[channel] = [];
+        }
+        this.channelMessages[channel].push(message);
+        this.currentChannelMessages = this.channelMessages[channel];
+      }
+    }
+
+    this.newMessage = '';
+    this.replyingTo = null;
+    this.showEmojis = false;
+    this.showUsers = false;
+
+    this.groupMessagesByDate();
   }
 
   groupMessagesByDate(): void {
     const groups: { [key: string]: ChatMessage[] } = {};
     for (const message of this.currentChannelMessages) {
-      const dateKey = this.getDateKey(message.createdAt);
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(message);
+      const key = this.getDateKey(message.createdAt);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(message);
     }
-    this.groupedMessages = Object.keys(groups).map((key) => ({
+
+    this.groupedMessages = Object.entries(groups).map(([key, messages]) => ({
       dateLabel: this.formatDateLabel(key),
-      messages: groups[key],
+      messages,
     }));
   }
 
@@ -216,50 +286,12 @@ export class ChatWindowComponent implements OnInit {
 
     if (date.toDateString() === today.toDateString()) return 'Heute';
     if (date.toDateString() === yesterday.toDateString()) return 'Gestern';
+
     return date.toLocaleDateString('de-DE', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
     });
-  }
-
-  sendMessage(): void {
-    const content = this.newMessage.trim();
-    if (!content) return;
-
-    const now = new Date();
-    const newMsg: ChatMessage = {
-      id: this.currentChannelMessages.length + 1,
-      author: this.currentUser.name,
-      userId: this.currentUser.id,
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      content,
-      avatar: this.currentUser.avatar,
-      reactions: [],
-      isSelf: true,
-      replies: [],
-      createdAt: now,
-    };
-
-    if (this.replyingTo) {
-      newMsg.replyToId = this.replyingTo.id;
-      const parent = this.currentChannelMessages.find(
-        (m) => m.id === this.replyingTo?.id
-      );
-      if (parent) {
-        if (!parent.replies) parent.replies = [];
-        parent.replies.push(newMsg);
-      }
-      this.replyingTo = null;
-    } else {
-      this.currentChannelMessages.push(newMsg);
-    }
-
-    this.newMessage = '';
-    this.showEmojis = false;
-    this.showUsers = false;
-
-    this.groupMessagesByDate();
   }
 
   toggleEmojiPicker() {
@@ -268,8 +300,27 @@ export class ChatWindowComponent implements OnInit {
   }
 
   toggleUserList() {
-    this.showUsers = !this.showUsers;
-    this.showEmojis = false;
+    const lastChar = this.newMessage.slice(-1);
+
+    if (lastChar === '@') {
+      this.mentionMode = 'user';
+
+      if (this.activeUser) {
+        this.filteredUsers = [this.currentUser, this.activeUser];
+      } else {
+        this.filteredUsers = [...this.currentChannelUsers];
+      }
+
+      this.showUsers = true;
+      this.showEmojis = false;
+    } else if (lastChar === '#') {
+      this.mentionMode = 'channel';
+      this.filteredChannels = Object.keys(this.channelUsers);
+      this.showUsers = true;
+      this.showEmojis = false;
+    } else {
+      this.showUsers = false;
+    }
   }
 
   addEmoji(emoji: string) {
@@ -277,52 +328,47 @@ export class ChatWindowComponent implements OnInit {
     this.showEmojis = false;
   }
 
-  mentionUser(user: ChatUser) {
-    this.newMessage += `@${user.name} `;
-    this.showUsers = false;
-  }
-
-  replyTo(message: ChatMessage): void {
+  replyTo(message: ChatMessage) {
     const mention = `@${message.author} `;
-    this.threadPanelService.openThread(message, mention);
-    this.threadToggle?.();
+    this.replyingTo = message;
+
+    if (this.activeUser) {
+      this.newMessage = mention;
+      setTimeout(() => {
+        const input = document.querySelector('input');
+        input?.focus();
+      }, 0);
+    } else {
+      this.threadPanelService.openThread(message, mention);
+      this.threadToggle?.();
+    }
   }
 
   toggleReaction(message: ChatMessage, emoji: string) {
-    if (!message.reactions) {
-      message.reactions = [];
-    }
+    if (!message.reactions) message.reactions = [];
 
     const reaction = message.reactions.find((r) => r.emoji === emoji);
+    const userId = this.currentUser.id;
 
     if (reaction) {
-      const index = reaction.users.indexOf(this.currentUser.id);
-      if (index !== -1) {
-
-        reaction.users.splice(index, 1);
+      const idx = reaction.users.indexOf(userId);
+      if (idx !== -1) {
+        reaction.users.splice(idx, 1);
         reaction.count--;
-
-
         if (reaction.count === 0) {
-          const idx = message.reactions.indexOf(reaction);
-          if (idx !== -1) {
-            message.reactions.splice(idx, 1);
-          }
+          message.reactions = message.reactions.filter((r) => r.count > 0);
         }
       } else {
-
-        reaction.users.push(this.currentUser.id);
+        reaction.users.push(userId);
         reaction.count++;
       }
     } else {
-
-      message.reactions.push({ emoji, count: 1, users: [this.currentUser.id] });
+      message.reactions.push({ emoji, count: 1, users: [userId] });
     }
   }
 
   getLastReplyTime(message: ChatMessage): string {
-    if (!message.replies?.length) return '';
-    return message.replies[message.replies.length - 1].time;
+    return message.replies?.[message.replies.length - 1]?.time ?? '';
   }
 
   getUserNamesFromIds(ids: string[]): string[] {
@@ -332,9 +378,7 @@ export class ChatWindowComponent implements OnInit {
   }
 
   toggleUserDropdown() {
-    setTimeout(() => {
-      this.showFullUserList = !this.showFullUserList;
-    });
+    setTimeout(() => (this.showFullUserList = !this.showFullUserList));
   }
 
   @ViewChild('userDropdownRef') userDropdownRef!: ElementRef;
@@ -342,14 +386,12 @@ export class ChatWindowComponent implements OnInit {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     if (!this.showFullUserList || !this.userDropdownRef) return;
-
     const clickedInside = this.userDropdownRef.nativeElement.contains(
       event.target
     );
-    if (!clickedInside) {
-      this.showFullUserList = false;
-    }
+    if (!clickedInside) this.showFullUserList = false;
   }
+
   openAddUserDialog() {
     const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
       width: '500px',
@@ -361,12 +403,9 @@ export class ChatWindowComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((newUsers: ChatUser[]) => {
-      if (newUsers && newUsers.length) {
+      if (newUsers?.length) {
         const filtered = newUsers.filter(
-          (user) =>
-            !this.currentChannelUsers.some(
-              (existing) => existing.name === user.name
-            )
+          (u) => !this.currentChannelUsers.find((m) => m.id === u.id)
         );
         this.currentChannelUsers = [...this.currentChannelUsers, ...filtered];
         this.channelUsers[this.activeChannelName] = this.currentChannelUsers;
@@ -374,31 +413,59 @@ export class ChatWindowComponent implements OnInit {
     });
   }
 
-  highlightLastReply(message: ChatMessage): void {
-    const lastReply = message.replies?.[message.replies.length - 1];
-    if (!lastReply) return;
-
-    this.threadPanelService.openThread(message);
-
-    this.threadToggle?.();
-  }
-
-  startEditing(message: ChatMessage): void {
+  startEditing(message: ChatMessage) {
     this.editingMessageId = message.id;
     this.editedMessageContent = message.content;
   }
 
-  cancelEdit(): void {
+  cancelEdit() {
     this.editingMessageId = null;
     this.editedMessageContent = '';
   }
 
   saveEdit(message: ChatMessage): void {
     const trimmed = this.editedMessageContent.trim();
-    if (trimmed && trimmed !== message.content) {
+    if (trimmed) {
       message.content = trimmed;
+      message.edited = true;
     }
-    this.editingMessageId = null;
-    this.editedMessageContent = '';
+    this.cancelEdit();
+  }
+
+  onMessageInput() {
+    const match = this.newMessage.match(/[@#](\w*)$/);
+    if (match) {
+      const term = match[1].toLowerCase();
+
+      if (this.mentionMode === 'user') {
+        const availableUsers = this.activeUser
+          ? [this.currentUser, this.activeUser]
+          : this.currentChannelUsers;
+
+        this.filteredUsers = availableUsers.filter((user) =>
+          user.name.toLowerCase().includes(term)
+        );
+      } else if (this.mentionMode === 'channel') {
+        this.filteredChannels = Object.keys(this.channelUsers).filter((name) =>
+          name.toLowerCase().includes(term)
+        );
+      }
+
+      this.showUsers = true;
+    } else {
+      this.showUsers = false;
+    }
+  }
+
+  mentionUser(user: ChatUser) {
+    this.newMessage = this.newMessage.replace(/@\w*$/, `@${user.name} `);
+    this.showUsers = false;
+    this.mentionMode = null;
+  }
+
+  mentionChannel(name: string) {
+    this.newMessage = this.newMessage.replace(/#\w*$/, `#${name} `);
+    this.showUsers = false;
+    this.mentionMode = null;
   }
 }

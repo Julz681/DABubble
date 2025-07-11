@@ -42,7 +42,12 @@
         <div class="bubble">
           <div class="author-time">
             <span class="author">{{ rootMessage.author }}</span>
-            <span class="time">{{ rootMessage.time }}</span>
+            <span class="time">
+
+  <span *ngIf="rootMessage.edited" class="edited-flag">bearbeitet</span>
+
+</span>
+
           </div>
 
           <!-- Edit Mode -->

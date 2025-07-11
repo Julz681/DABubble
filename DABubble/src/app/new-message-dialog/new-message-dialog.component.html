@@ -1,0 +1,49 @@
+<h2>Neue Nachricht</h2>
+
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Empfänger</mat-label>
+  <input
+    matInput
+    [(ngModel)]="inputValue"
+    (input)="onRecipientInput()"
+    (keydown.enter)="onEnter()"
+    placeholder="#channel oder @Name"
+  />
+</mat-form-field>
+
+<!-- 🔽 Vorschläge -->
+<div class="suggestion-box" *ngIf="showSuggestions">
+  <div
+    class="suggestion"
+    *ngFor="let suggestion of filteredSuggestions"
+    (click)="selectSuggestion(suggestion)"
+  >
+    {{ isUserMode ? '@' : '#' }}{{ suggestion }}
+  </div>
+</div>
+
+<!-- 🔽 Chips für gewählte Empfänger -->
+<div class="selected-recipients" *ngIf="selectedRecipients.length">
+  <span
+    class="chip"
+    *ngFor="let r of selectedRecipients; let i = index"
+  >
+    {{ r }}
+    <button (click)="removeRecipient(i)">×</button>
+  </span>
+</div>
+
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Nachricht</mat-label>
+  <textarea
+    matInput
+    [(ngModel)]="message"
+    placeholder="Gib deine Nachricht ein…"
+    rows="5"
+  ></textarea>
+</mat-form-field>
+
+<div class="actions">
+  <button mat-button (click)="cancel()">Abbrechen</button>
+  <button mat-flat-button color="primary" (click)="send()">Senden</button>
+</div>

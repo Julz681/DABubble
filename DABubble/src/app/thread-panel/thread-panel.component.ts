@@ -35,6 +35,7 @@ interface ChatMessage {
   replies?: ChatMessage[];
   replyToId?: number;
   createdAt: Date;
+  edited?: boolean;
 }
 
 @Component({
@@ -256,12 +257,12 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     this.editedMessageContent = '';
   }
 
-  saveEdit(msg: ChatMessage): void {
+  saveEdit(message: ChatMessage): void {
     const trimmed = this.editedMessageContent.trim();
-    if (!trimmed) return;
-
-    msg.content = trimmed;
-    this.editingMessageId = null;
-    this.editedMessageContent = '';
+    if (trimmed) {
+      message.content = trimmed;
+      message.edited = true;
+    }
+    this.cancelEdit();
   }
 }
