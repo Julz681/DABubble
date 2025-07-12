@@ -68,31 +68,59 @@ export class SidebarComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.channels.push({ name: result.name, members: result.members });
-
         this.channelService.setMembersForChannel(result.name, result.members);
-
-
         this.selectChannel({ name: result.name, members: result.members });
       }
     });
   }
 
-selectChannel(channel: { name: string; members?: any[] }) {
-  const members = this.channelService.getMembersForChannel(channel.name);
-  this.channelService.setActiveUser(null);  
-  this.channelService.setActiveChannel({ name: channel.name, members });
-}
+  selectChannel(channel: { name: string; members?: any[] }) {
+    const members = this.channelService.getMembersForChannel(channel.name);
+    this.channelService.setActiveUser(null);
+    this.channelService.setActiveChannel({ name: channel.name, members });
+  }
 
+  selectUser(user: any) {
+    this.channelService.setActiveUser(user);
+  }
 
   openNewMessageDialog() {
-  this.dialog.open(NewMessageDialogComponent, {
-    width: '500px',
-    panelClass: 'custom-dialog'
-  });
-}
+    const dialogRef = this.dialog.open(NewMessageDialogComponent, {
+      width: '500px',
+      panelClass: 'custom-dialog'
+    });
 
-selectUser(user: any) {
-  this.channelService.setActiveUser(user);
-}
+    dialogRef.afterClosed().subscribe((results) => {
+      if (!results || results.length === 0) return;
 
+      for (const res of results) {
+        const now = new Date();
+        const message = {
+          id: Date.now(),
+          author: 'Frederik Beck (Du)',
+          userId: 'frederik',
+          avatar: 'assets/Frederik Beck.png',
+          content: res.message,
+          time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          createdAt: now,
+          reactions: [],
+          isSelf: true
+        };
+
+        if (res.type === 'user') {
+          const user = this.users.find(u => u.id === res.id);
+          if (user) {
+            this.selectUser(user);
+            this.channelService.addMessage(user.id, message, true);
+          }
+        } else if (res.type === 'channel') {
+          const channel = this.channels.find(c => c.name === res.name);
+          if (channel) {
+            this.selectChannel(channel);
+            this.channelService.addMessage(res.name, message, false);
+          }
+        }
+      }
+    });
+  }
 }

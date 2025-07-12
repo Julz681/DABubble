@@ -82,14 +82,37 @@ export class NewMessageDialogComponent {
     this.selectedRecipients.splice(index, 1);
   }
 
-send() {
-  if (this.message.trim() && this.recipient.trim()) {
-    this.dialogRef.close({
-      recipient: this.recipient,
-      message: this.message
-    });
+send(): void {
+  if (!this.message.trim() || this.selectedRecipients.length === 0) {
+    return;
   }
+
+  const results = this.selectedRecipients.map(r => {
+    const isUser = r.startsWith('@');
+    const name = r.slice(1).trim();
+
+    if (isUser) {
+      const user = this.users.find(u => u.name === name);
+      return {
+        type: 'user',
+        id: user?.id,
+        name: user?.name,
+        message: this.message
+      };
+    } else {
+      const channel = this.channels.find(c => c === name);
+      return {
+        type: 'channel',
+        id: name, 
+        name: name,
+        message: this.message
+      };
+    }
+  }).filter(Boolean);
+
+  this.dialogRef.close(results);
 }
+
 
 
   cancel(): void {
