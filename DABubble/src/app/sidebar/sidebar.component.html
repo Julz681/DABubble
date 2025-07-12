@@ -22,10 +22,11 @@
   <mat-nav-list *ngIf="showChannels">
     <mat-list-item
       *ngFor="let channel of channels"
-      class="active-channel"
-      (click)="selectChannel(channel)">
+      class="channel-item"
+      (click)="selectChannelOnly(channel)">
       <mat-icon matListIcon>tag</mat-icon>
       <span>{{ channel.name }}</span>
+      <mat-icon class="info-icon" (click)="openChannelInfo(channel, $event)">info</mat-icon>
     </mat-list-item>
 
     <mat-list-item class="add-channel" (click)="openChannelDialog()">
@@ -51,8 +52,7 @@
         [src]="user.avatar"
         class="avatar"
         alt="avatar"
-        (click)="openUserProfile(user); $event.stopPropagation()"
-      />
+        (click)="openUserProfile(user); $event.stopPropagation()" />
       <span class="username">
         {{ user.id === currentUser.id ? user.name + ' (Du)' : user.name }}
       </span>

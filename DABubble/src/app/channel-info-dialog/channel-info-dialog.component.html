@@ -1,62 +1,58 @@
 <h2 class="dialog-title">
   <mat-icon>tag</mat-icon>
-  {{ '#' + data.name }}
+  {{ name }}
 </h2>
 
-<!-- SYSTEMCHANNEL: Entwicklerteam -->
-<ng-container *ngIf="isSystemChannel; else editableChannel">
-  <div class="section">
-    <div class="label-row">
-      <span class="label">Channel-Name</span>
-    </div>
-    <p class="value"># Entwicklerteam</p>
+<!-- NAME -->
+<div class="section">
+  <label class="label">Channel-Name</label>
+  <div class="row">
+    <div># {{ name }}</div>
+    <button *ngIf="!isSystemChannel && !editMode" mat-button (click)="editMode = true">
+      Bearbeiten
+    </button>
   </div>
+  <mat-form-field *ngIf="editMode && !isSystemChannel" appearance="fill" class="full-width">
+    <input matInput [(ngModel)]="name" />
+  </mat-form-field>
+</div>
 
-  <div class="section">
-    <div class="label-row">
-      <span class="label">Beschreibung</span>
-    </div>
-    <p class="value">
-      Dieser Channel ist für alles rund um #Entwicklerteam vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.
-    </p>
+<!-- BESCHREIBUNG -->
+<div class="section">
+  <label class="label">Beschreibung</label>
+  <div class="row">
+    <div>{{ description }}</div>
+    <button *ngIf="!isSystemChannel && !editMode" mat-button (click)="editMode = true">
+      Bearbeiten
+    </button>
   </div>
+  <mat-form-field *ngIf="editMode && !isSystemChannel" appearance="fill" class="full-width">
+    <textarea matInput [(ngModel)]="description"></textarea>
+  </mat-form-field>
+</div>
 
-  <hr class="divider" />
+<!-- ERSTELLT VON -->
+<div class="section">
+  <label class="label">Erstellt von</label>
+  <div class="creator-name">{{ createdBy }}</div>
+  <mat-form-field *ngIf="editMode && !isSystemChannel" appearance="fill" class="full-width">
+    <input matInput [(ngModel)]="createdBy" />
+  </mat-form-field>
+</div>
 
-  <div class="section creator">
-    <span class="label">Erstellt von</span>
-    <p class="creator-name">Noah Braun</p>
-  </div>
-</ng-container>
-
-<!-- ALLE ANDEREN CHANNELS -->
-<ng-template #editableChannel>
-  <div class="section">
-    <div class="label-row">
-      <span class="label">Channel-Name</span>
-      <a class="edit-link">Bearbeiten</a>
-    </div>
-    <p class="value"># {{ data.name }}</p>
-  </div>
-
-  <div class="section">
-    <div class="label-row">
-      <span class="label">Beschreibung</span>
-      <a class="edit-link">Bearbeiten</a>
-    </div>
-    <p class="value">{{ description }}</p>
-  </div>
-
-  <hr class="divider" />
-
-  <div class="section creator">
-    <span class="label">Erstellt von</span>
-    <p class="creator-name">{{ creator }}</p>
-  </div>
-</ng-template>
-
+<!-- BUTTONS -->
 <div class="actions">
-  <button mat-flat-button color="primary" (click)="dialogRef.close()">
+  <button mat-button (click)="cancel()">Abbrechen</button>
+  <button mat-button *ngIf="editMode && !isSystemChannel" color="primary" (click)="saveChanges()">
+    Speichern
+  </button>
+  <button
+    mat-button
+    class="leave-button"
+    color="warn"
+    *ngIf="!editMode"
+    (click)="leaveChannel()"
+  >
     Channel verlassen
   </button>
 </div>

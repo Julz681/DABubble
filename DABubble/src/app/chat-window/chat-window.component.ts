@@ -76,6 +76,9 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   mentionMode: 'user' | 'channel' | null = null;
   filteredUsers: ChatUser[] = [];
   filteredChannels: string[] = [];
+  activeChannelDescription = '';
+activeChannelCreatedBy = '';
+
 
   activeUser: ChatUser | null = null;
   activeChannelName = '';
@@ -182,21 +185,25 @@ ngOnInit(): void {
     this.activeUser = user;
     this.activeChannelName = user
       ? user.name
-      : this.channelService.getCurrentChannel().name;
+      : this.channelService.getCurrentChannel()?.name || '';
+
     this.currentChannelUsers = user
       ? [this.currentUser, user]
       : this.channelService.getMembersForChannel(this.activeChannelName);
   });
 
-  // 8. Channelwechsel
-  this.channelService.activeChannel$.subscribe((channel) => {
-    if (channel) {
-      this.activeUser = null;
-      this.activeChannelName = channel.name;
-      this.currentChannelUsers =
-        this.channelService.getMembersForChannel(channel.name);
-    }
-  });
+// 8. Channelwechsel
+this.channelService.activeChannel$.subscribe((channel) => {
+  if (channel) {
+    this.activeUser = null;
+    this.activeChannelName = channel.name;
+    this.activeChannelDescription = channel.description || '';
+    this.activeChannelCreatedBy = channel.createdBy || '';
+    this.currentChannelUsers =
+      this.channelService.getMembersForChannel(channel.name);
+  }
+});
+
 
   // 9. Nachrichten-Stream
   this.channelService.messages$.subscribe((messages) => {
@@ -535,28 +542,32 @@ getDisplayNameFromString(userId: string, name: string): string {
 openChannelInfo() {
   const channel = this.channelService.getCurrentChannel();
 
-  const hardcodedDescriptions: { [key: string]: string } = {
-    'Entwicklerteam':
-      'Dieser Channel ist für alles rund um #Entwicklerteam vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.',
-  };
+  // Falls channel null oder undefined ist, Methode sofort verlassen
+  if (!channel) return;
 
-  const description =
-    channel.description ||
-    hardcodedDescriptions[channel.name] ||
-    'Keine Beschreibung vorhanden.';
+  const description = this.channelService.getDescription(channel.name) || 'Keine Beschreibung';
+  const createdBy = this.channelService.getCreatedBy(channel.name) || 'Unbekannt';
 
-  const createdBy =
-    channel.createdBy || this.channelService.getCreatedBy(channel.name) || 'Unbekannt';
-
-  this.dialog.open(ChannelInfoDialogComponent, {
+  const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
     width: '500px',
     data: {
       name: channel.name,
       description,
       createdBy,
-    },
+      isSystemChannel: channel.name === 'Entwicklerteam'
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.updated) {
+      this.channelService.renameChannel(channel.name, result.data.name);
+      this.channelService.setDescription(result.data.name, result.data.description);
+      this.channelService.setCreatedBy(result.data.name, result.data.createdBy);
+    }
   });
 }
+
+
 
 
 

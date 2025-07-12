@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-/** Typen */
 export interface ChatUser {
   id: string;
   name: string;
@@ -15,28 +14,21 @@ export interface Channel {
   members?: ChatUser[];
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class ChannelService {
-  // Aktiver Channel
-  private activeChannelSubject = new BehaviorSubject<Channel>({
-    name: 'Entwicklerteam',
-    description:
-      'Dieser Channel ist für alles rund um #Entwicklerteam vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.',
-    createdBy: 'Noah Braun',
-  });
+  private channels: Channel[] = [];
+  private channelsSubject = new BehaviorSubject<Channel[]>([]);
+  channels$ = this.channelsSubject.asObservable();
+
+  private activeChannelSubject = new BehaviorSubject<Channel | null>(null);
   activeChannel$ = this.activeChannelSubject.asObservable();
 
-  // Aktiver DM-Nutzer (wenn aktiv)
   private activeUserSubject = new BehaviorSubject<ChatUser | null>(null);
   activeUser$ = this.activeUserSubject.asObservable();
 
-  // Nachrichten-Stream (je nach Target)
   private messagesSubject = new BehaviorSubject<any[]>([]);
   messages$ = this.messagesSubject.asObservable();
 
-  // Datenhaltung
   private channelMembers: Record<string, ChatUser[]> = {};
   private channelDescriptions: Record<string, string> = {};
   private channelCreators: Record<string, string> = {};
@@ -44,102 +36,153 @@ export class ChannelService {
   directMessages: Record<string, any[]> = {};
   channelMessages: Record<string, any[]> = {};
 
-  constructor() {}
+  
 
-  /** Aktiven Channel zurückgeben */
-  getCurrentChannel(): Channel {
+  // CHANNELS
+
+  getChannels(): Channel[] {
+    return this.channels;
+  }
+
+  setChannels(channels: Channel[]) {
+    this.channels = [...channels];
+    this.channelsSubject.next(this.channels);
+  }
+
+  addChannel(channel: Channel) {
+    this.channels.push(channel);
+    this.channelsSubject.next(this.channels);
+  }
+
+  updateChannel(updated: Channel) {
+    const idx = this.channels.findIndex((c) => c.name === updated.name);
+    if (idx !== -1) {
+      this.channels[idx] = updated;
+      this.channelsSubject.next(this.channels);
+    }
+  }
+
+  removeChannel(name: string) {
+    this.channels = this.channels.filter((c) => c.name !== name);
+    this.channelsSubject.next(this.channels);
+    delete this.channelMessages[name];
+    delete this.channelMembers[name];
+    delete this.channelDescriptions[name];
+    delete this.channelCreators[name];
+  }
+
+  renameChannel(oldName: string, newName: string) {
+    const channel = this.channels.find((c) => c.name === oldName);
+    if (!channel) return;
+
+    channel.name = newName;
+    this.updateChannel(channel);
+
+    if (this.channelMessages[oldName]) {
+      this.channelMessages[newName] = this.channelMessages[oldName];
+      delete this.channelMessages[oldName];
+    }
+
+    if (this.channelMembers[oldName]) {
+      this.channelMembers[newName] = this.channelMembers[oldName];
+      delete this.channelMembers[oldName];
+    }
+
+    if (this.channelDescriptions[oldName]) {
+      this.channelDescriptions[newName] = this.channelDescriptions[oldName];
+      delete this.channelDescriptions[oldName];
+    }
+
+    if (this.channelCreators[oldName]) {
+      this.channelCreators[newName] = this.channelCreators[oldName];
+      delete this.channelCreators[oldName];
+    }
+
+    if (this.getCurrentChannel()?.name === oldName) {
+      this.setActiveChannel(channel);
+    }
+  }
+
+  // ACTIVE CHANNEL & USER
+
+  getCurrentChannel(): Channel | null {
     return this.activeChannelSubject.value;
   }
 
-  /** Channel aktivieren */
-  setActiveChannel(channel: Channel): void {
-    // Speichere optional bereitgestellte Infos
-    if (channel.members) {
-      this.channelMembers[channel.name] = channel.members;
-    }
+  setActiveChannel(channel: Channel | null) {
+    if (!channel) return;
 
-    if (channel.description) {
-      this.channelDescriptions[channel.name] = channel.description;
-    }
-
-    if (channel.createdBy) {
-      this.channelCreators[channel.name] = channel.createdBy;
-    }
+    if (channel.members) this.setMembersForChannel(channel.name, channel.members);
+    if (channel.description) this.setDescription(channel.name, channel.description);
+    if (channel.createdBy) this.setCreatedBy(channel.name, channel.createdBy);
 
     this.activeChannelSubject.next(channel);
     this.updateMessagesForActiveTarget();
   }
 
-  /** Beschreibung lesen */
-  getDescription(channelName: string): string {
-    return this.channelDescriptions[channelName] || '';
-  }
-
-  /** Beschreibung setzen */
-  setDescription(channelName: string, description: string): void {
-    this.channelDescriptions[channelName] = description;
-
-    const current = this.getCurrentChannel();
-    if (current.name === channelName) {
-      this.activeChannelSubject.next({ ...current, description });
-    }
-  }
-
-  /** Ersteller eines Channels lesen */
-  getCreatedBy(channelName: string): string {
-    return this.channelCreators[channelName] || 'Unbekannt';
-  }
-
-  /** Ersteller setzen */
-  setCreatedBy(channelName: string, creator: string): void {
-    this.channelCreators[channelName] = creator;
-
-    const current = this.getCurrentChannel();
-    if (current.name === channelName) {
-      this.activeChannelSubject.next({ ...current, createdBy: creator });
-    }
-  }
-
-  /** Mitglieder lesen */
-  getMembersForChannel(name: string): ChatUser[] {
-    return this.channelMembers[name] || [];
-  }
-
-  /** Mitglieder setzen */
-  setMembersForChannel(name: string, members: ChatUser[]): void {
-    this.channelMembers[name] = members;
-
-    const current = this.getCurrentChannel();
-    if (current.name === name) {
-      this.activeChannelSubject.next({ ...current, members });
-    }
-  }
-
-  /** Direktnachrichten-User setzen */
-  setActiveUser(user: ChatUser | null): void {
+  setActiveUser(user: ChatUser | null) {
     this.activeUserSubject.next(user);
     this.updateMessagesForActiveTarget();
   }
 
-  /** Nachricht hinzufügen */
-  addMessage(targetId: string, message: any, isDM: boolean = false): void {
-    const storage = isDM ? this.directMessages : this.channelMessages;
-    if (!storage[targetId]) {
-      storage[targetId] = [];
-    }
-    storage[targetId].push(message);
+  // MESSAGES
 
+  addMessage(targetId: string, message: any, isDM = false) {
+    const store = isDM ? this.directMessages : this.channelMessages;
+    if (!store[targetId]) store[targetId] = [];
+    store[targetId].push(message);
     this.updateMessagesForActiveTarget();
   }
 
-  /** Nachrichten je nach Target setzen */
-  updateMessagesForActiveTarget(): void {
+  updateMessagesForActiveTarget() {
     const user = this.activeUserSubject.value;
     if (user) {
       this.messagesSubject.next([...this.directMessages[user.id] || []]);
     } else {
-      const channel = this.getCurrentChannel().name;
-      this.messagesSubject.next([...this.channelMessages[channel] || []]);
+      const channel = this.getCurrentChannel()?.name;
+      if (channel) {
+        this.messagesSubject.next([...this.channelMessages[channel] || []]);
+      }
     }
   }
+
+  // METADATEN (Beschreibung, Ersteller, Mitglieder)
+
+  getDescription(name: string): string {
+    return this.channelDescriptions[name] || '';
+  }
+
+  setDescription(name: string, desc: string) {
+    this.channelDescriptions[name] = desc;
+    const current = this.getCurrentChannel();
+    if (current && current.name === name) {
+      this.activeChannelSubject.next({ ...current, description: desc });
+    }
+  }
+
+  getCreatedBy(name: string): string {
+    return this.channelCreators[name] || '';
+  }
+
+  setCreatedBy(name: string, creator: string) {
+    this.channelCreators[name] = creator;
+    const current = this.getCurrentChannel();
+    if (current && current.name === name) {
+      this.activeChannelSubject.next({ ...current, createdBy: creator });
+    }
+  }
+
+  getMembersForChannel(name: string): ChatUser[] {
+    return this.channelMembers[name] || [];
+  }
+
+  setMembersForChannel(name: string, members: ChatUser[]) {
+    this.channelMembers[name] = members;
+    const current = this.getCurrentChannel();
+    if (current && current.name === name) {
+      this.activeChannelSubject.next({ ...current, members });
+    }
+  }
+
+  
 }
