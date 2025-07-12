@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   Input,
   ElementRef,
   ViewChild,
@@ -15,6 +16,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChannelService } from '../services/channel.service';
 import { ThreadPanelService } from '../services/thread.panel.service';
 import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
+import { UserProfileComponent } from '../user-profile/user-profile.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CurrentUserService, CurrentUser } from '../services/current.user.service';
+
+
+
 
 interface ChatUser {
   id: string;
@@ -46,11 +53,14 @@ interface ChatMessage {
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    MatDialogModule,
+    
   ],
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.scss'],
 })
-export class ChatWindowComponent implements OnInit {
+export class ChatWindowComponent implements OnInit, OnDestroy {
+
   @Input() threadToggle?: () => void;
 
   newMessage = '';
@@ -72,30 +82,42 @@ export class ChatWindowComponent implements OnInit {
   currentChannelUsers: ChatUser[] = [];
   groupedMessages: { dateLabel: string; messages: ChatMessage[] }[] = [];
 
-  allUsers: ChatUser[] = [
-    { id: 'frederik', name: 'Frederik Beck (Du)', avatar: 'assets/Frederik Beck.png' },
-    { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
-    { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
-    { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
-    { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
-    { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' },
-  ];
+allUsers: ChatUser[] = [
+  { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
+  { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+  { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
+  { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
+  { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
+];
 
-  currentUser: ChatUser = this.allUsers.find((u) => u.id === 'frederik')!;
+  currentUser!: CurrentUser;
+
 
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
 
-  constructor(
-    private channelService: ChannelService,
-    private dialog: MatDialog,
-    private threadPanelService: ThreadPanelService
-  ) {}
+constructor(
+  private channelService: ChannelService,
+  private dialog: MatDialog,
+  private threadPanelService: ThreadPanelService,
+  private currentUserService: CurrentUserService
+) {}
+
 
 ngOnInit(): void {
+  // 1. Aktuellen User laden
+  this.currentUser = this.currentUserService.getCurrentUser();
+
+  // 2. Falls currentUser noch nicht in allUsers enthalten ist → hinzufügen
+  const exists = this.allUsers.some(u => u.id === this.currentUser.id);
+  if (!exists) {
+    this.allUsers.unshift(this.currentUser);
+  }
+
+  // 3. Standard-Channel festlegen
   const defaultChannel = 'Entwicklerteam';
   this.activeChannelName = defaultChannel;
 
-
+  // 4. Mitglieder für Standard-Channel setzen
   this.channelService.setMembersForChannel(defaultChannel, [
     this.currentUser,
     this.allUsers.find((u) => u.id === 'sofia')!,
@@ -103,7 +125,7 @@ ngOnInit(): void {
     this.allUsers.find((u) => u.id === 'elise')!,
   ]);
 
-
+  // 5. Beispielhafte Channel-Nachrichten
   this.channelService.channelMessages[defaultChannel] = [
     {
       id: 1,
@@ -128,11 +150,11 @@ ngOnInit(): void {
         },
         {
           id: 3,
-          author: 'Frederik Beck (Du)',
-          userId: 'frederik',
+          author: this.currentUser.name,
+          userId: this.currentUser.id,
           time: '14:27 Uhr',
           content: 'Die aktuelle Version ist 17.2.1.',
-          avatar: 'assets/Frederik Beck.png',
+          avatar: this.currentUser.avatar,
           reactions: [],
           isSelf: true,
           createdAt: new Date(),
@@ -142,17 +164,16 @@ ngOnInit(): void {
     },
   ];
 
-
+  // 6. Benutzerwechsel (DM)
   this.channelService.activeUser$.subscribe((user) => {
     this.activeUser = user;
     this.activeChannelName = user ? user.name : this.channelService.getCurrentChannel().name;
-
     this.currentChannelUsers = user
       ? [this.currentUser, user]
       : this.channelService.getMembersForChannel(this.activeChannelName);
   });
 
-
+  // 7. Channelwechsel
   this.channelService.activeChannel$.subscribe((channel) => {
     if (channel) {
       this.activeUser = null;
@@ -161,34 +182,44 @@ ngOnInit(): void {
     }
   });
 
-
+  // 8. Nachrichten-Stream
   this.channelService.messages$.subscribe((messages) => {
     this.currentChannelMessages = messages;
     this.groupMessagesByDate();
   });
 
-  
+  // 9. Thread-Aktualisierung
   this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
     if (!updatedRoot) return;
-    const channel = this.activeChannelName;
-    const messages = this.channelService.channelMessages[channel] || [];
-    const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
 
+    const target = this.activeUser?.id ?? this.activeChannelName;
+    const messages = this.activeUser
+      ? this.channelService.directMessages[target] || []
+      : this.channelService.channelMessages[target] || [];
+
+    const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
     if (index !== -1) {
-      this.channelService.channelMessages[channel] = [
-        ...messages.slice(0, index),
-        updatedRoot,
-        ...messages.slice(index + 1),
-      ];
-      this.channelService.updateMessagesForActiveTarget(); 
+      messages[index] = updatedRoot;
+      if (this.activeUser) {
+        this.channelService.directMessages[target] = messages;
+      } else {
+        this.channelService.channelMessages[target] = messages;
+      }
+      this.channelService.updateMessagesForActiveTarget();
     }
   });
 
+  // 10. Direktnachricht aus Profil starten
+  window.addEventListener('startDirectChat', this.startDirectChatHandler);
+
+  // 11. Aktiviere Standard-Channel
   this.channelService.setActiveChannel({
     name: defaultChannel,
     members: this.channelService.getMembersForChannel(defaultChannel),
   });
 }
+
+
 
 
 sendMessage(): void {
@@ -425,4 +456,70 @@ sendMessage(): void {
   get isSelfChat(): boolean {
     return this.activeUser?.id === this.currentUser?.id;
   }
+
+  openUserProfile(message: ChatMessage) {
+  // Öffne kein Profil vom aktuellen Benutzer selbst
+  if (message.userId === this.currentUser.id) return;
+
+  const dialogRef = this.dialog.open(UserProfileComponent, {
+    width: '400px',
+    data: {
+      id: message.userId,
+      name: message.author,
+      avatar: message.avatar,
+      email: `${message.userId}@beispiel.com`
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.startChatWith) {
+      this.channelService.setActiveUser({
+        id: result.startChatWith.id,
+        name: result.startChatWith.name,
+        avatar: result.startChatWith.avatar
+      });
+    }
+  });
+}
+
+openUserProfileFromUser(user: ChatUser) {
+  const dialogRef = this.dialog.open(UserProfileComponent, {
+    width: '400px',
+    data: {
+      id: user.id,
+      name: user.name,
+      avatar: user.avatar,
+      email: `${user.id}@beispiel.com`
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.startChatWith) {
+      this.channelService.setActiveUser({
+        id: result.startChatWith.id,
+        name: result.startChatWith.name,
+        avatar: result.startChatWith.avatar
+      });
+    }
+  });
+}
+
+startDirectChatHandler = (e: any) => {
+  const user = e.detail;
+  this.channelService.setActiveUser(user);
+};
+
+ngOnDestroy(): void {
+  window.removeEventListener('startDirectChat', this.startDirectChatHandler);
+}
+
+getDisplayName(user: ChatUser): string {
+  return user.id === this.currentUser.id ? `${user.name} (Du)` : user.name;
+}
+
+getDisplayNameFromString(userId: string, name: string): string {
+  return userId === this.currentUser.id ? `${name} (Du)` : name;
+}
+
+
 }

@@ -1,0 +1,30 @@
+<mat-card class="profile-card">
+  <div class="card-header">
+    <h2>Profil</h2>
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="profile-image">
+    <img [src]="data.avatar" alt="Profilbild" />
+  </div>
+
+  <div class="profile-info">
+    <h3>{{ data.name }}</h3>
+    <div class="status">
+      <span class="status-dot"></span>
+      <span>Aktiv</span>
+    </div>
+
+    <div class="email">
+      <mat-icon>mail</mat-icon>
+      <div>
+        <div class="label">E-Mail-Adresse</div>
+        <div class="value">{{ data.email }}</div>
+      </div>
+    </div>
+  </div>
+
+  <button mat-flat-button color="primary" (click)="startChat()">💬 Nachricht</button>
+</mat-card>

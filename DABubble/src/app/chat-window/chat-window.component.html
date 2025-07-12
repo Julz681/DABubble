@@ -2,9 +2,17 @@
   <div class="chat-header">
     <ng-container *ngIf="activeUser; else channelMode">
       <div class="left">
-        <img class="large-avatar" [src]="activeUser.avatar" alt="{{ activeUser.name }}" />
+        <img
+          class="large-avatar"
+          [src]="activeUser.avatar"
+          [alt]="getDisplayName(activeUser)"
+          (click)="openUserProfileFromUser(activeUser)"
+          style="cursor: pointer"
+        />
         <div class="user-info">
-          <h2>{{ activeUser.name }}</h2>
+          <h2 (click)="openUserProfileFromUser(activeUser)" style="cursor: pointer">
+            {{ getDisplayName(activeUser) }}
+          </h2>
         </div>
       </div>
     </ng-container>
@@ -18,7 +26,7 @@
           <img
             *ngFor="let user of currentChannelUsers.slice(0, 3)"
             [src]="user.avatar"
-            [alt]="user.name"
+            [alt]="getDisplayName(user)"
           />
           <ng-container *ngIf="currentChannelUsers.length > 3">
             <div class="more-users">+{{ currentChannelUsers.length - 3 }}</div>
@@ -36,7 +44,7 @@
   <div *ngIf="showFullUserList" class="user-dropdown" #userDropdownRef>
     <div *ngFor="let user of currentChannelUsers" class="user-option">
       <img [src]="user.avatar" />
-      <span>{{ user.name }}</span>
+      <span>{{ getDisplayName(user) }}</span>
     </div>
   </div>
 
@@ -45,9 +53,17 @@
     <div *ngIf="!groupedMessages.length" class="empty-state">
       <ng-container *ngIf="isSelfChat; else normalDmOrChannel">
         <div class="self-chat-info">
-          <img class="large-avatar" [src]="currentUser.avatar" alt="{{ currentUser.name }}" />
+          <img
+            class="large-avatar"
+            [src]="currentUser.avatar"
+            [alt]="getDisplayName(currentUser)"
+            (click)="openUserProfileFromUser(currentUser)"
+            style="cursor: pointer"
+          />
           <div class="info-text">
-            <h2>{{ currentUser.name }}</h2>
+            <h2 (click)="openUserProfileFromUser(currentUser)" style="cursor: pointer">
+              {{ getDisplayName(currentUser) }}
+            </h2>
             <p>
               <strong>Dieser Raum ist nur für dich da.</strong> Mache dir Notizen, liste deine
               To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne
@@ -60,12 +76,17 @@
       <ng-template #normalDmOrChannel>
         <ng-container *ngIf="activeUser; else fallbackChannelInfo">
           <div class="self-chat-info">
-            <img class="large-avatar" [src]="activeUser.avatar" alt="{{ activeUser.name }}" />
+            <img
+              class="large-avatar"
+              [src]="activeUser.avatar"
+              [alt]="getDisplayName(activeUser)"
+              (click)="openUserProfileFromUser(activeUser)"
+            />
             <div class="info-text">
-              <h2>{{ activeUser.name }}</h2>
+              <h2>{{ getDisplayName(activeUser) }}</h2>
               <p>
                 Diese Unterhaltung findet nur zwischen
-                <strong>{{ activeUser.name }}</strong> und dir statt.
+                <strong>{{ getDisplayName(activeUser) }}</strong> und dir statt.
               </p>
             </div>
           </div>
@@ -91,13 +112,15 @@
         (mouseenter)="hoveredMessage = message"
         (mouseleave)="hoveredMessage = null"
       >
-        <img class="avatar" [src]="message.avatar" [alt]="message.author" />
+        <img
+          class="avatar"
+          [src]="message.avatar"
+          [alt]="getDisplayNameFromString(message.userId, message.author)"
+          (click)="openUserProfile(message)"
+        />
         <div class="message">
           <div class="message-toolbar" *ngIf="hoveredMessage === message">
-            <span
-              *ngFor="let emoji of emojis.slice(4, 7)"
-              (click)="toggleReaction(message, emoji)"
-            >
+            <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(message, emoji)">
               {{ emoji }}
             </span>
             <button class="reply-icon" (click)="replyTo(message)">💬</button>
@@ -112,7 +135,9 @@
           </div>
 
           <div class="meta">
-            <span class="author">{{ message.author }}</span>
+            <span class="author" (click)="openUserProfile(message)">
+              {{ getDisplayNameFromString(message.userId, message.author) }}
+            </span>
             <span class="time">
               {{ message.time }}
               <span *ngIf="message.edited" class="edited-flag">· bearbeitet</span>
@@ -138,10 +163,19 @@
                   class="message-wrapper reply"
                   [ngClass]="{ self: reply.isSelf }"
                 >
-                  <img class="avatar" [src]="reply.avatar" [alt]="reply.author" />
+                  <img
+                    class="avatar"
+                    [src]="reply.avatar"
+                    [alt]="getDisplayNameFromString(reply.userId, reply.author)"
+                    (click)="openUserProfile(reply)"
+                    style="cursor: pointer"
+                  />
+
                   <div class="message">
                     <div class="meta">
-                      <span class="author">{{ reply.author }}</span>
+                      <span class="author" (click)="openUserProfile(reply)">
+                        {{ getDisplayNameFromString(reply.userId, reply.author) }}
+                      </span>
                       <span class="time">{{ reply.time }}</span>
                     </div>
                     <div class="content">{{ reply.content }}</div>
@@ -177,14 +211,13 @@
       [(ngModel)]="newMessage"
       [placeholder]="
         activeUser
-          ? 'Nachricht an ' + activeUser.name
+          ? 'Nachricht an ' + getDisplayName(activeUser)
           : 'Nachricht an #' + activeChannelName
       "
       (keydown.enter)="sendMessage()"
     />
     <button (click)="toggleEmojiPicker()">😊</button>
     <button *ngIf="!activeUser" (click)="toggleUserList()">&#64;</button>
-
     <button class="send" (click)="sendMessage()">➤</button>
 
     <div class="emoji-picker" *ngIf="showEmojis">
@@ -200,7 +233,7 @@
         (click)="mentionUser(user)"
       >
         <img [src]="user.avatar" />
-        <span>{{ user.name }}</span>
+        <span>{{ getDisplayName(user) }}</span>
       </div>
     </div>
   </div>

@@ -12,20 +12,18 @@
 
   <!-- Body -->
   <div class="thread-body" *ngIf="rootMessage">
-    
-    <!-- 🔹 Root Message -->
+    <!-- Root Message -->
     <div
       class="message"
       [ngClass]="{ own: rootMessage.userId === currentUserId }"
       (mouseenter)="hoveredMessageId = rootMessage.id"
       (mouseleave)="hoveredMessageId = null"
     >
-      <!-- Hover Toolbar -->
       <div class="reaction-toolbar" *ngIf="hoveredMessageId === rootMessage.id">
         <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(rootMessage, emoji)">
           {{ emoji }}
         </span>
-        <span class="reply-icon" (click)="replyTo(rootMessage.author)">💬</span>
+        <span class="reply-icon" (click)="replyTo(getUserNameFromId(rootMessage.userId))">💬</span>
         <button
           *ngIf="rootMessage.userId === currentUserId && editingMessageId !== rootMessage.id"
           class="message-menu-button"
@@ -36,21 +34,19 @@
         </button>
       </div>
 
-      <!-- Avatar + Bubble -->
       <div class="message-content">
-        <img [src]="rootMessage.avatar" class="avatar" />
+        <img [src]="rootMessage.avatar" class="avatar" (click)="openUserProfile(rootMessage)" />
         <div class="bubble">
           <div class="author-time">
-            <span class="author">{{ rootMessage.author }}</span>
-            <span class="time">
-
-  <span *ngIf="rootMessage.edited" class="edited-flag">bearbeitet</span>
-
+            <span class="author" (click)="openUserProfile(rootMessage)">
+  {{ getUserNameFromId(rootMessage.userId) }}
 </span>
 
+            <span class="time">
+              <span *ngIf="rootMessage.edited" class="edited-flag">bearbeitet</span>
+            </span>
           </div>
 
-          <!-- Edit Mode -->
           <div *ngIf="editingMessageId === rootMessage.id; else rootText" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
             <button (click)="saveEdit(rootMessage)">Speichern</button>
@@ -60,12 +56,8 @@
             <div class="text">{{ rootMessage.content }}</div>
           </ng-template>
 
-          <!-- Reactions -->
           <div class="reactions" *ngIf="rootMessage.reactions?.length">
-            <span
-              *ngFor="let r of rootMessage.reactions"
-              [matTooltip]="getUserNamesFromIds(r.users).join(', ')"
-            >
+            <span *ngFor="let r of rootMessage.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
               {{ r.emoji }} {{ r.count }}
             </span>
           </div>
@@ -73,13 +65,13 @@
       </div>
     </div>
 
-    <!-- 🔹 Replies Info -->
+    <!-- Replies Info -->
     <div class="reply-info" *ngIf="replies.length > 0">
-      <a href="#"> {{ replies.length }} Antworten</a>
+      <a href="#">{{ replies.length }} Antworten</a>
       <span>Letzte Antwort {{ getLastReplyTime() }}</span>
     </div>
 
-    <!-- 🔹 Replies -->
+    <!-- Replies -->
     <div
       *ngFor="let msg of replies"
       class="message"
@@ -87,12 +79,11 @@
       (mouseenter)="hoveredMessageId = msg.id"
       (mouseleave)="hoveredMessageId = null"
     >
-      <!-- Hover Toolbar -->
       <div class="reaction-toolbar" *ngIf="hoveredMessageId === msg.id">
         <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(msg, emoji)">
           {{ emoji }}
         </span>
-        <span class="reply-icon" (click)="replyTo(msg.author)">💬</span>
+        <span class="reply-icon" (click)="replyTo(getUserNameFromId(msg.userId))">💬</span>
         <button
           *ngIf="msg.userId === currentUserId && editingMessageId !== msg.id"
           class="message-menu-button"
@@ -103,16 +94,17 @@
         </button>
       </div>
 
-      <!-- Avatar + Bubble -->
       <div class="message-content">
-        <img [src]="msg.avatar" class="avatar" />
+        <img [src]="msg.avatar" class="avatar" (click)="openUserProfile(msg)" />
         <div class="bubble">
           <div class="author-time">
-            <span class="author">{{ msg.author }}</span>
+<span class="author" (click)="openUserProfile(msg)">
+  {{ getUserNameFromId(msg.userId) }}
+</span>
+
             <span class="time">{{ msg.time }}</span>
           </div>
 
-          <!-- Edit Mode -->
           <div *ngIf="editingMessageId === msg.id; else msgText" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
             <button (click)="saveEdit(msg)">Speichern</button>
@@ -122,12 +114,8 @@
             <div class="text">{{ msg.content }}</div>
           </ng-template>
 
-          <!-- Reactions -->
           <div class="reactions" *ngIf="msg.reactions?.length">
-            <span
-              *ngFor="let r of msg.reactions"
-              [matTooltip]="getUserNamesFromIds(r.users).join(', ')"
-            >
+            <span *ngFor="let r of msg.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
               {{ r.emoji }} {{ r.count }}
             </span>
           </div>
@@ -136,7 +124,7 @@
     </div>
   </div>
 
-  <!-- 🔹 Input Field -->
+  <!-- Input -->
   <div class="thread-input">
     <input
       #messageInput
@@ -148,25 +136,14 @@
     <button (click)="toggleUserList()">&#64;</button>
     <button (click)="sendMessage()">➤</button>
 
-<div
-  class="emoji-picker"
-  *ngIf="showEmojis"
-  (click)="$event.stopPropagation()"
->
-  <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">
-    {{ emoji }}
-  </span>
-</div>
-
+    <div class="emoji-picker" *ngIf="showEmojis" (click)="$event.stopPropagation()">
+      <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
+    </div>
 
     <div class="mention-picker" *ngIf="showUsers">
-      <div
-        class="user-option"
-        *ngFor="let user of allUsers"
-        (click)="mentionUser(user)"
-      >
+      <div class="user-option" *ngFor="let user of allUsers" (click)="mentionUser(user)">
         <img [src]="user.avatar" />
-        <span>{{ user.name }}</span>
+        <span>{{ getDisplayName(user) }}</span>
       </div>
     </div>
   </div>

@@ -13,7 +13,7 @@ import { Router, RouterModule } from '@angular/router';
     SidebarComponent,
     ChatWindowComponent,
     ThreadPanelComponent,
-    RouterModule
+    RouterModule,
   ],
   templateUrl: './chat-layout.component.html',
   styleUrls: ['./chat-layout.component.scss']
@@ -36,8 +36,7 @@ export class ChatLayoutComponent {
     this.isThreadPanelOpen = true;
   }
 
-isLoginPage(): boolean {
-  return this.router.url.startsWith('/login');
-}
-
+  isLoginPage(): boolean {
+    return this.router.url.startsWith('/login');
+  }
 }

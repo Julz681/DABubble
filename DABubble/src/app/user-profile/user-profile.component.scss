@@ -1,0 +1,35 @@
+.profile-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .profile-image img {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    margin: 1rem 0;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #4caf50;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+  }
+  .email {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+    .value {
+      color: #2196f3;
+    }
+  }
+}

@@ -16,12 +16,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
 import { ThreadPanelService } from '../services/thread.panel.service';
-
-interface ChatUser {
-  id: string;
-  name: string;
-  avatar: string;
-}
+import { MatDialog } from '@angular/material/dialog';
+import { UserProfileComponent } from '../user-profile/user-profile.component';
+import {
+  CurrentUserService,
+  CurrentUser,
+} from '../services/current.user.service';
 
 interface ChatMessage {
   id: number;
@@ -57,14 +57,15 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   @Output() closePanel = new EventEmitter<void>();
   @ViewChild('messageInput') messageInput!: ElementRef<HTMLInputElement>;
 
-  currentUserId = 'frederik';
+  currentUser: CurrentUser;
+  currentUserId = '';
   newMessage = '';
   showEmojis = false;
   showUsers = false;
   replyToUser: string | null = null;
   hoveredMessageId: number | null = null;
   editingMessageId: number | null = null;
-  editedMessageContent: string = '';
+  editedMessageContent = '';
 
   rootMessage: ChatMessage | null = null;
   replies: ChatMessage[] = [];
@@ -86,23 +87,20 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     '👏',
   ];
 
-  allUsers: ChatUser[] = [
-    {
-      id: 'frederik',
-      name: 'Frederik Beck (Du)',
-      avatar: 'assets/Frederik Beck.png',
-    },
-    { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
-    { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
-  ];
-
-  constructor(private threadService: ThreadPanelService) {}
+  constructor(
+    private threadService: ThreadPanelService,
+    private dialog: MatDialog,
+    private currentUserService: CurrentUserService
+  ) {
+    this.currentUser = this.currentUserService.getCurrentUser();
+    this.currentUserId = this.currentUser.id;
+  }
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.threadService.threadRootMessage$.subscribe((msg) => {
-        this.rootMessage = msg;
-      })
+      this.threadService.threadRootMessage$.subscribe(
+        (msg) => (this.rootMessage = msg)
+      )
     );
 
     this.subscriptions.push(
@@ -124,9 +122,7 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
 
   toggleEmojiPicker(): void {
     this.showEmojis = !this.showEmojis;
-    if (this.showEmojis) {
-      this.showUsers = false;
-    }
+    if (this.showEmojis) this.showUsers = false;
   }
 
   toggleUserList(): void {
@@ -139,18 +135,11 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     this.showEmojis = false;
   }
 
-  mentionUser(user: { name: string }): void {
-    this.newMessage += `@${user.name} `;
-    this.showUsers = false;
-  }
-
   replyTo(user: string): void {
     const mention = `@${user} `;
-
     if (!this.newMessage.startsWith(mention)) {
       this.newMessage = mention;
     }
-
     this.replyToUser = user;
 
     setTimeout(() => {
@@ -168,13 +157,14 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     if (!trimmed || !this.rootMessage) return;
 
     const now = new Date();
+
     const newReply: ChatMessage = {
       id: Date.now(),
-      userId: this.currentUserId,
-      author: 'Frederik Beck (Du)',
+      userId: this.currentUser.id,
+      author: `${this.currentUser.name} (Du)`,
       time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       content: trimmed,
-      avatar: 'assets/Frederik Beck.png',
+      avatar: this.currentUser.avatar,
       createdAt: now,
       reactions: [],
       isSelf: true,
@@ -193,14 +183,11 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     if (!message.reactions) message.reactions = [];
 
     const existing = message.reactions.find((r) => r.emoji === emoji);
-
     if (existing) {
-      const index = existing.users.indexOf(this.currentUserId);
-
-      if (index > -1) {
-        existing.users.splice(index, 1);
+      const idx = existing.users.indexOf(this.currentUserId);
+      if (idx !== -1) {
+        existing.users.splice(idx, 1);
         existing.count--;
-
         if (existing.count === 0) {
           message.reactions = message.reactions.filter((r) => r !== existing);
         }
@@ -218,7 +205,17 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   }
 
   getUserNameFromId(id: string): string {
-    return this.allUsers.find((u) => u.id === id)?.name || id;
+    if (id === this.currentUser?.id) {
+      return `${this.currentUser.name} (Du)`;
+    }
+
+    const fallback: { [key: string]: string } = {
+      sofia: 'Sofia Müller',
+      noah: 'Noah Braun',
+      frederik: 'Frederik Beck',
+    };
+
+    return fallback[id] ?? id;
   }
 
   getUserNamesFromIds(ids: string[]): string[] {
@@ -226,8 +223,9 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   }
 
   getLastReplyTime(): string {
-    if (!this.replies.length) return '';
-    return this.replies[this.replies.length - 1].time;
+    return this.replies.length
+      ? this.replies[this.replies.length - 1].time
+      : '';
   }
 
   closeThreadPanel(): void {
@@ -256,5 +254,27 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
       message.edited = true;
     }
     this.cancelEdit();
+  }
+
+  openUserProfile(msg: ChatMessage): void {
+    if (msg.userId === this.currentUserId) return;
+
+    const dialogRef = this.dialog.open(UserProfileComponent, {
+      width: '400px',
+      data: {
+        id: msg.userId,
+        name: this.getUserNameFromId(msg.userId),
+        avatar: msg.avatar,
+        email: `${msg.userId}@beispiel.com`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.startChatWith) {
+        window.dispatchEvent(
+          new CustomEvent('startDirectChat', { detail: result.startChatWith })
+        );
+      }
+    });
   }
 }
