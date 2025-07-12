@@ -18,7 +18,7 @@ import { ThreadPanelComponent } from '../thread-panel/thread-panel.component';
 })
 export class ChatLayoutComponent {
   isSidebarCollapsed = false;
-  isThreadPanelOpen = true;
+  isThreadPanelOpen = false;
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
@@ -32,3 +32,4 @@ export class ChatLayoutComponent {
     this.isThreadPanelOpen = true;
   }
 }
+

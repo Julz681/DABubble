@@ -237,14 +237,6 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
 
   setInitialReplyText(text: string): void {
     this.newMessage = text;
-    setTimeout(() => {
-      const input = this.messageInput?.nativeElement;
-      if (input) {
-        input.focus();
-        const pos = this.newMessage.length;
-        input.setSelectionRange(pos, pos);
-      }
-    }, 0);
   }
 
   startEditing(msg: ChatMessage): void {

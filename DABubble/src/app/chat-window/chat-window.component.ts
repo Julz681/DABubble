@@ -214,10 +214,6 @@ export class ChatWindowComponent implements OnInit {
     const now = new Date();
     const isDirectMessage = !!this.activeUser;
 
-    if (isDirectMessage) {
-      this.replyingTo = null;
-    }
-
     const message: ChatMessage = {
       id: this.currentChannelMessages.length + 1,
       author: this.currentUser.name,
@@ -327,13 +323,13 @@ export class ChatWindowComponent implements OnInit {
     this.newMessage += emoji;
     this.showEmojis = false;
   }
-
   replyTo(message: ChatMessage) {
-    const mention = `@${message.author} `;
-    this.replyingTo = message;
+    const mention = message.author ? `@${message.author} ` : '';
 
     if (this.activeUser) {
+      this.replyingTo = message;
       this.newMessage = mention;
+
       setTimeout(() => {
         const input = document.querySelector('input');
         input?.focus();
@@ -341,6 +337,7 @@ export class ChatWindowComponent implements OnInit {
     } else {
       this.threadPanelService.openThread(message, mention);
       this.threadToggle?.();
+      this.replyingTo = null;
     }
   }
 
