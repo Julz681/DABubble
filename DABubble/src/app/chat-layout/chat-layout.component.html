@@ -1,9 +1,10 @@
-<button class="sidebar-toggle" (click)="toggleSidebar()">
+
+<button *ngIf="!isLoginPage()" class="sidebar-toggle" (click)="toggleSidebar()">
   {{ isSidebarCollapsed ? 'Workspace Menü öffnen' : 'Workspace Menü schließen' }}
 </button>
+>
 
 <div class="layout" [class.sidebar-collapsed]="isSidebarCollapsed" [class.thread-open]="isThreadPanelOpen">
-
   <aside class="sidebar">
     <app-sidebar *ngIf="!isSidebarCollapsed"></app-sidebar>
   </aside>
