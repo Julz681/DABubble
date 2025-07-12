@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { CurrentUserService } from '../services/current.user.service'; // ✅ importiert
 
 @Component({
   selector: 'app-profile',
@@ -23,34 +24,41 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   fullName: string = '';
   editedName: string = '';
   isEditing = false;
 
-  constructor(private dialogRef: MatDialogRef<ProfileComponent>) {}
+  constructor(
+    private dialogRef: MatDialogRef<ProfileComponent>,
+    private currentUserService: CurrentUserService 
+  ) {}
 
-  ngOnInit() {
-    this.fullName = localStorage.getItem('username') || 'Frederik Beck';
-    this.editedName = this.fullName;
+  ngOnInit(): void {
+    const currentUser = this.currentUserService.getCurrentUser();
+    this.fullName = currentUser.name;
+    this.editedName = currentUser.name;
   }
 
-  close() {
+  close(): void {
     this.dialogRef.close();
   }
 
-  edit() {
+  edit(): void {
     this.isEditing = true;
   }
 
-  cancel() {
+  cancel(): void {
     this.isEditing = false;
+    this.editedName = this.fullName;
   }
 
-  save() {
-    this.fullName = this.editedName;
-    localStorage.setItem('username', this.fullName);
-    this.isEditing = false;
-    this.dialogRef.close(this.fullName);
+  save(): void {
+    if (this.editedName.trim()) {
+      this.fullName = this.editedName.trim();
+      this.currentUserService.updateName(this.fullName); 
+      this.isEditing = false;
+      this.dialogRef.close(this.fullName);
+    }
   }
 }

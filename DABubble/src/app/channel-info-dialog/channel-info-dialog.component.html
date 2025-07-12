@@ -1,0 +1,62 @@
+<h2 class="dialog-title">
+  <mat-icon>tag</mat-icon>
+  {{ '#' + data.name }}
+</h2>
+
+<!-- SYSTEMCHANNEL: Entwicklerteam -->
+<ng-container *ngIf="isSystemChannel; else editableChannel">
+  <div class="section">
+    <div class="label-row">
+      <span class="label">Channel-Name</span>
+    </div>
+    <p class="value"># Entwicklerteam</p>
+  </div>
+
+  <div class="section">
+    <div class="label-row">
+      <span class="label">Beschreibung</span>
+    </div>
+    <p class="value">
+      Dieser Channel ist für alles rund um #Entwicklerteam vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.
+    </p>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="section creator">
+    <span class="label">Erstellt von</span>
+    <p class="creator-name">Noah Braun</p>
+  </div>
+</ng-container>
+
+<!-- ALLE ANDEREN CHANNELS -->
+<ng-template #editableChannel>
+  <div class="section">
+    <div class="label-row">
+      <span class="label">Channel-Name</span>
+      <a class="edit-link">Bearbeiten</a>
+    </div>
+    <p class="value"># {{ data.name }}</p>
+  </div>
+
+  <div class="section">
+    <div class="label-row">
+      <span class="label">Beschreibung</span>
+      <a class="edit-link">Bearbeiten</a>
+    </div>
+    <p class="value">{{ description }}</p>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="section creator">
+    <span class="label">Erstellt von</span>
+    <p class="creator-name">{{ creator }}</p>
+  </div>
+</ng-template>
+
+<div class="actions">
+  <button mat-flat-button color="primary" (click)="dialogRef.close()">
+    Channel verlassen
+  </button>
+</div>

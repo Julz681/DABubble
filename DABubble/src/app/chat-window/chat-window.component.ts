@@ -19,6 +19,8 @@ import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CurrentUserService, CurrentUser } from '../services/current.user.service';
+import { ChannelInfoDialogComponent } from '../channel-info-dialog/channel-info-dialog.component';
+
 
 
 
@@ -104,91 +106,105 @@ constructor(
 
 
 ngOnInit(): void {
-  // 1. Aktuellen User laden
-  this.currentUser = this.currentUserService.getCurrentUser();
+  // 1. Aktuellen Benutzer abonnieren (damit Änderungen z. B. nach Profilbearbeitung übernommen werden)
+  this.currentUserService.currentUser$.subscribe((user) => {
+    this.currentUser = user;
 
-  // 2. Falls currentUser noch nicht in allUsers enthalten ist → hinzufügen
-  const exists = this.allUsers.some(u => u.id === this.currentUser.id);
-  if (!exists) {
-    this.allUsers.unshift(this.currentUser);
-  }
+    // 2. Falls currentUser noch nicht in allUsers enthalten ist → hinzufügen, sonst aktualisieren
+    const existing = this.allUsers.find((u) => u.id === user.id);
+    if (existing) {
+      existing.name = user.name;
+      existing.avatar = user.avatar;
+    } else {
+      this.allUsers.unshift(user);
+    }
 
-  // 3. Standard-Channel festlegen
-  const defaultChannel = 'Entwicklerteam';
-  this.activeChannelName = defaultChannel;
+    // 3. Standard-Channel festlegen
+    const defaultChannel = 'Entwicklerteam';
+    this.activeChannelName = defaultChannel;
 
-  // 4. Mitglieder für Standard-Channel setzen
-  this.channelService.setMembersForChannel(defaultChannel, [
-    this.currentUser,
-    this.allUsers.find((u) => u.id === 'sofia')!,
-    this.allUsers.find((u) => u.id === 'noah')!,
-    this.allUsers.find((u) => u.id === 'elise')!,
-  ]);
+    // 4. Mitglieder für Standard-Channel setzen
+    this.channelService.setMembersForChannel(defaultChannel, [
+      this.currentUser,
+      this.allUsers.find((u) => u.id === 'sofia')!,
+      this.allUsers.find((u) => u.id === 'noah')!,
+      this.allUsers.find((u) => u.id === 'elise')!,
+    ]);
 
-  // 5. Beispielhafte Channel-Nachrichten
-  this.channelService.channelMessages[defaultChannel] = [
-    {
-      id: 1,
-      author: 'Noah Braun',
-      userId: 'noah',
-      time: '14:25 Uhr',
-      content: 'Welche Version ist aktuell von Angular?',
-      avatar: 'assets/Noah Braun.png',
-      reactions: [],
-      isSelf: false,
-      replies: [
-        {
-          id: 2,
-          author: 'Sofia Müller',
-          userId: 'sofia',
-          time: '14:26 Uhr',
-          content: 'Ich glaube 17.1, oder?',
-          avatar: 'assets/Sofia Müller.png',
-          reactions: [],
-          isSelf: false,
-          createdAt: new Date(),
-        },
-        {
-          id: 3,
-          author: this.currentUser.name,
-          userId: this.currentUser.id,
-          time: '14:27 Uhr',
-          content: 'Die aktuelle Version ist 17.2.1.',
-          avatar: this.currentUser.avatar,
-          reactions: [],
-          isSelf: true,
-          createdAt: new Date(),
-        },
-      ],
-      createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-    },
-  ];
+    // 5. Beispielhafte Channel-Nachrichten
+    this.channelService.channelMessages[defaultChannel] = [
+      {
+        id: 1,
+        author: 'Noah Braun',
+        userId: 'noah',
+        time: '14:25 Uhr',
+        content: 'Welche Version ist aktuell von Angular?',
+        avatar: 'assets/Noah Braun.png',
+        reactions: [],
+        isSelf: false,
+        replies: [
+          {
+            id: 2,
+            author: 'Sofia Müller',
+            userId: 'sofia',
+            time: '14:26 Uhr',
+            content: 'Ich glaube 17.1, oder?',
+            avatar: 'assets/Sofia Müller.png',
+            reactions: [],
+            isSelf: false,
+            createdAt: new Date(),
+          },
+          {
+            id: 3,
+            author: this.currentUser.name,
+            userId: this.currentUser.id,
+            time: '14:27 Uhr',
+            content: 'Die aktuelle Version ist 17.2.1.',
+            avatar: this.currentUser.avatar,
+            reactions: [],
+            isSelf: true,
+            createdAt: new Date(),
+          },
+        ],
+        createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+      },
+    ];
 
-  // 6. Benutzerwechsel (DM)
+    // 6. Standard-Channel aktivieren (nur beim ersten Init sinnvoll)
+    this.channelService.setActiveChannel({
+      name: defaultChannel,
+      members: this.channelService.getMembersForChannel(defaultChannel),
+    });
+  });
+
+  // 7. Benutzerwechsel (DM)
   this.channelService.activeUser$.subscribe((user) => {
     this.activeUser = user;
-    this.activeChannelName = user ? user.name : this.channelService.getCurrentChannel().name;
+    this.activeChannelName = user
+      ? user.name
+      : this.channelService.getCurrentChannel().name;
     this.currentChannelUsers = user
       ? [this.currentUser, user]
       : this.channelService.getMembersForChannel(this.activeChannelName);
   });
 
-  // 7. Channelwechsel
+  // 8. Channelwechsel
   this.channelService.activeChannel$.subscribe((channel) => {
     if (channel) {
       this.activeUser = null;
       this.activeChannelName = channel.name;
-      this.currentChannelUsers = this.channelService.getMembersForChannel(channel.name);
+      this.currentChannelUsers =
+        this.channelService.getMembersForChannel(channel.name);
     }
   });
 
-  // 8. Nachrichten-Stream
+  // 9. Nachrichten-Stream
   this.channelService.messages$.subscribe((messages) => {
     this.currentChannelMessages = messages;
     this.groupMessagesByDate();
   });
 
-  // 9. Thread-Aktualisierung
+  // 10. Thread-Aktualisierung
   this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
     if (!updatedRoot) return;
 
@@ -209,15 +225,10 @@ ngOnInit(): void {
     }
   });
 
-  // 10. Direktnachricht aus Profil starten
+  // 11. Direktnachricht aus Profil starten
   window.addEventListener('startDirectChat', this.startDirectChatHandler);
-
-  // 11. Aktiviere Standard-Channel
-  this.channelService.setActiveChannel({
-    name: defaultChannel,
-    members: this.channelService.getMembersForChannel(defaultChannel),
-  });
 }
+
 
 
 
@@ -514,12 +525,40 @@ ngOnDestroy(): void {
 }
 
 getDisplayName(user: ChatUser): string {
-  return user.id === this.currentUser.id ? `${user.name} (Du)` : user.name;
+  return user.id === this.currentUser.id ? `${user.name}` : user.name;
 }
 
 getDisplayNameFromString(userId: string, name: string): string {
   return userId === this.currentUser.id ? `${name} (Du)` : name;
 }
+
+openChannelInfo() {
+  const channel = this.channelService.getCurrentChannel();
+
+  const hardcodedDescriptions: { [key: string]: string } = {
+    'Entwicklerteam':
+      'Dieser Channel ist für alles rund um #Entwicklerteam vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.',
+  };
+
+  const description =
+    channel.description ||
+    hardcodedDescriptions[channel.name] ||
+    'Keine Beschreibung vorhanden.';
+
+  const createdBy =
+    channel.createdBy || this.channelService.getCreatedBy(channel.name) || 'Unbekannt';
+
+  this.dialog.open(ChannelInfoDialogComponent, {
+    width: '500px',
+    data: {
+      name: channel.name,
+      description,
+      createdBy,
+    },
+  });
+}
+
+
 
 
 }

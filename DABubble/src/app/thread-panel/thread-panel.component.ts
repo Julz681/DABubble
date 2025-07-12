@@ -57,8 +57,7 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   @Output() closePanel = new EventEmitter<void>();
   @ViewChild('messageInput') messageInput!: ElementRef<HTMLInputElement>;
 
-  currentUser: CurrentUser;
-  currentUserId = '';
+  currentUser!: CurrentUser;
   newMessage = '';
   showEmojis = false;
   showUsers = false;
@@ -91,12 +90,16 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     private threadService: ThreadPanelService,
     private dialog: MatDialog,
     private currentUserService: CurrentUserService
-  ) {
-    this.currentUser = this.currentUserService.getCurrentUser();
-    this.currentUserId = this.currentUser.id;
-  }
+  ) {}
 
   ngOnInit(): void {
+    // 🟢 Aktuellen Benutzer beobachten (inkl. Namensänderungen)
+    this.subscriptions.push(
+      this.currentUserService.currentUser$.subscribe((user) => {
+        this.currentUser = user;
+      })
+    );
+
     this.subscriptions.push(
       this.threadService.threadRootMessage$.subscribe(
         (msg) => (this.rootMessage = msg)
@@ -183,8 +186,10 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     if (!message.reactions) message.reactions = [];
 
     const existing = message.reactions.find((r) => r.emoji === emoji);
+    const userId = this.currentUser.id;
+
     if (existing) {
-      const idx = existing.users.indexOf(this.currentUserId);
+      const idx = existing.users.indexOf(userId);
       if (idx !== -1) {
         existing.users.splice(idx, 1);
         existing.count--;
@@ -192,14 +197,14 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
           message.reactions = message.reactions.filter((r) => r !== existing);
         }
       } else {
-        existing.users.push(this.currentUserId);
+        existing.users.push(userId);
         existing.count++;
       }
     } else {
       message.reactions.push({
         emoji,
         count: 1,
-        users: [this.currentUserId],
+        users: [userId],
       });
     }
   }
@@ -257,7 +262,7 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   }
 
   openUserProfile(msg: ChatMessage): void {
-    if (msg.userId === this.currentUserId) return;
+    if (msg.userId === this.currentUser.id) return;
 
     const dialogRef = this.dialog.open(UserProfileComponent, {
       width: '400px',

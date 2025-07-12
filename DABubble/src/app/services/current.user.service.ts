@@ -1,4 +1,3 @@
-// current-user.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
@@ -10,22 +9,38 @@ export interface CurrentUser {
 
 @Injectable({ providedIn: 'root' })
 export class CurrentUserService {
+  private readonly STORAGE_KEY = 'username';
+
   private currentUserSubject = new BehaviorSubject<CurrentUser>({
     id: 'frederik',
-    name: localStorage.getItem('username') || 'Frederik Beck',
+    name: localStorage.getItem(this.STORAGE_KEY) || 'Frederik Beck',
     avatar: 'assets/Frederik Beck.png',
   });
 
   currentUser$ = this.currentUserSubject.asObservable();
 
+
   getCurrentUser(): CurrentUser {
     return this.currentUserSubject.value;
   }
 
-  updateName(newName: string) {
-    const updated = { ...this.currentUserSubject.value, name: newName };
-    localStorage.setItem('username', newName);
-    this.currentUserSubject.next(updated);
-    window.dispatchEvent(new CustomEvent('usernameChanged', { detail: newName }));
+
+  updateName(newName: string): void {
+    const trimmedName = newName.trim();
+
+    if (!trimmedName) return;
+
+    const updatedUser: CurrentUser = {
+      ...this.currentUserSubject.value,
+      name: trimmedName,
+    };
+
+    localStorage.setItem(this.STORAGE_KEY, trimmedName);
+    this.currentUserSubject.next(updatedUser);
+
+
+    window.dispatchEvent(
+      new CustomEvent('usernameChanged', { detail: trimmedName })
+    );
   }
 }

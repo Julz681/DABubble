@@ -1,44 +1,54 @@
 <div class="chat-container">
-  <div class="chat-header">
-    <ng-container *ngIf="activeUser; else channelMode">
-      <div class="left">
-        <img
-          class="large-avatar"
-          [src]="activeUser.avatar"
-          [alt]="getDisplayName(activeUser)"
-          (click)="openUserProfileFromUser(activeUser)"
-          style="cursor: pointer"
-        />
-        <div class="user-info">
-          <h2 (click)="openUserProfileFromUser(activeUser)" style="cursor: pointer">
-            {{ getDisplayName(activeUser) }}
-          </h2>
-        </div>
+<div class="chat-header">
+  <div class="left">
+    <!-- Direktnachricht -->
+    <ng-container *ngIf="activeUser; else channelHeader">
+      <img
+        class="large-avatar"
+        [src]="activeUser.avatar"
+        [alt]="getDisplayName(activeUser)"
+        (click)="openUserProfileFromUser(activeUser)"
+        style="cursor: pointer"
+      />
+      <div class="user-info">
+        <h2 (click)="openUserProfileFromUser(activeUser)" style="cursor: pointer">
+          {{ getDisplayName(activeUser) }}
+        </h2>
       </div>
     </ng-container>
 
-    <ng-template #channelMode>
-      <div class="left">
-        <h2># {{ activeChannelName }}</h2>
-      </div>
-      <div class="right">
-        <div class="avatars" (click)="toggleUserDropdown()">
-          <img
-            *ngFor="let user of currentChannelUsers.slice(0, 3)"
-            [src]="user.avatar"
-            [alt]="getDisplayName(user)"
-          />
-          <ng-container *ngIf="currentChannelUsers.length > 3">
-            <div class="more-users">+{{ currentChannelUsers.length - 3 }}</div>
-          </ng-container>
-        </div>
-        <span>{{ currentChannelUsers.length }}</span>
-        <button class="add-user-btn" (click)="openAddUserDialog()">
-          <mat-icon>person_add</mat-icon>
-        </button>
+    <!-- Channelansicht -->
+    <ng-template #channelHeader>
+      <div class="channel-header">
+        <h2>
+          # {{ activeChannelName }}
+          <button mat-icon-button (click)="openChannelInfo()" aria-label="Channel-Info anzeigen">
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
+        </h2>
       </div>
     </ng-template>
   </div>
+
+  <!-- Rechtes Panel nur im Channel-Modus -->
+  <div class="right" *ngIf="!activeUser">
+    <div class="avatars" (click)="toggleUserDropdown()">
+      <img
+        *ngFor="let user of currentChannelUsers.slice(0, 3)"
+        [src]="user.avatar"
+        [alt]="getDisplayName(user)"
+      />
+      <ng-container *ngIf="currentChannelUsers.length > 3">
+        <div class="more-users">+{{ currentChannelUsers.length - 3 }}</div>
+      </ng-container>
+    </div>
+    <span>{{ currentChannelUsers.length }}</span>
+    <button class="add-user-btn" (click)="openAddUserDialog()">
+      <mat-icon>person_add</mat-icon>
+    </button>
+  </div>
+</div>
+
 
   <!-- Nutzerliste -->
   <div *ngIf="showFullUserList" class="user-dropdown" #userDropdownRef>

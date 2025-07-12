@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ChannelDialogComponent } from '../channel-dialog/channel-dialog.component';
-import { ChannelService } from '../services/channel.service';
+import { ChannelService, Channel } from '../services/channel.service'; // 👈 Channel importiert!
 import { NewMessageDialogComponent } from '../new-message-dialog/new-message-dialog.component';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { ChangeDetectorRef } from '@angular/core';
@@ -24,7 +24,7 @@ import { CurrentUserService, CurrentUser } from '../services/current.user.servic
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit, OnDestroy {
+export class SidebarComponent implements OnInit {
   currentUser!: CurrentUser;
 
   users: CurrentUser[] = [
@@ -36,10 +36,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
   ];
 
-  channels: { name: string; members: CurrentUser[] }[] = [
+  // 👇 Jetzt typisiert als Channel, damit description & createdBy gültig sind
+  channels: Channel[] = [
     {
       name: 'Entwicklerteam',
-      members: []
+      members: [],
+      description: 'Standard-Channel',
+      createdBy: 'System'
     }
   ];
 
@@ -54,7 +57,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-
     this.currentUserService.currentUser$.subscribe(user => {
       this.currentUser = user;
 
@@ -67,41 +69,18 @@ export class SidebarComponent implements OnInit, OnDestroy {
       }
 
       for (const channel of this.channels) {
-        const member = channel.members.find(m => m.id === user.id);
+        const member = channel.members?.find(m => m.id === user.id);
         if (member) {
           member.name = user.name;
           member.avatar = user.avatar;
         } else {
-          channel.members.unshift({ ...user });
+          channel.members?.unshift({ ...user });
         }
       }
 
       this.cdr.detectChanges();
     });
-
-    window.addEventListener('usernameChanged', this.onUsernameChanged);
   }
-
-  ngOnDestroy() {
-    window.removeEventListener('usernameChanged', this.onUsernameChanged);
-  }
-
-  onUsernameChanged = (e: any) => {
-    const newName = e.detail;
-    if (!this.currentUser) return;
-
-    this.currentUser.name = newName;
-
-    const me = this.users.find(u => u.id === this.currentUser.id);
-    if (me) me.name = newName;
-
-    for (const channel of this.channels) {
-      const member = channel.members.find(m => m.id === this.currentUser.id);
-      if (member) member.name = newName;
-    }
-
-    this.cdr.detectChanges();
-  };
 
   toggleChannels() {
     this.showChannels = !this.showChannels;
@@ -114,22 +93,38 @@ export class SidebarComponent implements OnInit, OnDestroy {
   openChannelDialog() {
     const dialogRef = this.dialog.open(ChannelDialogComponent, {
       width: '500px',
-      panelClass: 'custom-dialog'
+      panelClass: 'custom-dialog',
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.channels.push({ name: result.name, members: result.members });
+        const newChannel: Channel = {
+          name: result.name,
+          description: result.description,
+          createdBy: result.createdBy,
+          members: result.members,
+        };
+
+        this.channels.push(newChannel);
         this.channelService.setMembersForChannel(result.name, result.members);
-        this.selectChannel({ name: result.name, members: result.members });
+        this.channelService.setDescription(result.name, result.description);
+        this.channelService.setCreatedBy(result.name, result.createdBy);
+
+        this.selectChannel(newChannel);
       }
     });
   }
 
-  selectChannel(channel: { name: string; members: CurrentUser[] }) {
+  // 👇 Typ ist jetzt korrekt als Channel
+  selectChannel(channel: Channel) {
     const members = this.channelService.getMembersForChannel(channel.name);
     this.channelService.setActiveUser(null);
-    this.channelService.setActiveChannel({ name: channel.name, members });
+    this.channelService.setActiveChannel({
+      name: channel.name,
+      members,
+      description: channel.description,
+      createdBy: channel.createdBy
+    });
   }
 
   selectUser(user: CurrentUser) {

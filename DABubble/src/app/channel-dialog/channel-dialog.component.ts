@@ -40,24 +40,26 @@ export class ChannelDialogComponent {
     private dialog: MatDialog
   ) {}
 
-  nextStep() {
-    if (!this.channelName.trim()) return;
+nextStep() {
+  if (!this.channelName.trim()) return;
 
-    const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
-      width: '500px',
-      data: {
-        mode: 'creation',
-      },
-    });
+  const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
+    width: '500px',
+    data: {
+      mode: 'creation',
+    },
+  });
 
-    dialogRef.afterClosed().subscribe((members) => {
-      if (members) {
-        this.dialogRef.close({
-          name: this.channelName,
-          description: this.description,
-          members,
-        });
-      }
-    });
-  }
+  dialogRef.afterClosed().subscribe((members) => {
+    if (members) {
+      // Beschreibung mitgeben
+this.dialogRef.close({
+  name: this.channelName,
+  description: this.description,
+  members,
+  createdBy: this.currentUser.name  // 👈 HINZUGEFÜGT
+});
+    }
+  });
+}
 }
