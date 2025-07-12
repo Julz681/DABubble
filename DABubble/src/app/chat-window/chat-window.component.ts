@@ -93,15 +93,19 @@ export class ChatWindowComponent implements OnInit {
     },
   ];
 
-  currentUser: ChatUser = this.allUsers.find((u) => u.id === 'frederik')!;
+  currentUser: ChatUser;
+
 
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
 
-  constructor(
-    private channelService: ChannelService,
-    private dialog: MatDialog,
-    private threadPanelService: ThreadPanelService
-  ) {}
+constructor(
+  private channelService: ChannelService,
+  private dialog: MatDialog,
+  private threadPanelService: ThreadPanelService
+) {
+  this.currentUser = this.allUsers.find((u) => u.id === 'frederik')!;
+}
+
 
   ngOnInit(): void {
     const defaultChannel = 'Entwicklerteam';
@@ -465,4 +469,10 @@ export class ChatWindowComponent implements OnInit {
     this.showUsers = false;
     this.mentionMode = null;
   }
+
+get isSelfChat(): boolean {
+  return this.activeUser?.id === this.currentUser?.id;
+}
+
+
 }
