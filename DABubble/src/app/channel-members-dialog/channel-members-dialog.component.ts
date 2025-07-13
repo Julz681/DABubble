@@ -54,12 +54,12 @@ export class ChannelMembersDialogComponent {
   filteredUsers() {
     const alreadyInChannel = this.data.existingMembers || [];
 
-    return this.allUsers.filter(user =>
-      user.name !== 'Frederik Beck (Du)' &&
-      !alreadyInChannel.includes(user.name) &&
-      !this.selectedUsers.some(s => s.name === user.name) &&
-      user.name.toLowerCase().includes(this.search.toLowerCase())
-    );
+return this.allUsers.filter(user =>
+  !alreadyInChannel.includes(user.name) &&
+  !this.selectedUsers.some(s => s.name === user.name) &&
+  user.name.toLowerCase().includes(this.search.toLowerCase())
+);
+
   }
 
   addUser(user: any) {
@@ -70,9 +70,10 @@ export class ChannelMembersDialogComponent {
   }
 
   confirm() {
-    const result = this.mode === 'all'
-      ? this.allUsers.filter(u => u.name !== 'Frederik Beck (Du)')
-      : this.selectedUsers;
+const result = this.mode === 'all'
+  ? this.allUsers
+  : this.selectedUsers;
+
 
     this.dialogRef.close(result);
   }

@@ -7,7 +7,7 @@
 <div class="section">
   <label class="label">Channel-Name</label>
   <div class="row">
-    <div># {{ name }}</div>
+    <div>{{ name }}</div>
     <button *ngIf="!isSystemChannel && !editMode" mat-button (click)="editMode = true">
       Bearbeiten
     </button>
@@ -43,14 +43,27 @@
 <!-- BUTTONS -->
 <div class="actions">
   <button mat-button (click)="cancel()">Abbrechen</button>
-  <button mat-button *ngIf="editMode && !isSystemChannel" color="primary" (click)="saveChanges()">
+
+  <button mat-button color="primary" *ngIf="editMode && !isSystemChannel" (click)="saveChanges()">
     Speichern
   </button>
+
   <button
     mat-button
     class="leave-button"
     color="warn"
-    *ngIf="!editMode"
+    *ngIf="!editMode && !isSystemChannel"
+    (click)="leaveChannel()"
+  >
+    Channel verlassen
+  </button>
+
+  <!-- Systemchannel: Nur Verlassen-Button anzeigen -->
+  <button
+    mat-button
+    color="warn"
+    class="leave-button"
+    *ngIf="!editMode && isSystemChannel"
     (click)="leaveChannel()"
   >
     Channel verlassen

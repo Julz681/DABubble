@@ -20,8 +20,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
-    MatIconModule
-  ]
+    MatIconModule,
+  ],
 })
 export class ChannelInfoDialogComponent {
   editMode = false;
@@ -34,7 +34,7 @@ export class ChannelInfoDialogComponent {
     public dialogRef: MatDialogRef<ChannelInfoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.isSystemChannel = data.name === 'Entwicklerteam';
+    this.isSystemChannel = data.isSystemChannel === true;
 
     this.name = data.name;
     this.description = this.isSystemChannel
@@ -45,21 +45,25 @@ export class ChannelInfoDialogComponent {
   }
 
   saveChanges() {
-    if (this.isSystemChannel) return;
+    if (this.isSystemChannel) {
+      console.warn('[WARN] Änderungen am Systemchannel sind nicht erlaubt.');
+      return;
+    }
+
     this.dialogRef.close({
       updated: true,
       data: {
         name: this.name,
         description: this.description,
-        createdBy: this.createdBy
-      }
+        createdBy: this.createdBy,
+      },
     });
   }
 
-leaveChannel() {
-  this.dialogRef.close({ leave: true });
-}
-
+  leaveChannel() {
+    console.log('[DEBUG] leaveChannel() im Dialog wurde aufgerufen');
+    this.dialogRef.close({ leave: true });
+  }
 
   cancel() {
     this.dialogRef.close();

@@ -62,14 +62,26 @@ export class ChannelService {
     }
   }
 
-  removeChannel(name: string) {
-    this.channels = this.channels.filter((c) => c.name !== name);
-    this.channelsSubject.next(this.channels);
-    delete this.channelMessages[name];
-    delete this.channelMembers[name];
-    delete this.channelDescriptions[name];
-    delete this.channelCreators[name];
+removeChannel(name: string) {
+  console.log('[DEBUG] ChannelService.removeChannel: Entferne Channel:', name);
+
+  this.channels = this.channels.filter((c) => c.name !== name);
+  this.channelsSubject.next(this.channels);
+
+  if (this.getCurrentChannel()?.name === name) {
+    console.log('[DEBUG] Der zu entfernende Channel ist gerade aktiv – setze aktiv auf null');
+    this.activeChannelSubject.next(null);
   }
+
+  delete this.channelMessages[name];
+  delete this.channelMembers[name];
+  delete this.channelDescriptions[name];
+  delete this.channelCreators[name];
+
+  console.log('[DEBUG] Channel erfolgreich entfernt:', name);
+}
+
+
 
   renameChannel(oldName: string, newName: string) {
     const channel = this.channels.find((c) => c.name === oldName);
@@ -109,16 +121,27 @@ export class ChannelService {
     return this.activeChannelSubject.value;
   }
 
-  setActiveChannel(channel: Channel | null) {
-    if (!channel) return;
+setActiveChannel(channel: Channel | null) {
+  this.activeChannelSubject.next(channel ?? null);
 
-    if (channel.members) this.setMembersForChannel(channel.name, channel.members);
-    if (channel.description) this.setDescription(channel.name, channel.description);
-    if (channel.createdBy) this.setCreatedBy(channel.name, channel.createdBy);
+  if (!channel) {
+    this.messagesSubject.next([]);
 
-    this.activeChannelSubject.next(channel);
-    this.updateMessagesForActiveTarget();
+    this.setDescription('', '');
+    this.setCreatedBy('', '');
+    this.setMembersForChannel('', []);
+    return;
   }
+
+  if (channel.members) this.setMembersForChannel(channel.name, channel.members);
+  if (channel.description) this.setDescription(channel.name, channel.description);
+  if (channel.createdBy) this.setCreatedBy(channel.name, channel.createdBy);
+
+  this.updateMessagesForActiveTarget();
+}
+
+
+
 
   setActiveUser(user: ChatUser | null) {
     this.activeUserSubject.next(user);
@@ -183,6 +206,9 @@ export class ChannelService {
       this.activeChannelSubject.next({ ...current, members });
     }
   }
+clearMessages() {
+  this.messagesSubject.next([]);
+}
 
   
 }

@@ -102,13 +102,24 @@
           </div>
         </ng-container>
 
-        <ng-template #fallbackChannelInfo>
-          <h3># {{ activeChannelName }}</h3>
-          <p>
-            Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels
-            <strong># {{ activeChannelName }}</strong>.
-          </p>
-        </ng-template>
+<ng-template #fallbackChannelInfo>
+  <ng-container *ngIf="activeChannelName; else nothingLeft">
+    <h3># {{ activeChannelName }}</h3>
+    <p>
+      Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels
+      <strong># {{ activeChannelName }}</strong>.
+    </p>
+  </ng-container>
+
+  <ng-template #nothingLeft>
+    <div class="empty-state">
+      <p><strong>Kein Channel ausgewählt.</strong></p>
+      <p>Wähle einen Channel in der Sidebar oder erstelle einen neuen.</p>
+    </div>
+  </ng-template>
+</ng-template>
+
+
       </ng-template>
     </div>
 

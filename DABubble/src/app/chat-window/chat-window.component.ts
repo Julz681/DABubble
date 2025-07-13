@@ -18,12 +18,11 @@ import { ThreadPanelService } from '../services/thread.panel.service';
 import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CurrentUserService, CurrentUser } from '../services/current.user.service';
+import {
+  CurrentUserService,
+  CurrentUser,
+} from '../services/current.user.service';
 import { ChannelInfoDialogComponent } from '../channel-info-dialog/channel-info-dialog.component';
-
-
-
-
 
 interface ChatUser {
   id: string;
@@ -56,13 +55,11 @@ interface ChatMessage {
     MatButtonModule,
     MatTooltipModule,
     MatDialogModule,
-    
   ],
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.scss'],
 })
 export class ChatWindowComponent implements OnInit, OnDestroy {
-
   @Input() threadToggle?: () => void;
 
   newMessage = '';
@@ -77,8 +74,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   filteredUsers: ChatUser[] = [];
   filteredChannels: string[] = [];
   activeChannelDescription = '';
-activeChannelCreatedBy = '';
-
+  activeChannelCreatedBy = '';
 
   activeUser: ChatUser | null = null;
   activeChannelName = '';
@@ -87,196 +83,216 @@ activeChannelCreatedBy = '';
   currentChannelUsers: ChatUser[] = [];
   groupedMessages: { dateLabel: string; messages: ChatMessage[] }[] = [];
 
-allUsers: ChatUser[] = [
-  { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
-  { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
-  { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
-  { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
-  { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
-];
+  allUsers: ChatUser[] = [
+    { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
+    { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+    { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
+    { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
+    {
+      id: 'steffen',
+      name: 'Steffen Hoffmann',
+      avatar: 'assets/Steffen Hoffmann.png',
+    },
+  ];
 
   currentUser!: CurrentUser;
 
-
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
 
-constructor(
-  private channelService: ChannelService,
-  private dialog: MatDialog,
-  private threadPanelService: ThreadPanelService,
-  private currentUserService: CurrentUserService
-) {}
+  constructor(
+    private channelService: ChannelService,
+    private dialog: MatDialog,
+    private threadPanelService: ThreadPanelService,
+    private currentUserService: CurrentUserService
+  ) {}
 
+  ngOnInit(): void {
+    // 1. Aktuellen Benutzer abonnieren
+    this.currentUserService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
 
-ngOnInit(): void {
-  // 1. Aktuellen Benutzer abonnieren (damit Änderungen z. B. nach Profilbearbeitung übernommen werden)
-  this.currentUserService.currentUser$.subscribe((user) => {
-    this.currentUser = user;
-
-    // 2. Falls currentUser noch nicht in allUsers enthalten ist → hinzufügen, sonst aktualisieren
-    const existing = this.allUsers.find((u) => u.id === user.id);
-    if (existing) {
-      existing.name = user.name;
-      existing.avatar = user.avatar;
-    } else {
-      this.allUsers.unshift(user);
-    }
-
-    // 3. Standard-Channel festlegen
-    const defaultChannel = 'Entwicklerteam';
-    this.activeChannelName = defaultChannel;
-
-    // 4. Mitglieder für Standard-Channel setzen
-    this.channelService.setMembersForChannel(defaultChannel, [
-      this.currentUser,
-      this.allUsers.find((u) => u.id === 'sofia')!,
-      this.allUsers.find((u) => u.id === 'noah')!,
-      this.allUsers.find((u) => u.id === 'elise')!,
-    ]);
-
-    // 5. Beispielhafte Channel-Nachrichten
-    this.channelService.channelMessages[defaultChannel] = [
-      {
-        id: 1,
-        author: 'Noah Braun',
-        userId: 'noah',
-        time: '14:25 Uhr',
-        content: 'Welche Version ist aktuell von Angular?',
-        avatar: 'assets/Noah Braun.png',
-        reactions: [],
-        isSelf: false,
-        replies: [
-          {
-            id: 2,
-            author: 'Sofia Müller',
-            userId: 'sofia',
-            time: '14:26 Uhr',
-            content: 'Ich glaube 17.1, oder?',
-            avatar: 'assets/Sofia Müller.png',
-            reactions: [],
-            isSelf: false,
-            createdAt: new Date(),
-          },
-          {
-            id: 3,
-            author: this.currentUser.name,
-            userId: this.currentUser.id,
-            time: '14:27 Uhr',
-            content: 'Die aktuelle Version ist 17.2.1.',
-            avatar: this.currentUser.avatar,
-            reactions: [],
-            isSelf: true,
-            createdAt: new Date(),
-          },
-        ],
-        createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-      },
-    ];
-
-    // 6. Standard-Channel aktivieren (nur beim ersten Init sinnvoll)
-    this.channelService.setActiveChannel({
-      name: defaultChannel,
-      members: this.channelService.getMembersForChannel(defaultChannel),
-    });
-  });
-
-  // 7. Benutzerwechsel (DM)
-  this.channelService.activeUser$.subscribe((user) => {
-    this.activeUser = user;
-    this.activeChannelName = user
-      ? user.name
-      : this.channelService.getCurrentChannel()?.name || '';
-
-    this.currentChannelUsers = user
-      ? [this.currentUser, user]
-      : this.channelService.getMembersForChannel(this.activeChannelName);
-  });
-
-// 8. Channelwechsel
-this.channelService.activeChannel$.subscribe((channel) => {
-  if (channel) {
-    this.activeUser = null;
-    this.activeChannelName = channel.name;
-    this.activeChannelDescription = channel.description || '';
-    this.activeChannelCreatedBy = channel.createdBy || '';
-    this.currentChannelUsers =
-      this.channelService.getMembersForChannel(channel.name);
-  }
-});
-
-
-  // 9. Nachrichten-Stream
-  this.channelService.messages$.subscribe((messages) => {
-    this.currentChannelMessages = messages;
-    this.groupMessagesByDate();
-  });
-
-  // 10. Thread-Aktualisierung
-  this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
-    if (!updatedRoot) return;
-
-    const target = this.activeUser?.id ?? this.activeChannelName;
-    const messages = this.activeUser
-      ? this.channelService.directMessages[target] || []
-      : this.channelService.channelMessages[target] || [];
-
-    const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
-    if (index !== -1) {
-      messages[index] = updatedRoot;
-      if (this.activeUser) {
-        this.channelService.directMessages[target] = messages;
+      // 2. User zur Liste hinzufügen oder aktualisieren
+      const existing = this.allUsers.find((u) => u.id === user.id);
+      if (existing) {
+        existing.name = user.name;
+        existing.avatar = user.avatar;
       } else {
-        this.channelService.channelMessages[target] = messages;
+        this.allUsers.unshift(user);
       }
-      this.channelService.updateMessagesForActiveTarget();
-    }
-  });
 
-  // 11. Direktnachricht aus Profil starten
-  window.addEventListener('startDirectChat', this.startDirectChatHandler);
-}
+      // 3. Standard-Channel festlegen
+      const defaultChannel = 'Entwicklerteam';
+      this.activeChannelName = defaultChannel;
 
+      // 4. Mitglieder setzen
+      this.channelService.setMembersForChannel(defaultChannel, [
+        this.currentUser,
+        this.allUsers.find((u) => u.id === 'sofia')!,
+        this.allUsers.find((u) => u.id === 'noah')!,
+        this.allUsers.find((u) => u.id === 'elise')!,
+      ]);
 
+      // 5. Beispielhafte Nachrichten
+      this.channelService.channelMessages[defaultChannel] = [
+        {
+          id: 1,
+          author: 'Noah Braun',
+          userId: 'noah',
+          time: '14:25 Uhr',
+          content: 'Welche Version ist aktuell von Angular?',
+          avatar: 'assets/Noah Braun.png',
+          reactions: [],
+          isSelf: false,
+          replies: [
+            {
+              id: 2,
+              author: 'Sofia Müller',
+              userId: 'sofia',
+              time: '14:26 Uhr',
+              content: 'Ich glaube 17.1, oder?',
+              avatar: 'assets/Sofia Müller.png',
+              reactions: [],
+              isSelf: false,
+              createdAt: new Date(),
+            },
+            {
+              id: 3,
+              author: this.currentUser.name,
+              userId: this.currentUser.id,
+              time: '14:27 Uhr',
+              content: 'Die aktuelle Version ist 17.2.1.',
+              avatar: this.currentUser.avatar,
+              reactions: [],
+              isSelf: true,
+              createdAt: new Date(),
+            },
+          ],
+          createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+        },
+      ];
 
+      // 6. Channel aktivieren
+      this.channelService.setActiveChannel({
+        name: defaultChannel,
+        members: this.channelService.getMembersForChannel(defaultChannel),
+      });
+    });
 
+    // 7. Direktnachrichten-Aktivierung
+    this.channelService.activeUser$.subscribe((user) => {
+      this.activeUser = user;
 
-sendMessage(): void {
-  const content = this.newMessage.trim();
-  if (!content) return;
+      const currentChannel = this.channelService.getCurrentChannel();
+      const isValidChannel =
+        currentChannel &&
+        this.channelService
+          .getChannels()
+          .some((c) => c.name === currentChannel.name);
 
-  const now = new Date();
-  const isDirectMessage = !!this.activeUser;
+      this.activeChannelName = user
+        ? user.name
+        : isValidChannel
+        ? currentChannel!.name
+        : '';
 
-  const message: ChatMessage = {
-    id: Date.now(),
-    author: this.currentUser.name,
-    userId: this.currentUser.id,
-    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    content,
-    avatar: this.currentUser.avatar,
-    reactions: [],
-    isSelf: true,
-    replies: [],
-    createdAt: now,
-  };
+      this.currentChannelUsers = user
+        ? [this.currentUser, user]
+        : isValidChannel
+        ? this.channelService.getMembersForChannel(currentChannel!.name)
+        : [];
+    });
 
-  if (this.replyingTo) {
+    // 8. Channelwechsel
+    this.channelService.activeChannel$.subscribe((channel) => {
+      if (channel) {
+        this.activeUser = null;
+        this.activeChannelName = channel.name;
+        this.activeChannelDescription = channel.description || '';
+        this.activeChannelCreatedBy = channel.createdBy || '';
+        this.currentChannelUsers = this.channelService.getMembersForChannel(
+          channel.name
+        );
+      } else {
+        this.activeUser = null;
+        this.activeChannelName = '';
+        this.activeChannelDescription = '';
+        this.activeChannelCreatedBy = '';
+        this.currentChannelUsers = [];
+        this.currentChannelMessages = [];
+        this.groupedMessages = [];
+        this.newMessage = ''; // Leere Eingabezeile
+      }
+    });
 
-    if (!this.replyingTo.replies) this.replyingTo.replies = [];
-    this.replyingTo.replies.push(message);
-    this.channelService.updateMessagesForActiveTarget();
-  } else {
-    const targetId = isDirectMessage ? this.activeUser!.id : this.activeChannelName;
-    this.channelService.addMessage(targetId, message, isDirectMessage);
+    // 9. Nachrichten-Stream
+    this.channelService.messages$.subscribe((messages) => {
+      this.currentChannelMessages = messages;
+      this.groupMessagesByDate();
+    });
+
+    // 10. Thread-Aktualisierung
+    this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
+      if (!updatedRoot) return;
+
+      const target = this.activeUser?.id ?? this.activeChannelName;
+      const messages = this.activeUser
+        ? this.channelService.directMessages[target] || []
+        : this.channelService.channelMessages[target] || [];
+
+      const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
+      if (index !== -1) {
+        messages[index] = updatedRoot;
+
+        if (this.activeUser) {
+          this.channelService.directMessages[target] = messages;
+        } else {
+          this.channelService.channelMessages[target] = messages;
+        }
+
+        this.channelService.updateMessagesForActiveTarget();
+      }
+    });
+
+    // 11. Direktnachricht aus Profil starten
+    window.addEventListener('startDirectChat', this.startDirectChatHandler);
   }
 
-  this.newMessage = '';
-  this.replyingTo = null;
-  this.showEmojis = false;
-  this.showUsers = false;
-}
+  sendMessage(): void {
+    const content = this.newMessage.trim();
+    if (!content) return;
 
+    const now = new Date();
+    const isDirectMessage = !!this.activeUser;
 
+    const message: ChatMessage = {
+      id: Date.now(),
+      author: this.currentUser.name,
+      userId: this.currentUser.id,
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      content,
+      avatar: this.currentUser.avatar,
+      reactions: [],
+      isSelf: true,
+      replies: [],
+      createdAt: now,
+    };
+
+    if (this.replyingTo) {
+      if (!this.replyingTo.replies) this.replyingTo.replies = [];
+      this.replyingTo.replies.push(message);
+      this.channelService.updateMessagesForActiveTarget();
+    } else {
+      const targetId = isDirectMessage
+        ? this.activeUser!.id
+        : this.activeChannelName;
+      this.channelService.addMessage(targetId, message, isDirectMessage);
+    }
+
+    this.newMessage = '';
+    this.replyingTo = null;
+    this.showEmojis = false;
+    this.showUsers = false;
+  }
 
   groupMessagesByDate(): void {
     const groups: { [key: string]: ChatMessage[] } = {};
@@ -393,7 +409,9 @@ sendMessage(): void {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     if (!this.showFullUserList || !this.userDropdownRef) return;
-    const clickedInside = this.userDropdownRef.nativeElement.contains(event.target);
+    const clickedInside = this.userDropdownRef.nativeElement.contains(
+      event.target
+    );
     if (!clickedInside) this.showFullUserList = false;
   }
 
@@ -413,7 +431,10 @@ sendMessage(): void {
           (u) => !this.currentChannelUsers.find((m) => m.id === u.id)
         );
         this.currentChannelUsers = [...this.currentChannelUsers, ...filtered];
-        this.channelService.setMembersForChannel(this.activeChannelName, this.currentChannelUsers);
+        this.channelService.setMembersForChannel(
+          this.activeChannelName,
+          this.currentChannelUsers
+        );
       }
     });
   }
@@ -449,9 +470,9 @@ sendMessage(): void {
           user.name.toLowerCase().includes(term)
         );
       } else if (this.mentionMode === 'channel') {
-        this.filteredChannels = Object.keys(this.channelService.channelMessages).filter((name) =>
-          name.toLowerCase().includes(term)
-        );
+        this.filteredChannels = Object.keys(
+          this.channelService.channelMessages
+        ).filter((name) => name.toLowerCase().includes(term));
       }
       this.showUsers = true;
     } else {
@@ -476,77 +497,77 @@ sendMessage(): void {
   }
 
   openUserProfile(message: ChatMessage) {
-  // Öffne kein Profil vom aktuellen Benutzer selbst
-  if (message.userId === this.currentUser.id) return;
+    // Öffne kein Profil vom aktuellen Benutzer selbst
+    if (message.userId === this.currentUser.id) return;
 
-  const dialogRef = this.dialog.open(UserProfileComponent, {
-    width: '400px',
-    data: {
-      id: message.userId,
-      name: message.author,
-      avatar: message.avatar,
-      email: `${message.userId}@beispiel.com`
-    }
-  });
+    const dialogRef = this.dialog.open(UserProfileComponent, {
+      width: '400px',
+      data: {
+        id: message.userId,
+        name: message.author,
+        avatar: message.avatar,
+        email: `${message.userId}@beispiel.com`,
+      },
+    });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result?.startChatWith) {
-      this.channelService.setActiveUser({
-        id: result.startChatWith.id,
-        name: result.startChatWith.name,
-        avatar: result.startChatWith.avatar
-      });
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.startChatWith) {
+        this.channelService.setActiveUser({
+          id: result.startChatWith.id,
+          name: result.startChatWith.name,
+          avatar: result.startChatWith.avatar,
+        });
+      }
+    });
+  }
 
-openUserProfileFromUser(user: ChatUser) {
-  const dialogRef = this.dialog.open(UserProfileComponent, {
-    width: '400px',
-    data: {
-      id: user.id,
-      name: user.name,
-      avatar: user.avatar,
-      email: `${user.id}@beispiel.com`
-    }
-  });
+  openUserProfileFromUser(user: ChatUser) {
+    const dialogRef = this.dialog.open(UserProfileComponent, {
+      width: '400px',
+      data: {
+        id: user.id,
+        name: user.name,
+        avatar: user.avatar,
+        email: `${user.id}@beispiel.com`,
+      },
+    });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result?.startChatWith) {
-      this.channelService.setActiveUser({
-        id: result.startChatWith.id,
-        name: result.startChatWith.name,
-        avatar: result.startChatWith.avatar
-      });
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.startChatWith) {
+        this.channelService.setActiveUser({
+          id: result.startChatWith.id,
+          name: result.startChatWith.name,
+          avatar: result.startChatWith.avatar,
+        });
+      }
+    });
+  }
 
-startDirectChatHandler = (e: any) => {
-  const user = e.detail;
-  this.channelService.setActiveUser(user);
-};
+  startDirectChatHandler = (e: any) => {
+    const user = e.detail;
+    this.channelService.setActiveUser(user);
+  };
 
-ngOnDestroy(): void {
-  window.removeEventListener('startDirectChat', this.startDirectChatHandler);
-}
+  ngOnDestroy(): void {
+    window.removeEventListener('startDirectChat', this.startDirectChatHandler);
+  }
 
-getDisplayName(user: ChatUser): string {
-  return user.id === this.currentUser.id ? `${user.name}` : user.name;
-}
+  getDisplayName(user: ChatUser): string {
+    return user.id === this.currentUser.id ? `${user.name}` : user.name;
+  }
 
-getDisplayNameFromString(userId: string, name: string): string {
-  return userId === this.currentUser.id ? `${name} (Du)` : name;
-}
+  getDisplayNameFromString(userId: string, name: string): string {
+    return userId === this.currentUser.id ? `${name} (Du)` : name;
+  }
 
 openChannelInfo() {
   const channel = this.channelService.getCurrentChannel();
-
-  // Falls channel null oder undefined ist, Methode sofort verlassen
   if (!channel) return;
 
   const description = this.channelService.getDescription(channel.name) || 'Keine Beschreibung';
   const createdBy = this.channelService.getCreatedBy(channel.name) || 'Unbekannt';
+
+  const isSystemChannel = channel.name === 'Entwicklerteam';
 
   const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
     width: '500px',
@@ -554,22 +575,77 @@ openChannelInfo() {
       name: channel.name,
       description,
       createdBy,
-      isSystemChannel: channel.name === 'Entwicklerteam'
+      isSystemChannel
     }
   });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result?.updated) {
-      this.channelService.renameChannel(channel.name, result.data.name);
-      this.channelService.setDescription(result.data.name, result.data.description);
-      this.channelService.setCreatedBy(result.data.name, result.data.createdBy);
+  dialogRef.afterClosed().subscribe((result) => {
+    console.log('[DEBUG] Dialog geschlossen mit:', result);
+    if (!result) return;
+
+
+    if (result.leave) {
+      console.log('[DEBUG] Channel verlassen wurde gewählt:', channel.name);
+
+      const wasActive = this.channelService.getCurrentChannel()?.name === channel.name;
+
+      this.channelService.removeChannel(channel.name);
+
+      if (wasActive) {
+        this.channelService.setActiveUser(null);
+        this.channelService.setActiveChannel(null);
+      }
+
+      const remainingChannels = this.channelService.getChannels();
+
+      if (remainingChannels.length > 0) {
+        console.log('[DEBUG] Fallback zu anderem Channel:', remainingChannels[0].name);
+        this.channelService.setActiveChannel(remainingChannels[0]);
+      } else {
+
+        const fallbackUsers = [
+          { id: 'frederik', name: 'Frederik Beck', avatar: 'assets/Frederik Beck.png' },
+          { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
+          { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+          { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
+          { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
+          { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
+        ];
+
+        if (fallbackUsers.length > 0) {
+          console.log('[DEBUG] Keine Channels mehr – Fallback zur Direktnachricht mit:', fallbackUsers[0].name);
+          this.channelService.setActiveUser(fallbackUsers[0]);
+        } else {
+          console.log('[DEBUG] Kein Channel, keine User – leere Ansicht');
+          this.channelService.setActiveUser(null);
+          this.channelService.setActiveChannel(null);
+          this.channelService.clearMessages?.(); 
+        }
+      }
+
+      return;
     }
-  });
+
+    // === CHANNEL AKTUALISIEREN ===
+if (result.updated && !isSystemChannel) {
+  console.log('[DEBUG] Channel wurde aktualisiert:', result.data);
+
+  this.channelService.renameChannel(channel.name, result.data.name);
+  this.channelService.setDescription(result.data.name, result.data.description);
+  this.channelService.setCreatedBy(result.data.name, result.data.createdBy);
+
+  const updatedChannel = {
+    ...channel,
+    name: result.data.name,
+    description: result.data.description,
+    createdBy: result.data.createdBy
+  };
+
+  this.channelService.setActiveChannel(updatedChannel);
+} else if (result.updated && isSystemChannel) {
+  console.warn('[WARN] Systemchannel darf nicht bearbeitet werden:', channel.name);
 }
 
-
-
-
-
-
+  });
+}
 }

@@ -11,7 +11,10 @@ import { NewMessageDialogComponent } from '../new-message-dialog/new-message-dia
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 
 import { ChannelService, Channel } from '../services/channel.service';
-import { CurrentUserService, CurrentUser } from '../services/current.user.service';
+import {
+  CurrentUserService,
+  CurrentUser,
+} from '../services/current.user.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -24,7 +27,7 @@ import { CurrentUserService, CurrentUser } from '../services/current.user.servic
     MatDialogModule,
   ],
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+  styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent implements OnInit {
   currentUser!: CurrentUser;
@@ -42,35 +45,72 @@ export class SidebarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.currentUserService.currentUser$.subscribe(user => {
+    this.currentUserService.currentUser$.subscribe((user) => {
       this.currentUser = user;
       this.initDefaultChannel(user);
     });
 
     // Channels initialisieren
-    this.channels = this.channelService.getChannels();
+    this.channelService.channels$.subscribe((channels) => {
+      this.channels = channels;
+    });
 
     // Dummy-Nutzerliste
     this.users = [
-      { id: 'frederik', name: 'Frederik Beck', avatar: 'assets/Frederik Beck.png' },
+      {
+        id: 'frederik',
+        name: 'Frederik Beck',
+        avatar: 'assets/Frederik Beck.png',
+      },
       { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
       { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
       { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
-      { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
-      { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
+      {
+        id: 'elias',
+        name: 'Elias Neumann',
+        avatar: 'assets/Elias Neumann.png',
+      },
+      {
+        id: 'steffen',
+        name: 'Steffen Hoffmann',
+        avatar: 'assets/Steffen Hoffmann.png',
+      },
     ];
   }
 
   initDefaultChannel(user: CurrentUser) {
     if (this.channelService.getChannels().length === 0) {
+      const defaultMembers = [
+        user,
+        {
+          id: 'sofia',
+          name: 'Sofia Müller',
+          avatar: 'assets/Sofia Müller.png',
+        },
+        { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+        {
+          id: 'elias',
+          name: 'Elias Neumann',
+          avatar: 'assets/Elias Neumann.png',
+        },
+      ];
+
       const defaultChannel: Channel = {
         name: 'Entwicklerteam',
-        description: 'Dieser Channel ist für alles rund um #Entwicklerteam vorgesehen.',
+        description:
+          'Dieser Channel ist für alles rund um #Entwicklerteam vorgesehen.',
         createdBy: 'Noah Braun',
-        members: [user]
+        members: defaultMembers,
       };
+
       this.channelService.addChannel(defaultChannel);
       this.channelService.setActiveChannel(defaultChannel);
+
+      this.channelService.setMembersForChannel(
+        defaultChannel.name,
+        defaultMembers
+      );
+
       this.channels = this.channelService.getChannels();
     }
   }
@@ -86,17 +126,17 @@ export class SidebarComponent implements OnInit {
   openChannelDialog() {
     const dialogRef = this.dialog.open(ChannelDialogComponent, {
       width: '500px',
-      panelClass: 'custom-dialog'
+      panelClass: 'custom-dialog',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
 
       const newChannel: Channel = {
         name: result.name,
         description: result.description,
         createdBy: result.createdBy,
-        members: result.members
+        members: result.members,
       };
 
       this.channelService.addChannel(newChannel);
@@ -106,7 +146,10 @@ export class SidebarComponent implements OnInit {
   }
 
   openChannelInfo(channel: Channel, event: MouseEvent) {
+    console.log('[DEBUG] openChannelInfo aufgerufen für:', channel.name);
+
     event.stopPropagation();
+
     const isSystemChannel = channel.name === 'Entwicklerteam';
 
     const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
@@ -116,33 +159,69 @@ export class SidebarComponent implements OnInit {
         name: channel.name,
         description: channel.description,
         createdBy: channel.createdBy,
-        isSystemChannel
-      }
+        isSystemChannel,
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('[DEBUG] afterClosed result:', result);
+
       if (!result) return;
 
-      if (result.leave && !isSystemChannel) {
+      if (result.leave) {
+        console.log(
+          '[DEBUG] result.leave === true – versuche Channel zu entfernen:',
+          channel.name
+        );
+
+        const wasActive =
+          this.channelService.getCurrentChannel()?.name === channel.name;
+
         this.channelService.removeChannel(channel.name);
         this.channels = this.channelService.getChannels();
 
-        const fallback = this.channels[0] || null;
-        this.channelService.setActiveChannel(fallback);
+        if (wasActive) {
+          console.log('[DEBUG] Entfernte Channel war aktiv – zurücksetzen');
+          this.channelService.setActiveUser(null);
+          this.channelService.setActiveChannel({
+            name: '',
+            description: '',
+            createdBy: '',
+            members: [],
+          });
+          this.channelService.clearMessages();
+        }
+
+        const fallback = this.channels.length > 0 ? this.channels[0] : null;
+        if (fallback) {
+          console.log('[DEBUG] Fallback-Channel wird gesetzt:', fallback.name);
+          this.channelService.setActiveChannel(fallback);
+        }
+
         return;
       }
 
       if (result.updated && !isSystemChannel) {
+        console.log(
+          '[DEBUG] result.updated === true – aktualisiere Channel:',
+          channel.name
+        );
         const updated: Channel = {
           ...channel,
           name: result.data.name,
           description: result.data.description,
-          createdBy: result.data.createdBy
+          createdBy: result.data.createdBy,
         };
 
         this.channelService.renameChannel(channel.name, updated.name);
         this.channelService.updateChannel(updated);
-        this.channelService.setActiveChannel(updated);
+
+        const isCurrentlyActive =
+          this.channelService.getCurrentChannel()?.name === channel.name;
+        if (isCurrentlyActive) {
+          this.channelService.setActiveChannel(updated);
+        }
+
         this.channels = this.channelService.getChannels();
       }
     });
@@ -170,10 +249,10 @@ export class SidebarComponent implements OnInit {
   openNewMessageDialog() {
     const dialogRef = this.dialog.open(NewMessageDialogComponent, {
       width: '500px',
-      panelClass: 'custom-dialog'
+      panelClass: 'custom-dialog',
     });
 
-    dialogRef.afterClosed().subscribe(results => {
+    dialogRef.afterClosed().subscribe((results) => {
       if (!results || results.length === 0) return;
 
       for (const res of results) {
@@ -184,20 +263,23 @@ export class SidebarComponent implements OnInit {
           userId: this.currentUser.id,
           avatar: this.currentUser.avatar,
           content: res.message,
-          time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          time: now.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
           createdAt: now,
           reactions: [],
-          isSelf: true
+          isSelf: true,
         };
 
         if (res.type === 'user') {
-          const user = this.users.find(u => u.id === res.id);
+          const user = this.users.find((u) => u.id === res.id);
           if (user) {
             this.selectUser(user);
             this.channelService.addMessage(user.id, message, true);
           }
         } else if (res.type === 'channel') {
-          const channel = this.channels.find(c => c.name === res.name);
+          const channel = this.channels.find((c) => c.name === res.name);
           if (channel) {
             this.selectChannelOnly(channel);
             this.channelService.addMessage(res.name, message, false);
@@ -218,12 +300,12 @@ export class SidebarComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result?.startChatWith) {
         this.channelService.setActiveUser({
           id: result.startChatWith.id,
           name: result.startChatWith.name,
-          avatar: result.startChatWith.avatar
+          avatar: result.startChatWith.avatar,
         });
       }
     });
