@@ -1,22 +1,41 @@
-<!-- shell.component.html -->
 <header class="app-header">
   <div class="logo-bar">
     <img src="assets/Logo.png" alt="Logo" class="logo" />
     <span class="title">DABubble</span>
   </div>
 
-  <div class="search-container">
-    <input type="text" placeholder="Devspace durchsuchen" />
+  <!-- 🔍 Suchleiste -->
+  <div class="search-container" (click)="$event.stopPropagation()">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="onSearch()"
+      (focus)="searchFocused = true"
+      (blur)="onBlur()"
+      placeholder="Devspace durchsuchen"
+    />
     <mat-icon>search</mat-icon>
+
+    <!-- 🔽 Ergebnisliste -->
+    <div class="search-dropdown" *ngIf="searchFocused && filteredResults.length">
+      <div
+        class="search-result"
+        *ngFor="let result of filteredResults"
+        (click)="selectResult(result)"
+      >
+        <mat-icon class="icon" *ngIf="result.type === 'channel'">tag</mat-icon>
+        <mat-icon class="icon" *ngIf="result.type === 'user'">person</mat-icon>
+        <span>{{ result.display }}</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Benutzerprofil (Referenz auf Container für Dropdown-Erkennung) -->
+  <!-- Benutzerprofil -->
   <div class="user-profile" #dropdownContainer>
     <span>{{ userName }}</span>
     <mat-icon (click)="toggleDropdown()">expand_more</mat-icon>
     <img src="assets/Frederik Beck.png" class="avatar" />
 
-    <!-- Menü (event.stopPropagation wichtig!) -->
     <div
       class="dropdown-menu"
       *ngIf="dropdownOpen"

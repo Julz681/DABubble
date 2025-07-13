@@ -122,23 +122,37 @@ removeChannel(name: string) {
   }
 
 setActiveChannel(channel: Channel | null) {
+  const current = this.getCurrentChannel();
+
+  // Wenn es sich um denselben Channel handelt, trotzdem neu setzen (z. B. zur Reaktivierung nach Wechsel)
+  const isSame = current?.name === channel?.name;
+
+  // Immer subject aktualisieren, auch wenn es der gleiche Name ist
   this.activeChannelSubject.next(channel ?? null);
+
+  // DM beenden, wenn Channel aktiv gesetzt wird
+  this.setActiveUser(null);
 
   if (!channel) {
     this.messagesSubject.next([]);
-
-    this.setDescription('', '');
-    this.setCreatedBy('', '');
-    this.setMembersForChannel('', []);
     return;
   }
 
-  if (channel.members) this.setMembersForChannel(channel.name, channel.members);
-  if (channel.description) this.setDescription(channel.name, channel.description);
-  if (channel.createdBy) this.setCreatedBy(channel.name, channel.createdBy);
+  // Optional: Metadaten speichern
+  if (channel.members) {
+    this.setMembersForChannel(channel.name, channel.members);
+  }
+  if (channel.description) {
+    this.setDescription(channel.name, channel.description);
+  }
+  if (channel.createdBy) {
+    this.setCreatedBy(channel.name, channel.createdBy);
+  }
 
+  // Nachrichten sicher nachladen, auch bei gleichem Channel-Namen
   this.updateMessagesForActiveTarget();
 }
+
 
 
 

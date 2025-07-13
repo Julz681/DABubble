@@ -43,4 +43,16 @@ export class CurrentUserService {
       new CustomEvent('usernameChanged', { detail: trimmedName })
     );
   }
+
+  getAllUsers(): CurrentUser[] {
+  return [
+    { id: 'frederik', name: 'Frederik Beck', avatar: 'assets/Frederik Beck.png' },
+    { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
+    { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+    { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
+    { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
+    { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
+  ];
+}
+
 }
