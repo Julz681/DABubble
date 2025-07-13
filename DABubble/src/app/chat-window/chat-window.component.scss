@@ -559,3 +559,24 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+.message {
+  position: relative;
+}
+
+.emoji-picker.popover {
+  position: absolute;
+  bottom: 100%; // Über der Nachricht
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 6px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  z-index: 100;
+}
+

@@ -18,6 +18,7 @@ import { ThreadPanelService } from '../services/thread.panel.service';
 import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { MatDialogModule } from '@angular/material/dialog';
+
 import {
   CurrentUserService,
   CurrentUser,
@@ -75,6 +76,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   filteredChannels: string[] = [];
   activeChannelDescription = '';
   activeChannelCreatedBy = '';
+  emojiPopoverMessage: ChatMessage | null = null;
+
 
   activeUser: ChatUser | null = null;
   activeChannelName = '';
@@ -332,24 +335,25 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.showUsers = false;
   }
 
-  toggleUserList() {
-    const lastChar = this.newMessage.slice(-1);
-    if (lastChar === '@') {
-      this.mentionMode = 'user';
-      this.filteredUsers = this.activeUser
-        ? [this.currentUser, this.activeUser]
-        : [...this.currentChannelUsers];
-      this.showUsers = true;
-      this.showEmojis = false;
-    } else if (lastChar === '#') {
-      this.mentionMode = 'channel';
-      this.filteredChannels = Object.keys(this.channelService.channelMessages);
-      this.showUsers = true;
-      this.showEmojis = false;
-    } else {
-      this.showUsers = false;
-    }
+toggleUserList() {
+  const lastChar = this.newMessage.slice(-1);
+  if (lastChar === '@') {
+    this.mentionMode = 'user';
+    this.filteredUsers = this.activeUser
+      ? [this.currentUser, this.activeUser]
+      : [...this.currentChannelUsers];
+    this.showUsers = true;
+    this.showEmojis = false;
+  } else {
+    this.mentionMode = 'user'; 
+    this.filteredUsers = this.activeUser
+      ? [this.currentUser, this.activeUser]
+      : [...this.currentChannelUsers];
+    this.showUsers = true;
+    this.showEmojis = false;
   }
+}
+
 
   addEmoji(emoji: string) {
     this.newMessage += emoji;
@@ -405,15 +409,37 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   }
 
   @ViewChild('userDropdownRef') userDropdownRef!: ElementRef;
+  @ViewChild('mentionPickerRef') mentionPickerRef!: ElementRef;
 
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: MouseEvent) {
-    if (!this.showFullUserList || !this.userDropdownRef) return;
-    const clickedInside = this.userDropdownRef.nativeElement.contains(
-      event.target
-    );
-    if (!clickedInside) this.showFullUserList = false;
+
+
+@HostListener('document:click', ['$event'])
+handleGlobalClick(event: MouseEvent): void {
+  const clickedTarget = event.target as HTMLElement;
+
+  // === USER DROPDOWN ===
+  const clickedInsideUserDropdown =
+    this.userDropdownRef?.nativeElement.contains(clickedTarget);
+
+  if (!clickedInsideUserDropdown && this.showFullUserList) {
+    this.showFullUserList = false;
   }
+
+  // === MENTION PICKER ===
+  const clickedInsideMention =
+    this.mentionPickerRef?.nativeElement.contains(clickedTarget);
+
+  const clickedInput = clickedTarget.closest('input');
+
+  const clickedMentionButton = clickedTarget.closest('button')?.innerText === '@';
+
+  if (!clickedInsideMention && !clickedInput && !clickedMentionButton && this.showUsers) {
+    this.showUsers = false;
+    this.mentionMode = null;
+  }
+}
+
+
 
   openAddUserDialog() {
     const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
@@ -458,33 +484,51 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.cancelEdit();
   }
 
-  onMessageInput() {
-    const match = this.newMessage.match(/[@#](\w*)$/);
-    if (match) {
-      const term = match[1].toLowerCase();
-      if (this.mentionMode === 'user') {
-        const availableUsers = this.activeUser
-          ? [this.currentUser, this.activeUser]
-          : this.currentChannelUsers;
-        this.filteredUsers = availableUsers.filter((user) =>
-          user.name.toLowerCase().includes(term)
-        );
-      } else if (this.mentionMode === 'channel') {
-        this.filteredChannels = Object.keys(
-          this.channelService.channelMessages
-        ).filter((name) => name.toLowerCase().includes(term));
-      }
-      this.showUsers = true;
-    } else {
-      this.showUsers = false;
-    }
-  }
+onMessageInput() {
+  const match = this.newMessage.match(/@([^@\s]*)$/);
+  if (match) {
+    const term = match[1].toLowerCase();
+    this.mentionMode = 'user';
+    const availableUsers = this.activeUser
+      ? [this.currentUser, this.activeUser]
+      : this.currentChannelUsers;
 
-  mentionUser(user: ChatUser) {
-    this.newMessage = this.newMessage.replace(/@\w*$/, `@${user.name} `);
+    this.filteredUsers = availableUsers.filter((user) =>
+      user.name.toLowerCase().includes(term)
+    );
+
+    this.showUsers = this.filteredUsers.length > 0;
+  } else {
     this.showUsers = false;
     this.mentionMode = null;
   }
+}
+
+
+mentionUser(user: ChatUser) {
+  const atPattern = /@[^@\s]*$/;
+  const insertText = `@${user.name}`;
+
+  if (atPattern.test(this.newMessage)) {
+    this.newMessage = this.newMessage.replace(atPattern, insertText + ' ');
+  } else {
+    this.newMessage += insertText + ' ';
+  }
+
+  this.showUsers = false;
+  this.mentionMode = null;
+
+  // Optional: Cursor an das Ende setzen
+  setTimeout(() => {
+    const input = document.querySelector('input');
+    if (input instanceof HTMLInputElement) {
+      input.focus();
+      const pos = this.newMessage.length;
+      input.setSelectionRange(pos, pos);
+    }
+  }, 0);
+}
+
 
   mentionChannel(name: string) {
     this.newMessage = this.newMessage.replace(/#\w*$/, `#${name} `);
@@ -648,4 +692,15 @@ if (result.updated && !isSystemChannel) {
 
   });
 }
+
+toggleEmojiPopover(message: ChatMessage) {
+  this.emojiPopoverMessage =
+    this.emojiPopoverMessage === message ? null : message;
+}
+
+addReaction(message: ChatMessage, emoji: string) {
+  this.toggleReaction(message, emoji);
+  this.emojiPopoverMessage = null; 
+}
+
 }

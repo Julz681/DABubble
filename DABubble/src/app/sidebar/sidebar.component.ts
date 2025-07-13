@@ -44,39 +44,37 @@ export class SidebarComponent implements OnInit {
     private currentUserService: CurrentUserService
   ) {}
 
-  ngOnInit() {
-    this.currentUserService.currentUser$.subscribe((user) => {
-      this.currentUser = user;
-      this.initDefaultChannel(user);
-    });
+ngOnInit() {
+  this.currentUserService.currentUser$.subscribe((user) => {
+    this.currentUser = user;
+    this.updateUserInList(user);
+    this.initDefaultChannel(user);
 
-    // Channels initialisieren
-    this.channelService.channels$.subscribe((channels) => {
-      this.channels = channels;
-    });
-
-    // Dummy-Nutzerliste
-    this.users = [
-      {
-        id: 'frederik',
-        name: 'Frederik Beck',
-        avatar: 'assets/Frederik Beck.png',
-      },
+    // Dummy-User initial anhängen (nur wenn noch nicht vorhanden)
+    const dummyUsers: CurrentUser[] = [
       { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
       { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
       { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
-      {
-        id: 'elias',
-        name: 'Elias Neumann',
-        avatar: 'assets/Elias Neumann.png',
-      },
-      {
-        id: 'steffen',
-        name: 'Steffen Hoffmann',
-        avatar: 'assets/Steffen Hoffmann.png',
-      },
+      { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
+      { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' },
     ];
-  }
+
+    for (const dummy of dummyUsers) {
+      if (!this.users.find((u) => u.id === dummy.id)) {
+        this.users.push(dummy);
+      }
+    }
+
+    // Optional: Alphabetisch sortieren
+    this.users.sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  // Channels initialisieren
+  this.channelService.channels$.subscribe((channels) => {
+    this.channels = channels;
+  });
+}
+
 
   initDefaultChannel(user: CurrentUser) {
     if (this.channelService.getChannels().length === 0) {
@@ -310,4 +308,15 @@ export class SidebarComponent implements OnInit {
       }
     });
   }
+
+  updateUserInList(updatedUser: CurrentUser) {
+  const existing = this.users.find((u) => u.id === updatedUser.id);
+  if (existing) {
+    existing.name = updatedUser.name;
+    existing.avatar = updatedUser.avatar;
+  } else {
+    this.users.unshift(updatedUser);
+  }
+}
+
 }

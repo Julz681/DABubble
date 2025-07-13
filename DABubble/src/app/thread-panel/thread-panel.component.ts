@@ -6,6 +6,7 @@ import {
   Output,
   ViewChild,
   ElementRef,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +19,8 @@ import { Subscription } from 'rxjs';
 import { ThreadPanelService } from '../services/thread.panel.service';
 import { MatDialog } from '@angular/material/dialog';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
+import { ChannelService } from '../services/channel.service';
+
 import {
   CurrentUserService,
   CurrentUser,
@@ -56,6 +59,7 @@ interface ChatMessage {
 export class ThreadPanelComponent implements OnInit, OnDestroy {
   @Output() closePanel = new EventEmitter<void>();
   @ViewChild('messageInput') messageInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('mentionMenuRef') mentionMenuRef!: ElementRef;
 
   currentUser!: CurrentUser;
   newMessage = '';
@@ -65,6 +69,11 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   hoveredMessageId: number | null = null;
   editingMessageId: number | null = null;
   editedMessageContent = '';
+  emojiPopoverMessage: ChatMessage | null = null;
+
+  mentionMode: 'user' | null = null;
+  allUsers: any[] = [];
+  filteredUsers: any[] = [];
 
   rootMessage: ChatMessage | null = null;
   replies: ChatMessage[] = [];
@@ -72,31 +81,21 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   emojis: string[] = [
-    '😀',
-    '😂',
-    '😅',
-    '😍',
-    '😎',
-    '😢',
-    '👍',
-    '👎',
-    '❤️',
-    '🔥',
-    '🎯',
-    '👏',
+    '😀', '😂', '😅', '😍', '😎', '😢', '👍', '👎', '❤️', '🔥', '🎯', '👏',
   ];
 
   constructor(
     private threadService: ThreadPanelService,
     private dialog: MatDialog,
-    private currentUserService: CurrentUserService
+    private currentUserService: CurrentUserService,
+    private channelService: ChannelService
   ) {}
 
   ngOnInit(): void {
-    // 🟢 Aktuellen Benutzer beobachten (inkl. Namensänderungen)
     this.subscriptions.push(
       this.currentUserService.currentUser$.subscribe((user) => {
         this.currentUser = user;
+        this.loadUsers(); // ⬅ Nutzerliste initial laden
       })
     );
 
@@ -122,6 +121,17 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
+loadUsers(): void {
+  const currentChannel = this.channelService.getCurrentChannel();
+  if (!currentChannel) {
+    this.allUsers = [];
+    return;
+  }
+
+  this.allUsers = this.channelService.getMembersForChannel(currentChannel.name);
+}
+
+
 
   toggleEmojiPicker(): void {
     this.showEmojis = !this.showEmojis;
@@ -131,6 +141,68 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   toggleUserList(): void {
     this.showUsers = !this.showUsers;
     this.showEmojis = false;
+
+    if (this.showUsers) {
+      this.mentionMode = 'user';
+      this.filteredUsers = [...this.allUsers];
+    } else {
+      this.mentionMode = null;
+    }
+  }
+
+@HostListener('document:click', ['$event'])
+onClickOutside(event: MouseEvent): void {
+  const target = event.target as HTMLElement;
+
+  const clickedInsideMention =
+    this.mentionMenuRef?.nativeElement.contains(target);
+
+  const clickedMentionButton =
+    target.closest('button')?.innerText === '@' || target.closest('.mention-toggle-btn');
+
+  if (!clickedInsideMention && !clickedMentionButton && this.showUsers) {
+    this.showUsers = false;
+    this.mentionMode = null;
+  }
+}
+
+
+onMessageInput(): void {
+  const atIndex = this.newMessage.lastIndexOf('@');
+  if (atIndex !== -1 && (atIndex === 0 || this.newMessage.charAt(atIndex - 1) === ' ')) {
+    const query = this.newMessage.substring(atIndex + 1).toLowerCase();
+    this.filteredUsers = this.allUsers.filter((user) =>
+      user.name.toLowerCase().startsWith(query)
+    );
+    this.showUsers = this.filteredUsers.length > 0;
+    this.mentionMode = this.showUsers ? 'user' : null;
+  } else {
+    this.showUsers = false;
+    this.mentionMode = null;
+  }
+}
+
+
+  mentionUser(user: any): void {
+    const atIndex = this.newMessage.lastIndexOf('@');
+    if (atIndex !== -1) {
+      this.newMessage =
+        this.newMessage.slice(0, atIndex) + `@${user.name} `;
+    } else {
+      this.newMessage += `@${user.name} `;
+    }
+
+    this.showUsers = false;
+    this.mentionMode = null;
+
+    setTimeout(() => {
+      const input = this.messageInput?.nativeElement;
+      if (input) {
+        input.focus();
+        const pos = this.newMessage.length;
+        input.setSelectionRange(pos, pos);
+      }
+    }, 0);
   }
 
   addEmoji(emoji: string): void {
@@ -281,5 +353,15 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
         );
       }
     });
+  }
+
+  toggleEmojiPopover(message: ChatMessage): void {
+    this.emojiPopoverMessage =
+      this.emojiPopoverMessage === message ? null : message;
+  }
+
+  addReaction(message: ChatMessage, emoji: string): void {
+    this.toggleReaction(message, emoji);
+    this.emojiPopoverMessage = null;
   }
 }

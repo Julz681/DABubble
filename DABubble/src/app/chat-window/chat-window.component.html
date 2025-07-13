@@ -139,21 +139,35 @@
           [alt]="getDisplayNameFromString(message.userId, message.author)"
           (click)="openUserProfile(message)"
         />
-        <div class="message">
-          <div class="message-toolbar" *ngIf="hoveredMessage === message">
-            <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(message, emoji)">
-              {{ emoji }}
-            </span>
-            <button class="reply-icon" (click)="replyTo(message)">💬</button>
-            <button
-              *ngIf="message.isSelf && editingMessageId !== message.id"
-              class="message-menu-button"
-              (click)="startEditing(message)"
-              matTooltip="Nachricht bearbeiten"
-            >
-              <mat-icon>more_vert</mat-icon>
-            </button>
-          </div>
+<div class="message">
+  <!-- Emoji-Popover: MUSS vor der Toolbar stehen -->
+  <div
+    class="emoji-picker popover"
+    *ngIf="emojiPopoverMessage === message"
+    (click)="$event.stopPropagation()"
+  >
+    <span *ngFor="let emoji of emojis" (click)="addReaction(message, emoji)">
+      {{ emoji }}
+    </span>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="message-toolbar" *ngIf="hoveredMessage === message">
+    <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(message, emoji)">
+      {{ emoji }}
+    </span>
+    <span class="emoji-plus" (click)="toggleEmojiPopover(message)">➕</span>
+    <button class="reply-icon" (click)="replyTo(message)">💬</button>
+    <button
+      *ngIf="message.isSelf && editingMessageId !== message.id"
+      class="message-menu-button"
+      (click)="startEditing(message)"
+      matTooltip="Nachricht bearbeiten"
+    >
+      <mat-icon>more_vert</mat-icon>
+  </button>
+</div>
+
 
           <div class="meta">
             <span class="author" (click)="openUserProfile(message)">
@@ -227,35 +241,44 @@
   </div>
 
   <!-- Eingabe -->
-  <div class="chat-input">
-    <input
-      [(ngModel)]="newMessage"
-      [placeholder]="
-        activeUser
-          ? 'Nachricht an ' + getDisplayName(activeUser)
-          : 'Nachricht an #' + activeChannelName
-      "
-      (keydown.enter)="sendMessage()"
-    />
-    <button (click)="toggleEmojiPicker()">😊</button>
-    <button *ngIf="!activeUser" (click)="toggleUserList()">&#64;</button>
-    <button class="send" (click)="sendMessage()">➤</button>
+<div class="chat-input">
+<!-- wichtig für Autovervollständigung -->
+<input
+  [(ngModel)]="newMessage"
+  [placeholder]="activeUser ? 'Nachricht an ' + getDisplayName(activeUser) : 'Nachricht an #' + activeChannelName"
+  (keydown.enter)="sendMessage()"
+  (input)="onMessageInput()" />
 
-    <div class="emoji-picker" *ngIf="showEmojis">
-      <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">
-        {{ emoji }}
-      </span>
-    </div>
+  <button (click)="toggleEmojiPicker()">😊</button>
+  <button *ngIf="!activeUser" (click)="toggleUserList()">&#64;</button>
+  <button class="send" (click)="sendMessage()">➤</button>
 
-    <div class="mention-picker" *ngIf="showUsers">
-      <div
-        class="user-option"
-        *ngFor="let user of currentChannelUsers"
-        (click)="mentionUser(user)"
-      >
-        <img [src]="user.avatar" />
-        <span>{{ getDisplayName(user) }}</span>
-      </div>
-    </div>
+  <!-- Emoji-Picker -->
+  <div class="emoji-picker" *ngIf="showEmojis">
+    <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">
+      {{ emoji }}
+    </span>
   </div>
+
+<div class="mention-picker" *ngIf="showUsers" #mentionPickerRef>
+  <div
+    class="user-option"
+    *ngFor="let user of filteredUsers"
+    (click)="mentionUser(user)"
+  >
+    <img [src]="user.avatar" />
+    <span>{{ getDisplayName(user) }}</span>
+  </div>
+
+  <div
+    class="channel-option"
+    *ngFor="let channel of filteredChannels"
+    (click)="mentionChannel(channel)"
+  >
+    #{{ channel }}
+  </div>
+</div>
+
+</div>
+
 </div>
