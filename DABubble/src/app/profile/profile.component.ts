@@ -7,10 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { CurrentUserService } from '../services/current.user.service'; 
+import { CurrentUserService } from '../services/current.user.service';
 import { AuthService } from '../services/auth.service';
-
-
 
 @Component({
   selector: 'app-profile',
@@ -30,7 +28,17 @@ import { AuthService } from '../services/auth.service';
 export class ProfileComponent implements OnInit {
   fullName: string = '';
   editedName: string = '';
+  selectedAvatar: string = '';
   isEditing = false;
+
+  availableAvatars: string[] = [
+    'assets/Frederik Beck.png',
+    'assets/Sofia Müller.png',
+    'assets/Noah Braun.png',
+    'assets/Elise Roth.png',
+    'assets/Elias Neumann.png',
+    'assets/Steffen Hoffmann.png',
+  ];
 
   constructor(
     private dialogRef: MatDialogRef<ProfileComponent>,
@@ -42,6 +50,7 @@ export class ProfileComponent implements OnInit {
     const currentUser = this.currentUserService.getCurrentUser();
     this.fullName = currentUser.name;
     this.editedName = currentUser.name;
+    this.selectedAvatar = currentUser.avatar;
   }
 
   close(): void {
@@ -54,20 +63,27 @@ export class ProfileComponent implements OnInit {
 
   cancel(): void {
     this.isEditing = false;
-    this.editedName = this.fullName;
+    const currentUser = this.currentUserService.getCurrentUser();
+    this.editedName = currentUser.name;
+    this.selectedAvatar = currentUser.avatar;
   }
 
   save(): void {
-    if (this.editedName.trim()) {
-      this.fullName = this.editedName.trim();
-      this.currentUserService.updateName(this.fullName); 
+    const trimmedName = this.editedName.trim();
+    if (trimmedName) {
+      this.currentUserService.updateName(trimmedName);
+      this.currentUserService.updateAvatar(this.selectedAvatar);
+      this.fullName = trimmedName;
       this.isEditing = false;
-      this.dialogRef.close(this.fullName);
+      this.dialogRef.close(trimmedName);
     }
   }
 
-  get userDisplayName(): string {
-  return this.authService.currentUser?.displayName ?? 'Unbekannt';
-}
+  selectAvatar(avatar: string) {
+    this.selectedAvatar = avatar;
+  }
 
+  get currentUserEmail(): string {
+    return this.authService.currentUser?.email ?? 'Unbekannt';
+  }
 }

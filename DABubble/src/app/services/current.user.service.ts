@@ -96,4 +96,20 @@ export class CurrentUserService {
 
     this.usersSubject.next([...users]);
   }
+
+  updateAvatar(newAvatar: string): void {
+  const currentUser = this.currentUserSubject.value;
+  const updatedUser: CurrentUser = {
+    ...currentUser,
+    avatar: newAvatar,
+  };
+
+  this.currentUserSubject.next(updatedUser);
+
+  const updatedUsers = this.usersSubject.value.map((user) =>
+    user.id === updatedUser.id ? updatedUser : user
+  );
+  this.usersSubject.next(updatedUsers);
+}
+
 }

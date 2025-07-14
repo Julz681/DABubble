@@ -8,7 +8,12 @@
   </div>
 
   <div class="profile-image">
-    <img src="assets/Frederik Beck.png" alt="Profilbild" />
+    <div class="avatar-container">
+      <img [src]="selectedAvatar" alt="Profilbild" />
+      <button mat-icon-button class="edit-avatar-btn" *ngIf="!isEditing" (click)="edit()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
   </div>
 
   <div class="profile-info" *ngIf="!isEditing">
@@ -26,7 +31,7 @@
       <mat-icon>mail</mat-icon>
       <div>
         <div class="label">E-Mail-Adresse</div>
-        <div class="value">fred.beck&#64;email.com</div>
+        <div class="value">{{ currentUserEmail }}</div>
       </div>
     </div>
   </div>
@@ -36,6 +41,18 @@
       <mat-label>Vollständiger Name</mat-label>
       <input matInput [(ngModel)]="editedName" />
     </mat-form-field>
+
+    <div class="avatar-selection">
+      <h4>Profilbild wählen:</h4>
+      <div class="avatar-grid">
+        <img
+          *ngFor="let avatar of availableAvatars"
+          [src]="avatar"
+          [class.selected]="avatar === selectedAvatar"
+          (click)="selectAvatar(avatar)"
+        />
+      </div>
+    </div>
 
     <div class="actions">
       <button mat-stroked-button color="primary" (click)="cancel()">Abbrechen</button>

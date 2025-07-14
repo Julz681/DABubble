@@ -7,12 +7,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    h2 {
-      margin: 0;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
   }
 
   .profile-image {
@@ -20,10 +14,23 @@
     justify-content: center;
     margin: 1rem 0;
 
-    img {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
+    .avatar-container {
+      position: relative;
+
+      img {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+      }
+
+      .edit-avatar-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+      }
     }
   }
 
@@ -34,16 +41,9 @@
       justify-content: space-between;
       align-items: center;
 
-      h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 500;
-      }
-
       .edit-link {
         font-size: 0.85rem;
         color: #5a65ea;
-        text-decoration: none;
         cursor: pointer;
       }
     }
@@ -52,15 +52,14 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      margin: 0.5rem 0;
-      font-size: 0.9rem;
       color: green;
+      margin: 0.5rem 0;
 
       .status-dot {
         width: 8px;
         height: 8px;
-        border-radius: 50%;
         background: green;
+        border-radius: 50%;
       }
     }
 
@@ -68,13 +67,7 @@
       display: flex;
       align-items: flex-start;
       gap: 0.5rem;
-      font-size: 0.85rem;
       margin-top: 1rem;
-
-      mat-icon {
-        font-size: 18px;
-        margin-top: 0.2rem;
-      }
 
       .label {
         font-weight: 500;
@@ -89,16 +82,35 @@
     .actions {
       display: flex;
       justify-content: space-between;
-      margin-top: 1rem;
-
-      button {
-        flex: 1;
-        margin: 0 0.25rem;
-      }
+      margin-top: 1.5rem;
     }
 
-    .full-width {
-      width: 100%;
+    .avatar-selection {
+      margin-top: 1rem;
+
+      h4 {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .avatar-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        img {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: border-color 0.2s;
+
+          &.selected {
+            border-color: #3f51b5;
+          }
+        }
+      }
     }
   }
 }
