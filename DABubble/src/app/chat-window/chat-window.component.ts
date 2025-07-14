@@ -360,18 +360,30 @@ toggleUserList() {
     this.showEmojis = false;
   }
 
-  replyTo(message: ChatMessage) {
-    const mention = message.author ? `@${message.author} ` : '';
-    if (this.activeUser) {
-      this.replyingTo = message;
-      this.newMessage = mention;
-      setTimeout(() => document.querySelector('input')?.focus(), 0);
-    } else {
-      this.threadPanelService.openThread(message, mention);
-      this.threadToggle?.();
-      this.replyingTo = null;
-    }
+replyTo(message: ChatMessage): void {
+  const mention = `@${this.getUserNameFromId(message.userId)} `;
+
+  // 👇 Das ist die entscheidende Änderung:
+  this.threadPanelService.openThread(message, mention);
+
+  if (this.threadToggle) {
+    this.threadToggle();
   }
+
+  setTimeout(() => {
+    const input = this.chatInputRef?.nativeElement;
+    if (input) {
+      input.focus();
+      const pos = this.newMessage.length;
+      input.setSelectionRange(pos, pos);
+    }
+  }, 0);
+}
+
+
+
+
+
 
   toggleReaction(message: ChatMessage, emoji: string) {
     if (!message.reactions) message.reactions = [];
@@ -403,6 +415,18 @@ toggleUserList() {
       .filter((u) => ids.includes(u.id))
       .map((u) => u.name);
   }
+  getUserNameFromId(userId: string): string {
+  if (userId === this.currentUser.id) {
+    return this.currentUser.name;
+  }
+
+  const user =
+    this.allUsers.find(u => u.id === userId) ||
+    this.currentChannelUsers.find(u => u.id === userId);
+
+  return user?.name || 'Unbekannt';
+}
+
 
   toggleUserDropdown() {
     setTimeout(() => (this.showFullUserList = !this.showFullUserList));
@@ -410,6 +434,8 @@ toggleUserList() {
 
   @ViewChild('userDropdownRef') userDropdownRef!: ElementRef;
   @ViewChild('mentionPickerRef') mentionPickerRef!: ElementRef;
+  @ViewChild('chatInput') chatInputRef!: ElementRef<HTMLInputElement>;
+
 
 
 
@@ -430,14 +456,22 @@ handleGlobalClick(event: MouseEvent): void {
     this.mentionPickerRef?.nativeElement.contains(clickedTarget);
 
   const clickedInput = clickedTarget.closest('input');
-
   const clickedMentionButton = clickedTarget.closest('button')?.innerText === '@';
 
   if (!clickedInsideMention && !clickedInput && !clickedMentionButton && this.showUsers) {
     this.showUsers = false;
     this.mentionMode = null;
   }
+
+  // === EMOJI POPOVER ===
+  const isInPopover = !!clickedTarget.closest('.emoji-picker.popover');
+  const isEmojiPlus = !!clickedTarget.closest('.emoji-plus');
+
+  if (!isInPopover && !isEmojiPlus) {
+    this.emojiPopoverMessage = null;
+  }
 }
+
 
 
 

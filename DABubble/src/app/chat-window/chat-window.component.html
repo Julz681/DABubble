@@ -157,7 +157,10 @@
       {{ emoji }}
     </span>
     <span class="emoji-plus" (click)="toggleEmojiPopover(message)">➕</span>
-    <button class="reply-icon" (click)="replyTo(message)">💬</button>
+    <span class="reply-icon" (click)="replyTo(message)">💬</span>
+
+
+
     <button
       *ngIf="message.isSelf && editingMessageId !== message.id"
       class="message-menu-button"

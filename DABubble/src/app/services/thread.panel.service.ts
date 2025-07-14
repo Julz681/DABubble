@@ -14,7 +14,6 @@ export interface ChatMessage {
   replyToId?: number;
   createdAt: Date;
   edited?: boolean;
-
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,30 +22,51 @@ export class ThreadPanelService {
   private _threadReplies = new BehaviorSubject<ChatMessage[]>([]);
   private _initialReplyText = new BehaviorSubject<string>('');
 
+  /** Observable für das Root-Element (die ursprüngliche Nachricht) */
   threadRootMessage$ = this._threadRootMessage.asObservable();
+
+  /** Observable für die Antworten */
   threadReplies$ = this._threadReplies.asObservable();
+
+  /** Observable für vorbefüllten Nachrichtentext */
   initialReplyText$ = this._initialReplyText.asObservable();
 
-
-  openThread(rootMessage: ChatMessage, initialReply: string = '') {
+  /**
+   * Öffnet den Thread zu einer bestimmten Nachricht.
+   * @param rootMessage Die Ursprungsnachricht
+   * @param initialReply (optional) Vorbefüllter Nachrichtentext
+   */
+  openThread(rootMessage: ChatMessage, initialReply: string = ''): void {
     this._threadRootMessage.next(rootMessage);
     this._threadReplies.next(rootMessage.replies || []);
     this._initialReplyText.next(initialReply);
   }
 
-
-  addReply(reply: ChatMessage) {
-    const replies = [...this._threadReplies.value, reply];
-    this._threadReplies.next(replies);
+  /**
+   * Fügt eine neue Antwort im Thread hinzu
+   * @param reply Die Antwortnachricht
+   */
+  addReply(reply: ChatMessage): void {
+    const updatedReplies = [...this._threadReplies.value, reply];
+    this._threadReplies.next(updatedReplies);
 
     const root = this._threadRootMessage.value;
     if (root) {
-      root.replies = replies;
+      root.replies = updatedReplies;
     }
   }
 
+  /**
+   * Setzt den vorgefüllten Text manuell (z. B. bei "Antworten an")
+   */
+  setInitialReplyText(text: string): void {
+    this._initialReplyText.next(text);
+  }
 
-  close() {
+  /**
+   * Schließt den Thread
+   */
+  close(): void {
     this._threadRootMessage.next(null);
     this._threadReplies.next([]);
     this._initialReplyText.next('');

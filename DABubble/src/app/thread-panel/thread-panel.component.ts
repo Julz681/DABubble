@@ -154,9 +154,9 @@ loadUsers(): void {
 onClickOutside(event: MouseEvent): void {
   const target = event.target as HTMLElement;
 
+  // === MENTION ===
   const clickedInsideMention =
     this.mentionMenuRef?.nativeElement.contains(target);
-
   const clickedMentionButton =
     target.closest('button')?.innerText === '@' || target.closest('.mention-toggle-btn');
 
@@ -164,7 +164,16 @@ onClickOutside(event: MouseEvent): void {
     this.showUsers = false;
     this.mentionMode = null;
   }
+
+  // === EMOJI POPOVER ===
+  const isInPopover = !!target.closest('.emoji-picker.popover');
+  const isEmojiPlus = !!target.closest('.emoji-plus');
+
+  if (!isInPopover && !isEmojiPlus) {
+    this.emojiPopoverMessage = null;
+  }
 }
+
 
 
 onMessageInput(): void {
@@ -364,4 +373,5 @@ onMessageInput(): void {
     this.toggleReaction(message, emoji);
     this.emojiPopoverMessage = null;
   }
+  
 }
