@@ -162,6 +162,7 @@
 
 
     <button
+
       *ngIf="message.isSelf && editingMessageId !== message.id"
       class="message-menu-button"
       (click)="startEditing(message)"
@@ -182,9 +183,29 @@
             </span>
           </div>
 
-          <div class="content" *ngIf="editingMessageId !== message.id">
-            {{ message.content }}
-          </div>
+<!-- Nachrichtentext & Datei/Anhang -->
+<div class="content" *ngIf="editingMessageId !== message.id">
+  {{ message.content }}
+
+  <!-- Bild anzeigen, wenn URL mit .png oder .jpg endet -->
+  <img
+    *ngIf="message.url?.toLowerCase().endsWith('.png') || message.url?.toLowerCase().endsWith('.jpg') || message.url?.toLowerCase().endsWith('.jpeg')"
+    [src]="message.url"
+    alt="Bildanhang"
+    style="max-width: 200px; border-radius: 8px; margin-top: 8px;"
+  />
+
+  <!-- Link anzeigen, wenn es kein Bild ist -->
+  <a
+    *ngIf="message.url && !(message.url.toLowerCase().endsWith('.png') || message.url.toLowerCase().endsWith('.jpg') || message.url.toLowerCase().endsWith('.jpeg'))"
+    [href]="message.url"
+    target="_blank"
+    style="display: block; margin-top: 8px; color: #5a65ea;"
+  >
+    Datei öffnen
+  </a>
+</div>
+
 
           <div *ngIf="editingMessageId === message.id" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
@@ -254,6 +275,10 @@
 
   <button (click)="toggleEmojiPicker()">😊</button>
   <button *ngIf="!activeUser" (click)="toggleUserList()">&#64;</button>
+      <button (click)="fileInput.click()" matTooltip="Datei anhängen">
+    <mat-icon>attach_file</mat-icon>
+  </button>
+  <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
   <button class="send" (click)="sendMessage()">➤</button>
 
   <!-- Emoji-Picker -->
@@ -262,6 +287,8 @@
       {{ emoji }}
     </span>
   </div>
+
+
 
 <div class="mention-picker" *ngIf="showUsers" #mentionPickerRef>
   <div

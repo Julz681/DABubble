@@ -18,6 +18,8 @@ import { ThreadPanelService } from '../services/thread.panel.service';
 import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { FileService } from '../services/file.service';
+
 
 import {
   CurrentUserService,
@@ -44,6 +46,7 @@ interface ChatMessage {
   replyToId?: number;
   createdAt: Date;
   edited?: boolean;
+  url?: string;
 }
 
 @Component({
@@ -106,7 +109,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     private channelService: ChannelService,
     private dialog: MatDialog,
     private threadPanelService: ThreadPanelService,
-    private currentUserService: CurrentUserService
+    private currentUserService: CurrentUserService,
+    private fileService: FileService, 
   ) {}
 
   ngOnInit(): void {
@@ -435,6 +439,7 @@ replyTo(message: ChatMessage): void {
   @ViewChild('userDropdownRef') userDropdownRef!: ElementRef;
   @ViewChild('mentionPickerRef') mentionPickerRef!: ElementRef;
   @ViewChild('chatInput') chatInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
 
 
@@ -735,6 +740,33 @@ toggleEmojiPopover(message: ChatMessage) {
 addReaction(message: ChatMessage, emoji: string) {
   this.toggleReaction(message, emoji);
   this.emojiPopoverMessage = null; 
+}
+
+onFileSelected(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+
+  const path = `chat-files/${Date.now()}_${file.name}`;
+  const { percent$, url$ } = this.fileService.uploadFile(file, path);
+
+  percent$.subscribe(pct => console.log(`Hochladen: ${pct.toFixed(0)}%`));
+  url$.subscribe(url => {
+    const msg = {
+      id: Date.now(),
+      author: this.currentUser.name,
+      userId: this.currentUser.id,
+      time: new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }),
+      content: `Datei: ${file.name}`,
+url, 
+
+      avatar: this.currentUser.avatar,
+      isSelf: true,
+      createdAt: new Date()
+    };
+    // Füge Nachricht hinzu
+    const target = this.activeUser ? this.activeUser.id : this.activeChannelName;
+    this.channelService.addMessage(target, msg, !!this.activeUser);
+  });
 }
 
 }
