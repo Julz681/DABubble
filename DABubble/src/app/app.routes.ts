@@ -1,6 +1,10 @@
 import { Routes } from '@angular/router';
 
+// 🔹 Public Components (ohne Layout)
 import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+
+// 🔹 Shell Layout & App-intern
 import { ShellComponent } from './shell/shell.component';
 import { ChatLayoutComponent } from './chat-layout/chat-layout.component';
 import { ChatWindowComponent } from './chat-window/chat-window.component';
@@ -8,13 +12,14 @@ import { ProfileComponent } from './profile/profile.component';
 import { ChannelDialogComponent } from './channel-dialog/channel-dialog.component';
 
 export const routes: Routes = [
-  // Standard: Weiterleitung zur Login-Seite
+  // 🔸 Startseite leitet weiter zur Login-Seite
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // Login separat ohne Shell-Layout
+  // 🔸 Öffentliche Seiten (Login & Registrierung)
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
 
-  // App-Bereich: Alles in der Shell (Header, Sidebar, etc.)
+  // 🔹 Haupt-App (mit Shell als Layout-Komponente)
   {
     path: 'app',
     component: ShellComponent,
@@ -23,17 +28,17 @@ export const routes: Routes = [
         path: '',
         component: ChatLayoutComponent,
         children: [
-          { path: '', component: ChatWindowComponent },           // /app
-          { path: 'chat/:user', component: ChatWindowComponent }, // /app/chat/:user
+          { path: '', component: ChatWindowComponent }, // /app
+          { path: 'chat/:user', component: ChatWindowComponent } // /app/chat/max
         ]
       },
       { path: 'profile', component: ProfileComponent }
     ]
   },
 
-  // Channel-Dialog optional direkt zugänglich (nur falls gewünscht)
+  // 🔸 Optional: Channel-Dialog direkt aufrufbar
   { path: 'channel', component: ChannelDialogComponent },
 
-  // Fallback: Undefinierte Routen zur Login-Seite
+  // 🔸 Fallback: Alles andere zur Login-Seite
   { path: '**', redirectTo: 'login' }
 ];

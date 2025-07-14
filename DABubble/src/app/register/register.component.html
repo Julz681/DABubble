@@ -1,0 +1,32 @@
+<mat-card class="login-card">
+  <h1>Konto erstellen</h1>
+  <p>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
+
+  <form (ngSubmit)="register()">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Name und Nachname</mat-label>
+      <input matInput [(ngModel)]="name" name="name" required>
+      <mat-icon matPrefix>person</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>E-Mail-Adresse</mat-label>
+      <input matInput type="email" [(ngModel)]="email" name="email" required>
+      <mat-icon matPrefix>mail</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Passwort</mat-label>
+      <input matInput type="password" [(ngModel)]="password" name="password" required>
+      <mat-icon matPrefix>lock</mat-icon>
+    </mat-form-field>
+
+    <mat-checkbox [(ngModel)]="agreed" name="datenschutz">
+      Ich stimme der <a href="#">Datenschutzerklärung</a> zu.
+    </mat-checkbox>
+
+    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <button mat-flat-button color="primary" class="full-width" type="submit">Weiter</button>
+  </form>
+</mat-card>

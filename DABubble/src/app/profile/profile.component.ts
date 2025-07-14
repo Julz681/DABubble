@@ -7,7 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { CurrentUserService } from '../services/current.user.service'; // ✅ importiert
+import { CurrentUserService } from '../services/current.user.service'; 
+import { AuthService } from '../services/auth.service';
+
+
 
 @Component({
   selector: 'app-profile',
@@ -31,7 +34,8 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<ProfileComponent>,
-    private currentUserService: CurrentUserService 
+    private currentUserService: CurrentUserService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -61,4 +65,9 @@ export class ProfileComponent implements OnInit {
       this.dialogRef.close(this.fullName);
     }
   }
+
+  get userDisplayName(): string {
+  return this.authService.currentUser?.displayName ?? 'Unbekannt';
+}
+
 }

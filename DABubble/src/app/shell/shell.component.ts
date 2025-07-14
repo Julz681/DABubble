@@ -5,16 +5,17 @@ import {
   ViewChild,
   OnInit,
 } from '@angular/core';
-import { ChatLayoutComponent } from '../chat-layout/chat-layout.component';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ChannelService } from '../services/channel.service';
-import { CurrentUserService, CurrentUser } from '../services/current.user.service';
+import {
+  CurrentUserService,
+  CurrentUser,
+} from '../services/current.user.service';
 import { FormsModule } from '@angular/forms';
-
-// @ts-ignore
+import { RouterOutlet } from '@angular/router';
 import { ProfileComponent } from '../profile/profile.component';
 
 @Component({
@@ -22,10 +23,10 @@ import { ProfileComponent } from '../profile/profile.component';
   standalone: true,
   imports: [
     CommonModule,
-    ChatLayoutComponent,
     MatIconModule,
     MatDialogModule,
     FormsModule,
+    RouterOutlet,
   ],
   templateUrl: './shell.component.html',
   styleUrls: ['./shell.component.scss'],
@@ -38,7 +39,11 @@ export class ShellComponent implements OnInit {
   users: CurrentUser[] = [];
   currentUser!: CurrentUser;
 
-  filteredResults: Array<{ type: 'channel' | 'user'; display: string; id: string }> = [];
+  filteredResults: Array<{
+    type: 'channel' | 'user';
+    display: string;
+    id: string;
+  }> = [];
 
   @ViewChild('dropdownContainer') dropdownRef!: ElementRef;
 
@@ -51,14 +56,20 @@ export class ShellComponent implements OnInit {
 
   ngOnInit(): void {
     // Aktuellen User abonnieren (für Anzeige im Header)
-    this.currentUserService.currentUser$.subscribe(user => {
+    this.currentUserService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
 
     // Nutzerliste abonnieren (für Suchfunktion)
-    this.currentUserService.users$.subscribe(users => {
+    this.currentUserService.users$.subscribe((users) => {
       this.users = users;
     });
+
+    // 👇 Hole gespeicherten Namen aus localStorage (falls vorhanden)
+    const savedName = localStorage.getItem('username');
+    if (savedName && (!this.currentUser || this.currentUser.name !== savedName)) {
+      this.currentUserService.updateName(savedName);
+    }
   }
 
   get userName(): string {
@@ -84,7 +95,8 @@ export class ShellComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: string | undefined) => {
       if (result) {
-        // Der Name wird automatisch über das Observable aktualisiert
+        // Name wurde aktualisiert → direkt im Service gesetzt
+        this.currentUserService.updateName(result);
       }
     });
   }
@@ -101,13 +113,22 @@ export class ShellComponent implements OnInit {
   onSearch() {
     const term = this.searchTerm.toLowerCase();
 
-    const channels = this.channelService.getChannels()
-      .filter(c => c.name.toLowerCase().includes(term))
-      .map(c => ({ type: 'channel' as const, display: `#${c.name}`, id: c.name }));
+    const channels = this.channelService
+      .getChannels()
+      .filter((c) => c.name.toLowerCase().includes(term))
+      .map((c) => ({
+        type: 'channel' as const,
+        display: `#${c.name}`,
+        id: c.name,
+      }));
 
     const users = this.users
-      .filter(u => u.name.toLowerCase().includes(term))
-      .map(u => ({ type: 'user' as const, display: u.name, id: u.id }));
+      .filter((u) => u.name.toLowerCase().includes(term))
+      .map((u) => ({
+        type: 'user' as const,
+        display: u.name,
+        id: u.id,
+      }));
 
     this.filteredResults = [...channels, ...users];
   }
@@ -118,10 +139,12 @@ export class ShellComponent implements OnInit {
 
   selectResult(result: { type: 'channel' | 'user'; id: string }) {
     if (result.type === 'channel') {
-      const channel = this.channelService.getChannels().find(c => c.name === result.id);
+      const channel = this.channelService
+        .getChannels()
+        .find((c) => c.name === result.id);
       if (channel) this.channelService.setActiveChannel(channel);
     } else {
-      const user = this.users.find(u => u.id === result.id);
+      const user = this.users.find((u) => u.id === result.id);
       if (user) this.channelService.setActiveUser(user);
     }
 
