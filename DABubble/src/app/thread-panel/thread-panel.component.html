@@ -64,9 +64,27 @@
             <button (click)="saveEdit(rootMessage)">Speichern</button>
             <button (click)="cancelEdit()">Abbrechen</button>
           </div>
-          <ng-template #rootText>
-            <div class="text">{{ rootMessage.content }}</div>
-          </ng-template>
+<ng-template #rootText>
+  <!-- Datei-Vorschau -->
+  <ng-container *ngIf="extractUrl(rootMessage.content); else normalRootText">
+    <img
+      *ngIf="isImageUrl(extractUrl(rootMessage.content))"
+      [src]="extractUrl(rootMessage.content)"
+      style="max-width: 200px; margin-top: 8px"
+    />
+    <a
+      *ngIf="!isImageUrl(extractUrl(rootMessage.content))"
+      [href]="extractUrl(rootMessage.content)"
+      target="_blank"
+    >Datei öffnen</a>
+  </ng-container>
+
+  <ng-template #normalRootText>
+    <div class="text">{{ rootMessage.content }}</div>
+  </ng-template>
+</ng-template>
+
+
 
           <div class="reactions" *ngIf="rootMessage.reactions?.length">
             <span *ngFor="let r of rootMessage.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
@@ -134,9 +152,29 @@
             <button (click)="saveEdit(msg)">Speichern</button>
             <button (click)="cancelEdit()">Abbrechen</button>
           </div>
-          <ng-template #msgText>
-            <div class="text">{{ msg.content }}</div>
-          </ng-template>
+<ng-template #msgText>
+  <ng-container *ngIf="isMarkdownLink(msg.content); else normalText">
+    <div class="text">
+      <span>{{ extractFileName(msg.content) }}</span><br />
+      <a
+        [href]="extractUrl(msg.content)"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="font-size: 0.85rem; color: #5c6bc0"
+      >
+        Datei öffnen
+      </a>
+    </div>
+  </ng-container>
+
+  <ng-template #normalText>
+    <div class="text">{{ msg.content }}</div>
+  </ng-template>
+</ng-template>
+
+
+
+
 
           <div class="reactions" *ngIf="msg.reactions?.length">
             <span *ngFor="let r of msg.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
@@ -159,7 +197,12 @@
     />
     <button class="emoji-toggle-button" (click)="toggleEmojiPicker()">😊</button>
     <button (click)="toggleUserList()">&#64;</button>
-    <button (click)="sendMessage()">➤</button>
+    <button (click)="fileInput.click()" matTooltip="Datei anhängen">
+  <mat-icon>attach_file</mat-icon>
+</button>
+<input #fileInput type="file" hidden (change)="onFileSelected($event)" />
+<button (click)="sendMessage()">➤</button>
+
 
     <div class="emoji-picker" *ngIf="showEmojis" (click)="$event.stopPropagation()">
       <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>

@@ -34,7 +34,8 @@
   <div class="user-profile" #dropdownContainer>
     <span>{{ userName }}</span>
     <mat-icon (click)="toggleDropdown()">expand_more</mat-icon>
-    <img src="assets/Frederik Beck.png" class="avatar" />
+    <img [src]="currentUser?.avatar" class="avatar" />
+
 
     <div
       class="dropdown-menu"

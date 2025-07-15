@@ -9,6 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { CurrentUserService } from '../services/current.user.service';
 import { AuthService } from '../services/auth.service';
+import { FileService } from '../services/file.service';
+
 
 @Component({
   selector: 'app-profile',
@@ -43,7 +45,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<ProfileComponent>,
     private currentUserService: CurrentUserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -86,4 +89,27 @@ export class ProfileComponent implements OnInit {
   get currentUserEmail(): string {
     return this.authService.currentUser?.email ?? 'Unbekannt';
   }
+
+  onFileSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0];
+    const path = `avatars/${Date.now()}_${file.name}`;
+
+    const { url$ } = this.fileService.uploadFile(file, path);
+
+    url$.subscribe({
+      next: (downloadUrl: string) => {
+        this.selectedAvatar = downloadUrl;
+      },
+      error: (err) => {
+        console.error('Fehler beim Hochladen des Avatars:', err);
+      },
+    });
+  }
 }
+
+}
+
+

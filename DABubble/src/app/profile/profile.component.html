@@ -44,14 +44,23 @@
 
     <div class="avatar-selection">
       <h4>Profilbild wählen:</h4>
-      <div class="avatar-grid">
-        <img
-          *ngFor="let avatar of availableAvatars"
-          [src]="avatar"
-          [class.selected]="avatar === selectedAvatar"
-          (click)="selectAvatar(avatar)"
-        />
-      </div>
+<!-- Avatar-Auswahl -->
+<div class="avatar-grid">
+  <img
+    *ngFor="let avatar of availableAvatars"
+    [src]="avatar"
+    [class.selected]="avatar === selectedAvatar"
+    (click)="selectAvatar(avatar)"
+  />
+
+  <!-- Upload-Kachel -->
+  <label class="upload-avatar">
+    <input type="file" (change)="onFileSelected($event)" hidden />
+    <div class="plus">+</div>
+  </label>
+</div>
+
+
     </div>
 
     <div class="actions">

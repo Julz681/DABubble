@@ -114,3 +114,30 @@
     }
   }
 }
+
+.upload-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #666;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #ccc;
+  }
+
+  input {
+    display: none;
+  }
+
+  .plus {
+    user-select: none;
+  }
+}
+

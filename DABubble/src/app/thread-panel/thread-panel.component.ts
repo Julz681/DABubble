@@ -20,6 +20,10 @@ import { ThreadPanelService } from '../services/thread.panel.service';
 import { MatDialog } from '@angular/material/dialog';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { ChannelService } from '../services/channel.service';
+import { FileService } from '../services/file.service';
+
+
+
 
 import {
   CurrentUserService,
@@ -60,6 +64,8 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   @Output() closePanel = new EventEmitter<void>();
   @ViewChild('messageInput') messageInput!: ElementRef<HTMLInputElement>;
   @ViewChild('mentionMenuRef') mentionMenuRef!: ElementRef;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
 
   currentUser!: CurrentUser;
   newMessage = '';
@@ -88,7 +94,8 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     private threadService: ThreadPanelService,
     private dialog: MatDialog,
     private currentUserService: CurrentUserService,
-    private channelService: ChannelService
+    private channelService: ChannelService,
+    private fileService: FileService,
   ) {}
 
   ngOnInit(): void {
@@ -373,5 +380,56 @@ onMessageInput(): void {
     this.toggleReaction(message, emoji);
     this.emojiPopoverMessage = null;
   }
+
+ onFileSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0];
+    const now = new Date();
+    const path = `uploads/${Date.now()}_${file.name}`;
+
+    const { url$ } = this.fileService.uploadFile(file, path);
+
+    url$.subscribe({
+      next: (downloadUrl: string) => {
+        const newReply: ChatMessage = {
+          id: Date.now(),
+          userId: this.currentUser.id,
+          author: `${this.currentUser.name} (Du)`,
+          time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          content: `[Datei: ${file.name}](${downloadUrl})`,
+          avatar: this.currentUser.avatar,
+          createdAt: now,
+          reactions: [],
+          isSelf: true,
+        };
+
+        this.threadService.addReply(newReply);
+        this.fileInput.nativeElement.value = ''; // Zurücksetzen
+      },
+      error: (err) => {
+        console.error('Upload fehlgeschlagen:', err);
+      }
+    });
+  }
+}
+
+
+isMarkdownLink(text: string): boolean {
+  return /\[.*?\]\((https?:\/\/.*?)\)/.test(text);
+}
+
+extractUrl(text: string): string {
+  const match = text.match(/\((https?:\/\/.*?)\)/);
+  return match ? match[1] : '';
+}
+
+extractFileName(text: string): string {
+  const match = text.match(/\[Datei:\s*(.*?)\]/);
+  return match ? `Datei: ${match[1]}` : 'Datei öffnen';
+}
+
+
+
   
 }
