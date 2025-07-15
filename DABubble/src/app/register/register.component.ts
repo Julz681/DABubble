@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AuthService } from '../services/auth.service';
 import { CurrentUserService } from '../services/current.user.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +23,8 @@ import { CurrentUserService } from '../services/current.user.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTooltipModule
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
@@ -56,4 +58,9 @@ export class RegisterComponent {
       })
       .catch((err) => this.errorMessage = err.message);
   }
+
+  goBack() {
+  window.history.back();
+}
+
 }

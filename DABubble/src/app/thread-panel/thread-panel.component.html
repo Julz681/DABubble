@@ -5,7 +5,7 @@
       <strong>Thread</strong>
       <span class="channel"># {{ rootMessage?.userId ? 'Entwicklerteam' : '' }}</span>
     </div>
-    <button mat-icon-button (click)="closeThreadPanel()">
+    <button mat-icon-button (click)="closeThreadPanel()" matTooltip="Thread schließen">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -25,18 +25,18 @@
         *ngIf="emojiPopoverMessage?.id === rootMessage.id"
         (click)="$event.stopPropagation()"
       >
-        <span *ngFor="let emoji of emojis" (click)="addReaction(rootMessage, emoji)">
+        <span *ngFor="let emoji of emojis" (click)="addReaction(rootMessage, emoji)" matTooltip="Reaktion hinzufügen">
           {{ emoji }}
         </span>
       </div>
 
       <!-- Toolbar -->
       <div class="reaction-toolbar" *ngIf="hoveredMessageId === rootMessage.id">
-        <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(rootMessage, emoji)">
+        <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(rootMessage, emoji)" matTooltip="Reaktion wählen">
           {{ emoji }}
         </span>
-        <span class="emoji-plus" (click)="toggleEmojiPopover(rootMessage)">➕</span>
-        <span class="reply-icon" (click)="replyTo(getUserNameFromId(rootMessage.userId))">💬</span>
+        <span class="emoji-plus" (click)="toggleEmojiPopover(rootMessage)" matTooltip="Weitere Emojis">➕</span>
+        <span class="reply-icon" (click)="replyTo(getUserNameFromId(rootMessage.userId))" matTooltip="Antworten">💬</span>
         <button
           *ngIf="rootMessage.userId === currentUserId && editingMessageId !== rootMessage.id"
           class="message-menu-button"
@@ -48,10 +48,10 @@
       </div>
 
       <div class="message-content">
-        <img [src]="rootMessage.avatar" class="avatar" (click)="openUserProfile(rootMessage)" />
+        <img [src]="rootMessage.avatar" class="avatar" (click)="openUserProfile(rootMessage)" matTooltip="Profil öffnen" />
         <div class="bubble">
           <div class="author-time">
-            <span class="author" (click)="openUserProfile(rootMessage)">
+            <span class="author" (click)="openUserProfile(rootMessage)" matTooltip="Profil anzeigen">
               {{ getUserNameFromId(rootMessage.userId) }}
             </span>
             <span class="time">
@@ -61,8 +61,8 @@
 
           <div *ngIf="editingMessageId === rootMessage.id; else rootText" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
-            <button (click)="saveEdit(rootMessage)">Speichern</button>
-            <button (click)="cancelEdit()">Abbrechen</button>
+            <button (click)="saveEdit(rootMessage)" matTooltip="Speichern">Speichern</button>
+            <button (click)="cancelEdit()" matTooltip="Abbrechen">Abbrechen</button>
           </div>
 <ng-template #rootText>
   <!-- Datei-Vorschau -->
@@ -84,8 +84,6 @@
   </ng-template>
 </ng-template>
 
-
-
           <div class="reactions" *ngIf="rootMessage.reactions?.length">
             <span *ngFor="let r of rootMessage.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
               {{ r.emoji }} {{ r.count }}
@@ -97,7 +95,7 @@
 
     <!-- Replies Info -->
     <div class="reply-info" *ngIf="replies.length > 0">
-      <a href="#">{{ replies.length }} Antworten</a>
+      <a href="#" matTooltip="Thread anzeigen">{{ replies.length }} Antworten</a>
       <span>Letzte Antwort {{ getLastReplyTime() }}</span>
     </div>
 
@@ -115,18 +113,18 @@
         *ngIf="emojiPopoverMessage?.id === msg.id"
         (click)="$event.stopPropagation()"
       >
-        <span *ngFor="let emoji of emojis" (click)="addReaction(msg, emoji)">
+        <span *ngFor="let emoji of emojis" (click)="addReaction(msg, emoji)" matTooltip="Reaktion hinzufügen">
           {{ emoji }}
         </span>
       </div>
 
       <!-- Toolbar -->
       <div class="reaction-toolbar" *ngIf="hoveredMessageId === msg.id">
-        <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(msg, emoji)">
+        <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(msg, emoji)" matTooltip="Reaktion wählen">
           {{ emoji }}
         </span>
-        <span class="emoji-plus" (click)="toggleEmojiPopover(msg)">➕</span>
-        <span class="reply-icon" (click)="replyTo(getUserNameFromId(msg.userId))">💬</span>
+        <span class="emoji-plus" (click)="toggleEmojiPopover(msg)" matTooltip="Weitere Emojis">➕</span>
+        <span class="reply-icon" (click)="replyTo(getUserNameFromId(msg.userId))" matTooltip="Antworten">💬</span>
         <button
           *ngIf="msg.userId === currentUserId && editingMessageId !== msg.id"
           class="message-menu-button"
@@ -138,10 +136,10 @@
       </div>
 
       <div class="message-content">
-        <img [src]="msg.avatar" class="avatar" (click)="openUserProfile(msg)" />
+        <img [src]="msg.avatar" class="avatar" (click)="openUserProfile(msg)" matTooltip="Profil öffnen" />
         <div class="bubble">
           <div class="author-time">
-            <span class="author" (click)="openUserProfile(msg)">
+            <span class="author" (click)="openUserProfile(msg)" matTooltip="Profil anzeigen">
               {{ getUserNameFromId(msg.userId) }}
             </span>
             <span class="time">{{ msg.time }}</span>
@@ -149,8 +147,8 @@
 
           <div *ngIf="editingMessageId === msg.id; else msgText" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
-            <button (click)="saveEdit(msg)">Speichern</button>
-            <button (click)="cancelEdit()">Abbrechen</button>
+            <button (click)="saveEdit(msg)" matTooltip="Speichern">Speichern</button>
+            <button (click)="cancelEdit()" matTooltip="Abbrechen">Abbrechen</button>
           </div>
 <ng-template #msgText>
   <ng-container *ngIf="isMarkdownLink(msg.content); else normalText">
@@ -161,6 +159,7 @@
         target="_blank"
         rel="noopener noreferrer"
         style="font-size: 0.85rem; color: #5c6bc0"
+        matTooltip="Datei öffnen"
       >
         Datei öffnen
       </a>
@@ -171,10 +170,6 @@
     <div class="text">{{ msg.content }}</div>
   </ng-template>
 </ng-template>
-
-
-
-
 
           <div class="reactions" *ngIf="msg.reactions?.length">
             <span *ngFor="let r of msg.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
@@ -195,29 +190,28 @@
       (keyup.enter)="sendMessage()"
       (input)="onMessageInput()"
     />
-    <button class="emoji-toggle-button" (click)="toggleEmojiPicker()">😊</button>
-    <button (click)="toggleUserList()">&#64;</button>
+    <button class="emoji-toggle-button" (click)="toggleEmojiPicker()" matTooltip="Emoji-Picker öffnen">😊</button>
+    <button (click)="toggleUserList()" matTooltip="Nutzer erwähnen">&#64;</button>
     <button (click)="fileInput.click()" matTooltip="Datei anhängen">
-  <mat-icon>attach_file</mat-icon>
-</button>
-<input #fileInput type="file" hidden (change)="onFileSelected($event)" />
-<button (click)="sendMessage()">➤</button>
-
+      <mat-icon>attach_file</mat-icon>
+    </button>
+    <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
+    <button (click)="sendMessage()" matTooltip="Nachricht senden">➤</button>
 
     <div class="emoji-picker" *ngIf="showEmojis" (click)="$event.stopPropagation()">
-      <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
+      <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)" matTooltip="Emoji einfügen">{{ emoji }}</span>
     </div>
 
-<div class="mention-picker" *ngIf="showUsers" #mentionMenuRef>
-  <div
-    class="user-option"
-    *ngFor="let user of filteredUsers"
-    (click)="mentionUser(user)"
-  >
-    <img [src]="user.avatar" />
-    <span>{{ user.name }}</span>
-  </div>
-</div>
-
+    <div class="mention-picker" *ngIf="showUsers" #mentionMenuRef>
+      <div
+        class="user-option"
+        *ngFor="let user of filteredUsers"
+        (click)="mentionUser(user)"
+        matTooltip="@{{ user.name }} einfügen"
+      >
+        <img [src]="user.avatar" />
+        <span>{{ user.name }}</span>
+      </div>
+    </div>
   </div>
 </div>

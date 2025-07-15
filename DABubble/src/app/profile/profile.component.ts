@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { CurrentUserService } from '../services/current.user.service';
 import { AuthService } from '../services/auth.service';
 import { FileService } from '../services/file.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 @Component({
@@ -23,6 +24,7 @@ import { FileService } from '../services/file.service';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatTooltipModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],

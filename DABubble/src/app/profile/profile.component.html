@@ -2,7 +2,12 @@
   <div class="card-header">
     <h2 *ngIf="!isEditing">Profil</h2>
     <h2 *ngIf="isEditing">Dein Profil bearbeiten</h2>
-    <button mat-icon-button (click)="close()">
+    <button
+      mat-icon-button
+      (click)="close()"
+      matTooltip="Profil schließen"
+      aria-label="Schließen"
+    >
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -10,7 +15,14 @@
   <div class="profile-image">
     <div class="avatar-container">
       <img [src]="selectedAvatar" alt="Profilbild" />
-      <button mat-icon-button class="edit-avatar-btn" *ngIf="!isEditing" (click)="edit()">
+      <button
+        mat-icon-button
+        class="edit-avatar-btn"
+        *ngIf="!isEditing"
+        (click)="edit()"
+        matTooltip="Profilbild bearbeiten"
+        aria-label="Bearbeiten"
+      >
         <mat-icon>edit</mat-icon>
       </button>
     </div>
@@ -19,7 +31,7 @@
   <div class="profile-info" *ngIf="!isEditing">
     <div class="name-row">
       <h3>{{ fullName }}</h3>
-      <a class="edit-link" (click)="edit()">Bearbeiten</a>
+      <a class="edit-link" (click)="edit()" matTooltip="Profil bearbeiten">Bearbeiten</a>
     </div>
 
     <div class="status">
@@ -39,33 +51,51 @@
   <div class="edit-form" *ngIf="isEditing">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Vollständiger Name</mat-label>
-      <input matInput [(ngModel)]="editedName" />
+      <input
+        matInput
+        [(ngModel)]="editedName"
+        matTooltip="Deinen Namen bearbeiten"
+      />
     </mat-form-field>
 
     <div class="avatar-selection">
       <h4>Profilbild wählen:</h4>
-<!-- Avatar-Auswahl -->
-<div class="avatar-grid">
-  <img
-    *ngFor="let avatar of availableAvatars"
-    [src]="avatar"
-    [class.selected]="avatar === selectedAvatar"
-    (click)="selectAvatar(avatar)"
-  />
 
-  <!-- Upload-Kachel -->
-  <label class="upload-avatar">
-    <input type="file" (change)="onFileSelected($event)" hidden />
-    <div class="plus">+</div>
-  </label>
-</div>
+      <!-- Avatar-Auswahl -->
+      <div class="avatar-grid">
+        <img
+          *ngFor="let avatar of availableAvatars"
+          [src]="avatar"
+          [class.selected]="avatar === selectedAvatar"
+          (click)="selectAvatar(avatar)"
+          matTooltip="Dieses Bild auswählen"
+        />
 
-
+        <!-- Upload-Kachel -->
+        <label class="upload-avatar" matTooltip="Eigenes Bild hochladen">
+          <input type="file" (change)="onFileSelected($event)" hidden />
+          <div class="plus">+</div>
+        </label>
+      </div>
     </div>
 
     <div class="actions">
-      <button mat-stroked-button color="primary" (click)="cancel()">Abbrechen</button>
-      <button mat-flat-button color="primary" (click)="save()">Speichern</button>
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="cancel()"
+        matTooltip="Bearbeitung abbrechen"
+      >
+        Abbrechen
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="save()"
+        matTooltip="Änderungen speichern"
+      >
+        Speichern
+      </button>
     </div>
   </div>
 </mat-card>

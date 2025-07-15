@@ -1,6 +1,12 @@
 <header class="app-header">
+  <!-- Logo-Bereich -->
   <div class="logo-bar">
-    <img src="assets/Logo.png" alt="Logo" class="logo" />
+    <img
+      src="assets/Logo.png"
+      alt="Logo"
+      class="logo"
+      matTooltip="Zur Startseite"
+    />
     <span class="title">DABubble</span>
   </div>
 
@@ -13,8 +19,9 @@
       (focus)="searchFocused = true"
       (blur)="onBlur()"
       placeholder="Devspace durchsuchen"
+      matTooltip="Channel oder Person suchen"
     />
-    <mat-icon>search</mat-icon>
+    <mat-icon matTooltip="Suchen">search</mat-icon>
 
     <!-- 🔽 Ergebnisliste -->
     <div class="search-dropdown" *ngIf="searchFocused && filteredResults.length">
@@ -22,6 +29,7 @@
         class="search-result"
         *ngFor="let result of filteredResults"
         (click)="selectResult(result)"
+        [matTooltip]="result.display"
       >
         <mat-icon class="icon" *ngIf="result.type === 'channel'">tag</mat-icon>
         <mat-icon class="icon" *ngIf="result.type === 'user'">person</mat-icon>
@@ -32,18 +40,29 @@
 
   <!-- Benutzerprofil -->
   <div class="user-profile" #dropdownContainer>
-    <span>{{ userName }}</span>
-    <mat-icon (click)="toggleDropdown()">expand_more</mat-icon>
-    <img [src]="currentUser?.avatar" class="avatar" />
-
+    <span matTooltip="Angemeldet als {{ userName }}">{{ userName }}</span>
+    <mat-icon
+      (click)="toggleDropdown()"
+      matTooltip="Menü öffnen"
+      style="cursor: pointer;"
+    >expand_more</mat-icon>
+    <img
+      [src]="currentUser?.avatar"
+      class="avatar"
+      alt="Avatar"
+    />
 
     <div
       class="dropdown-menu"
       *ngIf="dropdownOpen"
       (click)="$event.stopPropagation()"
     >
-      <button (click)="openProfileDialog()">Profil</button>
-      <button (click)="logout()">Logout</button>
+      <button (click)="openProfileDialog()" matTooltip="Profil ansehen und bearbeiten">
+        Profil
+      </button>
+      <button (click)="logout()" matTooltip="Abmelden">
+        Logout
+      </button>
     </div>
   </div>
 </header>
@@ -51,4 +70,3 @@
 <main class="app-main">
   <router-outlet></router-outlet>
 </main>
-

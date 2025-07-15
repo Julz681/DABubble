@@ -1,7 +1,12 @@
 <mat-card class="profile-card">
   <div class="card-header">
     <h2>Profil</h2>
-    <button mat-icon-button (click)="close()">
+    <button
+      mat-icon-button
+      (click)="close()"
+      matTooltip="Schließen"
+      aria-label="Profil schließen"
+    >
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -26,5 +31,13 @@
     </div>
   </div>
 
-  <button mat-flat-button color="primary" (click)="startChat()">💬 Nachricht</button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="startChat()"
+    matTooltip="Direktnachricht starten"
+    aria-label="Nachricht senden"
+  >
+    💬 Nachricht
+  </button>
 </mat-card>

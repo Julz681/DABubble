@@ -1,6 +1,6 @@
 <div class="dialog-header">
   <h2>Channel erstellen</h2>
-  <button mat-icon-button mat-dialog-close>
+  <button mat-icon-button mat-dialog-close matTooltip="Dialog schließen">
     <mat-icon>close</mat-icon>
   </button>
 </div>
@@ -9,14 +9,14 @@
 
 <mat-form-field appearance="outline" class="full-width">
   <mat-label>Channel-Name</mat-label>
-  <input matInput [(ngModel)]="channelName" placeholder="# z.B. Kooperationsprojekte" />
+  <input matInput [(ngModel)]="channelName" placeholder="# z.B. Kooperationsprojekte" matTooltip="Gib einen aussagekräftigen Namen für deinen Channel ein" />
 </mat-form-field>
 
 <mat-form-field appearance="outline" class="full-width">
   <mat-label>Beschreibung (optional)</mat-label>
-  <textarea matInput [(ngModel)]="description" placeholder="Dein Text hier"></textarea>
+  <textarea matInput [(ngModel)]="description" placeholder="Dein Text hier" matTooltip="Beschreibe den Zweck oder Inhalt des Channels (optional)"></textarea>
 </mat-form-field>
 
 <div class="actions">
-  <button mat-flat-button color="primary" (click)="nextStep()">Erstellen</button>
+  <button mat-flat-button color="primary" (click)="nextStep()" matTooltip="Channel erstellen und zum nächsten Schritt gehen">Erstellen</button>
 </div>

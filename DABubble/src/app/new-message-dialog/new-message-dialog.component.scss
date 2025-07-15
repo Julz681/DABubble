@@ -1,56 +1,89 @@
+.headline {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1e1e1e;
+}
+
+.message-container {
+  background: #f8f9ff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
 .full-width {
   width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.recipient-field input {
+  font-weight: 500;
 }
 
 .suggestion-box {
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0.25rem;
-  margin-top: -0.75rem;
-  margin-bottom: 1rem;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  max-height: 180px;
+  position: absolute;
+  background: #ffffff;
+  border: 1px solid #dce0f0;
+  border-radius: 8px;
+  padding: 0.25rem 0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
-  position: absolute;
+  width: 100%;
 }
 
 .suggestion {
-  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  padding: 0.65rem 1rem;
   cursor: pointer;
-  border-radius: 4px;
   font-size: 0.95rem;
-
-  &:hover {
-    background: #f1f1f1;
-  }
+  transition: background 0.2s ease;
+  color: #333;
 }
+
+.suggestion:hover {
+  background: #f1f4ff;
+}
+
+/* Avatar links neben dem Namen */
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+  object-fit: cover;
+}
+
 
 .selected-recipients {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 1.2rem;
+}
 
-  .chip {
-    background: #e0e7ff;
-    padding: 4px 8px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    font-size: 0.85rem;
+.chip {
+  background: #dbeafe;
+  color: #1e3a8a;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+}
 
-    button {
-      background: none;
-      border: none;
-      margin-left: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      color: #444;
-    }
-  }
+.chip button {
+  background: none;
+  border: none;
+  margin-left: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #1e3a8a;
+  cursor: pointer;
+  line-height: 1;
 }
 
 .actions {

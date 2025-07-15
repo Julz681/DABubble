@@ -1,54 +1,54 @@
 <div class="chat-container">
-<div class="chat-header">
-  <div class="left">
-    <!-- Direktnachricht -->
-    <ng-container *ngIf="activeUser; else channelHeader">
-      <img
-        class="large-avatar"
-        [src]="activeUser.avatar"
-        [alt]="getDisplayName(activeUser)"
-        (click)="openUserProfileFromUser(activeUser)"
-        style="cursor: pointer"
-      />
-      <div class="user-info">
-        <h2 (click)="openUserProfileFromUser(activeUser)" style="cursor: pointer">
-          {{ getDisplayName(activeUser) }}
-        </h2>
-      </div>
-    </ng-container>
-
-    <!-- Channelansicht -->
-    <ng-template #channelHeader>
-      <div class="channel-header">
-        <h2>
-          # {{ activeChannelName }}
-          <button mat-icon-button (click)="openChannelInfo()" aria-label="Channel-Info anzeigen">
-            <mat-icon>arrow_drop_down</mat-icon>
-          </button>
-        </h2>
-      </div>
-    </ng-template>
-  </div>
-
-  <!-- Rechtes Panel nur im Channel-Modus -->
-  <div class="right" *ngIf="!activeUser">
-    <div class="avatars" (click)="toggleUserDropdown()">
-      <img
-        *ngFor="let user of currentChannelUsers.slice(0, 3)"
-        [src]="user.avatar"
-        [alt]="getDisplayName(user)"
-      />
-      <ng-container *ngIf="currentChannelUsers.length > 3">
-        <div class="more-users">+{{ currentChannelUsers.length - 3 }}</div>
+  <div class="chat-header">
+    <div class="left">
+      <!-- Direktnachricht -->
+      <ng-container *ngIf="activeUser; else channelHeader">
+        <img
+          class="large-avatar"
+          [src]="activeUser.avatar"
+          [alt]="getDisplayName(activeUser)"
+          (click)="openUserProfileFromUser(activeUser)"
+          style="cursor: pointer"
+          matTooltip="Profil anzeigen"
+        />
+        <div class="user-info">
+          <h2 (click)="openUserProfileFromUser(activeUser)" style="cursor: pointer" matTooltip="Profil anzeigen">
+            {{ getDisplayName(activeUser) }}
+          </h2>
+        </div>
       </ng-container>
-    </div>
-    <span>{{ currentChannelUsers.length }}</span>
-    <button class="add-user-btn" (click)="openAddUserDialog()">
-      <mat-icon>person_add</mat-icon>
-    </button>
-  </div>
-</div>
 
+      <!-- Channelansicht -->
+      <ng-template #channelHeader>
+        <div class="channel-header">
+          <h2>
+            # {{ activeChannelName }}
+            <button mat-icon-button (click)="openChannelInfo()" aria-label="Channel-Info anzeigen" matTooltip="Channel-Info anzeigen">
+              <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+          </h2>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Rechtes Panel nur im Channel-Modus -->
+    <div class="right" *ngIf="!activeUser">
+      <div class="avatars" (click)="toggleUserDropdown()" matTooltip="Channel-Mitglieder anzeigen">
+        <img
+          *ngFor="let user of currentChannelUsers.slice(0, 3)"
+          [src]="user.avatar"
+          [alt]="getDisplayName(user)"
+        />
+        <ng-container *ngIf="currentChannelUsers.length > 3">
+          <div class="more-users">+{{ currentChannelUsers.length - 3 }}</div>
+        </ng-container>
+      </div>
+      <span>{{ currentChannelUsers.length }}</span>
+      <button class="add-user-btn" (click)="openAddUserDialog()" matTooltip="Nutzer zum Channel einladen">
+        <mat-icon>person_add</mat-icon>
+      </button>
+    </div>
+  </div>
 
   <!-- Nutzerliste -->
   <div *ngIf="showFullUserList" class="user-dropdown" #userDropdownRef>
@@ -69,15 +69,15 @@
             [alt]="getDisplayName(currentUser)"
             (click)="openUserProfileFromUser(currentUser)"
             style="cursor: pointer"
+            matTooltip="Profil anzeigen"
           />
           <div class="info-text">
-            <h2 (click)="openUserProfileFromUser(currentUser)" style="cursor: pointer">
+            <h2 (click)="openUserProfileFromUser(currentUser)" style="cursor: pointer" matTooltip="Profil anzeigen">
               {{ getDisplayName(currentUser) }}
             </h2>
             <p>
               <strong>Dieser Raum ist nur für dich da.</strong> Mache dir Notizen, liste deine
-              To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne
-              Dinge mit dir selbst besprechen.
+              To-dos auf oder bewahre Links und Dateien griffbereit auf.
             </p>
           </div>
         </div>
@@ -91,35 +91,28 @@
               [src]="activeUser.avatar"
               [alt]="getDisplayName(activeUser)"
               (click)="openUserProfileFromUser(activeUser)"
+              matTooltip="Profil anzeigen"
             />
             <div class="info-text">
               <h2>{{ getDisplayName(activeUser) }}</h2>
-              <p>
-                Diese Unterhaltung findet nur zwischen
-                <strong>{{ getDisplayName(activeUser) }}</strong> und dir statt.
-              </p>
+              <p>Diese Unterhaltung findet nur zwischen <strong>{{ getDisplayName(activeUser) }}</strong> und dir statt.</p>
             </div>
           </div>
         </ng-container>
 
-<ng-template #fallbackChannelInfo>
-  <ng-container *ngIf="activeChannelName; else nothingLeft">
-    <h3># {{ activeChannelName }}</h3>
-    <p>
-      Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels
-      <strong># {{ activeChannelName }}</strong>.
-    </p>
-  </ng-container>
+        <ng-template #fallbackChannelInfo>
+          <ng-container *ngIf="activeChannelName; else nothingLeft">
+            <h3># {{ activeChannelName }}</h3>
+            <p>Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels <strong># {{ activeChannelName }}</strong>.</p>
+          </ng-container>
 
-  <ng-template #nothingLeft>
-    <div class="empty-state">
-      <p><strong>Kein Channel ausgewählt.</strong></p>
-      <p>Wähle einen Channel in der Sidebar oder erstelle einen neuen.</p>
-    </div>
-  </ng-template>
-</ng-template>
-
-
+          <ng-template #nothingLeft>
+            <div class="empty-state">
+              <p><strong>Kein Channel ausgewählt.</strong></p>
+              <p>Wähle einen Channel in der Sidebar oder erstelle einen neuen.</p>
+            </div>
+          </ng-template>
+        </ng-template>
       </ng-template>
     </div>
 
@@ -138,103 +131,54 @@
           [src]="message.avatar"
           [alt]="getDisplayNameFromString(message.userId, message.author)"
           (click)="openUserProfile(message)"
+          matTooltip="Profil anzeigen"
         />
-<div class="message">
-  <!-- Emoji-Popover: MUSS vor der Toolbar stehen -->
-  <div
-    class="emoji-picker popover"
-    *ngIf="emojiPopoverMessage === message"
-    (click)="$event.stopPropagation()"
-  >
-    <span *ngFor="let emoji of emojis" (click)="addReaction(message, emoji)">
-      {{ emoji }}
-    </span>
-  </div>
 
-  <!-- TOOLBAR -->
-  <div class="message-toolbar" *ngIf="hoveredMessage === message">
-    <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(message, emoji)">
-      {{ emoji }}
-    </span>
-    <span class="emoji-plus" (click)="toggleEmojiPopover(message)">➕</span>
-    <span class="reply-icon" (click)="replyTo(message)">💬</span>
-
-
-
-    <button
-
-      *ngIf="message.isSelf && editingMessageId !== message.id"
-      class="message-menu-button"
-      (click)="startEditing(message)"
-      matTooltip="Nachricht bearbeiten"
-    >
-      <mat-icon>more_vert</mat-icon>
-  </button>
-</div>
-
-
-          <div class="meta">
-            <span class="author" (click)="openUserProfile(message)">
-              {{ getDisplayNameFromString(message.userId, message.author) }}
-            </span>
-            <span class="time">
-              {{ message.time }}
-              <span *ngIf="message.edited" class="edited-flag">· bearbeitet</span>
-            </span>
+        <div class="message">
+          <div class="emoji-picker popover" *ngIf="emojiPopoverMessage === message" (click)="$event.stopPropagation()">
+            <span *ngFor="let emoji of emojis" (click)="addReaction(message, emoji)">{{ emoji }}</span>
           </div>
 
-<!-- Nachrichtentext & Datei/Anhang -->
-<div class="content" *ngIf="editingMessageId !== message.id">
-  {{ message.content }}
+          <div class="message-toolbar" *ngIf="hoveredMessage === message">
+            <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(message, emoji)">{{ emoji }}</span>
+            <span class="emoji-plus" (click)="toggleEmojiPopover(message)" matTooltip="Emoji hinzufügen">➕</span>
+            <span class="reply-icon" (click)="replyTo(message)" matTooltip="Antworten">💬</span>
+            <button *ngIf="message.isSelf && editingMessageId !== message.id"
+              class="message-menu-button"
+              (click)="startEditing(message)"
+              matTooltip="Nachricht bearbeiten">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </div>
 
-  <!-- Bild anzeigen, wenn URL mit .png oder .jpg endet -->
-  <img
-    *ngIf="message.url?.toLowerCase().endsWith('.png') || message.url?.toLowerCase().endsWith('.jpg') || message.url?.toLowerCase().endsWith('.jpeg')"
-    [src]="message.url"
-    alt="Bildanhang"
-    style="max-width: 200px; border-radius: 8px; margin-top: 8px;"
-  />
+          <div class="meta">
+            <span class="author" (click)="openUserProfile(message)">{{ getDisplayNameFromString(message.userId, message.author) }}</span>
+            <span class="time">{{ message.time }}<span *ngIf="message.edited" class="edited-flag">· bearbeitet</span></span>
+          </div>
 
-  <!-- Link anzeigen, wenn es kein Bild ist -->
-  <a
-    *ngIf="message.url && !(message.url.toLowerCase().endsWith('.png') || message.url.toLowerCase().endsWith('.jpg') || message.url.toLowerCase().endsWith('.jpeg'))"
-    [href]="message.url"
-    target="_blank"
-    style="display: block; margin-top: 8px; color: #5a65ea;"
-  >
-    Datei öffnen
-  </a>
-</div>
-
+          <div class="content" *ngIf="editingMessageId !== message.id">
+            {{ message.content }}
+            <img *ngIf="message.url?.toLowerCase().endsWith('.png') || message.url?.toLowerCase().endsWith('.jpg') || message.url?.toLowerCase().endsWith('.jpeg')"
+              [src]="message.url" alt="Bildanhang" style="max-width: 200px; border-radius: 8px; margin-top: 8px;" />
+            <a *ngIf="message.url && !(message.url.toLowerCase().endsWith('.png') || message.url.toLowerCase().endsWith('.jpg') || message.url.toLowerCase().endsWith('.jpeg'))"
+              [href]="message.url" target="_blank" style="display: block; margin-top: 8px; color: #5a65ea;">Datei öffnen</a>
+          </div>
 
           <div *ngIf="editingMessageId === message.id" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
-            <button (click)="saveEdit(message)">Speichern</button>
-            <button (click)="cancelEdit()">Abbrechen</button>
+            <button (click)="saveEdit(message)" matTooltip="Speichern">Speichern</button>
+            <button (click)="cancelEdit()" matTooltip="Abbrechen">Abbrechen</button>
           </div>
 
-          <!-- REPLIES -->
           <div class="reply-meta" *ngIf="message.replies?.length">
             <ng-container *ngIf="activeUser; else channelReplyLink">
               <div class="dm-replies">
-                <div
-                  *ngFor="let reply of message.replies"
-                  class="message-wrapper reply"
-                  [ngClass]="{ self: reply.isSelf }"
-                >
-                  <img
-                    class="avatar"
-                    [src]="reply.avatar"
-                    [alt]="getDisplayNameFromString(reply.userId, reply.author)"
-                    (click)="openUserProfile(reply)"
-                    style="cursor: pointer"
-                  />
-
+                <div *ngFor="let reply of message.replies" class="message-wrapper reply" [ngClass]="{ self: reply.isSelf }">
+                  <img class="avatar" [src]="reply.avatar" [alt]="getDisplayNameFromString(reply.userId, reply.author)"
+                    (click)="openUserProfile(reply)" style="cursor: pointer" matTooltip="Profil anzeigen" />
                   <div class="message">
                     <div class="meta">
-                      <span class="author" (click)="openUserProfile(reply)">
-                        {{ getDisplayNameFromString(reply.userId, reply.author) }}
-                      </span>
+                      <span class="author" (click)="openUserProfile(reply)">{{ getDisplayNameFromString(reply.userId, reply.author) }}</span>
                       <span class="time">{{ reply.time }}</span>
                     </div>
                     <div class="content">{{ reply.content }}</div>
@@ -242,7 +186,6 @@
                 </div>
               </div>
             </ng-container>
-
             <ng-template #channelReplyLink>
               <a href="#" (click)="replyTo(message); $event.preventDefault()">
                 {{ message.replies?.length }} Antworten
@@ -252,10 +195,7 @@
           </div>
 
           <div class="reactions" *ngIf="message.reactions?.length">
-            <span
-              *ngFor="let r of message.reactions"
-              [matTooltip]="getUserNamesFromIds(r.users).join(', ')"
-            >
+            <span *ngFor="let r of message.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
               {{ r.emoji }} {{ r.count }}
             </span>
           </div>
@@ -265,50 +205,31 @@
   </div>
 
   <!-- Eingabe -->
-<div class="chat-input">
-<!-- wichtig für Autovervollständigung -->
-<input
-  [(ngModel)]="newMessage"
-  [placeholder]="activeUser ? 'Nachricht an ' + getDisplayName(activeUser) : 'Nachricht an #' + activeChannelName"
-  (keydown.enter)="sendMessage()"
-  (input)="onMessageInput()" />
+  <div class="chat-input">
+    <input [(ngModel)]="newMessage"
+      [placeholder]="activeUser ? 'Nachricht an ' + getDisplayName(activeUser) : 'Nachricht an #' + activeChannelName"
+      (keydown.enter)="sendMessage()" (input)="onMessageInput()" />
 
-  <button (click)="toggleEmojiPicker()">😊</button>
-  <button *ngIf="!activeUser" (click)="toggleUserList()">&#64;</button>
-      <button (click)="fileInput.click()" matTooltip="Datei anhängen">
-    <mat-icon>attach_file</mat-icon>
-  </button>
-  <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
-  <button class="send" (click)="sendMessage()">➤</button>
+    <button (click)="toggleEmojiPicker()" matTooltip="Emoji auswählen">😊</button>
+    <button *ngIf="!activeUser" (click)="toggleUserList()" matTooltip="Nutzer erwähnen">&#64;</button>
+    <button (click)="fileInput.click()" matTooltip="Datei anhängen">
+      <mat-icon>attach_file</mat-icon>
+    </button>
+    <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
+    <button class="send" (click)="sendMessage()" matTooltip="Nachricht senden">➤</button>
 
-  <!-- Emoji-Picker -->
-  <div class="emoji-picker" *ngIf="showEmojis">
-    <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">
-      {{ emoji }}
-    </span>
+    <div class="emoji-picker" *ngIf="showEmojis">
+      <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
+    </div>
+
+    <div class="mention-picker" *ngIf="showUsers" #mentionPickerRef>
+      <div class="user-option" *ngFor="let user of filteredUsers" (click)="mentionUser(user)">
+        <img [src]="user.avatar" />
+        <span>{{ getDisplayName(user) }}</span>
+      </div>
+      <div class="channel-option" *ngFor="let channel of filteredChannels" (click)="mentionChannel(channel)">
+        #{{ channel }}
+      </div>
+    </div>
   </div>
-
-
-
-<div class="mention-picker" *ngIf="showUsers" #mentionPickerRef>
-  <div
-    class="user-option"
-    *ngFor="let user of filteredUsers"
-    (click)="mentionUser(user)"
-  >
-    <img [src]="user.avatar" />
-    <span>{{ getDisplayName(user) }}</span>
-  </div>
-
-  <div
-    class="channel-option"
-    *ngFor="let channel of filteredChannels"
-    (click)="mentionChannel(channel)"
-  >
-    #{{ channel }}
-  </div>
-</div>
-
-</div>
-
 </div>

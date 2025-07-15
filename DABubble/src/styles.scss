@@ -72,3 +72,30 @@
     visibility: hidden;
   }
 }
+
+
+::ng-deep .cdk-overlay-pane.custom-channel-dialog .mat-mdc-dialog-container {
+  border-radius: 0 20px 20px 20px !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+::ng-deep .cdk-overlay-pane.custom-channel-dialog .mat-mdc-dialog-surface {
+  border-radius: 0 20px 20px 20px !important;
+  background-color: white !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.custom-channel-dialog .mat-mdc-dialog-container,
+.custom-channel-dialog .mat-mdc-dialog-surface {
+  border-radius: 0 20px 20px 20px !important;
+  box-shadow: none !important;
+  background: white !important;
+  padding: 0 !important;
+}
+
+.custom-channel-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  width: auto !important;
+}

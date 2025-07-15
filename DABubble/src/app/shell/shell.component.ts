@@ -17,6 +17,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { ProfileComponent } from '../profile/profile.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-shell',
@@ -27,6 +28,7 @@ import { ProfileComponent } from '../profile/profile.component';
     MatDialogModule,
     FormsModule,
     RouterOutlet,
+    MatTooltipModule
   ],
   templateUrl: './shell.component.html',
   styleUrls: ['./shell.component.scss'],

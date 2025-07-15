@@ -1,20 +1,36 @@
 <div class="sidebar-header">
-  <img src="../../assets/Dev.png" alt="Logo" class="logo" />
+  <img
+    src="../../assets/Dev.png"
+    alt="Logo"
+    class="logo"
+    matTooltip="Zur Startseite"
+  />
   <span class="brand-name">Devspace</span>
-  <mat-icon class="edit-icon" (click)="openNewMessageDialog()">edit_square</mat-icon>
+  <mat-icon
+    class="edit-icon"
+    (click)="openNewMessageDialog()"
+    matTooltip="Neue Nachricht starten"
+    style="cursor: pointer"
+  >
+    edit_square
+  </mat-icon>
 </div>
 
 <mat-divider></mat-divider>
 
 <!-- CHANNELS -->
 <div class="section">
-  <h3 (click)="toggleChannels()">
+  <h3 (click)="toggleChannels()" style="cursor: pointer" matTooltip="Channels ein-/ausklappen">
     <mat-icon class="toggle-icon">
       {{ showChannels ? 'expand_more' : 'chevron_right' }}
     </mat-icon>
     <mat-icon class="section-icon">group_work</mat-icon>
     Channels
-    <span class="add-icon" (click)="openChannelDialog(); $event.stopPropagation()">
+    <span
+      class="add-icon"
+      (click)="openChannelDialog(); $event.stopPropagation()"
+      matTooltip="Neuen Channel erstellen"
+    >
       <mat-icon>add</mat-icon>
     </span>
   </h3>
@@ -23,13 +39,18 @@
     <mat-list-item
       *ngFor="let channel of channels"
       class="channel-item"
-      (click)="selectChannelOnly(channel)">
+      (click)="selectChannelOnly(channel)"
+
+    >
       <mat-icon matListIcon>tag</mat-icon>
       <span>{{ channel.name }}</span>
-
     </mat-list-item>
 
-    <mat-list-item class="add-channel" (click)="openChannelDialog()">
+    <mat-list-item
+      class="add-channel"
+      (click)="openChannelDialog()"
+      matTooltip="Channel hinzufügen"
+    >
       <mat-icon matListIcon>add_circle_outline</mat-icon>
       <span>Channel hinzufügen</span>
     </mat-list-item>
@@ -38,7 +59,7 @@
 
 <!-- DIREKTNACHRICHTEN -->
 <div class="section">
-  <h3 (click)="toggleDMs()">
+  <h3 (click)="toggleDMs()" style="cursor: pointer" matTooltip="Direktnachrichten ein-/ausklappen">
     <mat-icon class="toggle-icon">
       {{ showDMs ? 'expand_more' : 'chevron_right' }}
     </mat-icon>
@@ -47,16 +68,22 @@
   </h3>
 
   <mat-nav-list *ngIf="showDMs">
-    <mat-list-item *ngFor="let user of users" (click)="selectUser(user)">
+    <mat-list-item
+      *ngFor="let user of users"
+      (click)="selectUser(user)"
+
+    >
       <img
         [src]="user.avatar"
         class="avatar"
         alt="avatar"
-        (click)="openUserProfile(user); $event.stopPropagation()" />
+        (click)="openUserProfile(user); $event.stopPropagation()"
+
+      />
       <span class="username">
         {{ user.id === currentUser.id ? user.name + ' (Du)' : user.name }}
       </span>
-      <mat-icon class="online-icon" color="primary">circle</mat-icon>
+      <mat-icon class="online-icon" color="primary" >circle</mat-icon>
     </mat-list-item>
   </mat-nav-list>
 </div>

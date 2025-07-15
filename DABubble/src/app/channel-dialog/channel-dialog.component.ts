@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 import {
   MatDialogModule,
   MatDialog,
@@ -23,6 +25,7 @@ import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './channel-dialog.component.html',
   styleUrls: ['./channel-dialog.component.scss'],

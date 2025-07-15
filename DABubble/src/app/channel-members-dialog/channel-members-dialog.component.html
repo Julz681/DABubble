@@ -1,32 +1,52 @@
 <h2>Leute hinzufügen</h2>
 
-
 <mat-radio-group *ngIf="data.mode === 'creation'" [(ngModel)]="mode" class="mode-group">
-  <mat-radio-button value="all">
+  <mat-radio-button value="all" matTooltip="Alle Teammitglieder automatisch hinzufügen">
     Alle Mitglieder hinzufügen
   </mat-radio-button>
-  <mat-radio-button value="selected">
+  <mat-radio-button value="selected" matTooltip="Nur bestimmte Personen auswählen">
     Bestimmte Leute hinzufügen
   </mat-radio-button>
 </mat-radio-group>
 
 <mat-form-field *ngIf="mode === 'selected'" appearance="outline" class="full-width">
-  <input matInput [(ngModel)]="search" placeholder="Name eingeben" />
+  <input
+    matInput
+    [(ngModel)]="search"
+    placeholder="Name eingeben"
+    matTooltip="Gib einen Namen ein, um Mitglieder zu suchen"
+  />
 </mat-form-field>
 
 <div class="autocomplete" *ngIf="mode === 'selected' && search">
-  <div class="user-option" *ngFor="let user of filteredUsers()" (click)="addUser(user)">
+  <div
+    class="user-option"
+    *ngFor="let user of filteredUsers()"
+    (click)="addUser(user)"
+    matTooltip="Klicken, um {{ user.name }} hinzuzufügen"
+  >
     <img [src]="user.avatar" class="avatar" />
     <span>{{ user.name }}</span>
   </div>
 </div>
 
 <div class="selected-users" *ngIf="mode === 'selected' && selectedUsers.length">
-  <span *ngFor="let user of selectedUsers">{{ user.name }}</span>
+  <span
+    *ngFor="let user of selectedUsers"
+    matTooltip="{{ user.name }}"
+  >
+    {{ user.name }}
+  </span>
 </div>
 
 <div class="actions">
-  <button mat-flat-button color="primary" (click)="confirm()">
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="confirm()"
+    matTooltip="{{ data.mode === 'creation' ? 'Channel mit gewählten Personen erstellen' : 'Mitglieder hinzufügen' }}"
+    aria-label="Bestätigen"
+  >
     {{ data.mode === 'creation' ? 'Erstellen' : 'Hinzufügen' }}
   </button>
 </div>

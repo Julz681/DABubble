@@ -1,0 +1,53 @@
+.legal-page {
+  max-width: 700px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+
+  h1 {
+    font-size: 2rem;
+    color: #4440f6;
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    color: #333;
+  }
+
+  p {
+    line-height: 1.6;
+    margin: 0.5rem 0 1rem;
+    color: #444;
+  }
+
+  a {
+    color: #5a65ea;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #3f51b5;
+  margin-bottom: 1.5rem;
+
+  mat-icon {
+    font-size: 20px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

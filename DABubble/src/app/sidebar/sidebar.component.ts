@@ -15,6 +15,7 @@ import {
   CurrentUserService,
   CurrentUser,
 } from '../services/current.user.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-sidebar',
@@ -25,6 +26,7 @@ import {
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
+    MatTooltipModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
@@ -150,16 +152,17 @@ ngOnInit() {
 
     const isSystemChannel = channel.name === 'Entwicklerteam';
 
-    const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
-      width: '600px',
-      panelClass: 'custom-dialog',
-      data: {
-        name: channel.name,
-        description: channel.description,
-        createdBy: channel.createdBy,
-        isSystemChannel,
-      },
-    });
+const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
+  width: '600px',
+  panelClass: 'custom-channel-dialog',
+  data: {
+    name: channel.name,
+    description: channel.description,
+    createdBy: channel.createdBy,
+    isSystemChannel,
+  },
+});
+
 
     dialogRef.afterClosed().subscribe((result) => {
       console.log('[DEBUG] afterClosed result:', result);

@@ -11,13 +11,19 @@ import { ChatWindowComponent } from './chat-window/chat-window.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ChannelDialogComponent } from './channel-dialog/channel-dialog.component';
 
+// 🔹 Rechtliche Seiten
+import { ImpressumComponent } from './impressum/impressum.component';
+import { DatenschutzComponent } from './datenschutz/datenschutz.component';
+
 export const routes: Routes = [
   // 🔸 Startseite leitet weiter zur Login-Seite
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // 🔸 Öffentliche Seiten (Login & Registrierung)
+  // 🔸 Öffentliche Seiten (Login, Registrierung, Rechtliches)
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'impressum', component: ImpressumComponent },
+  { path: 'datenschutz', component: DatenschutzComponent },
 
   // 🔹 Haupt-App (mit Shell als Layout-Komponente)
   {

@@ -1,70 +1,92 @@
 <h2 class="dialog-title">
   <mat-icon>tag</mat-icon>
   {{ name }}
+  <button
+    mat-icon-button
+    class="close-button"
+    (click)="cancel()"
+    matTooltip="Dialog schließen"
+    aria-label="Dialog schließen"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
 </h2>
 
-<!-- NAME -->
-<div class="section">
-  <label class="label">Channel-Name</label>
-  <div class="row">
-    <div>{{ name }}</div>
-    <button *ngIf="!isSystemChannel && !editMode" mat-button (click)="editMode = true">
+<!-- Channel-Name -->
+<div class="info-card">
+  <div class="info-header">
+    <span class="info-label">Channel-Name</span>
+    <button
+      *ngIf="!isSystemChannel && !editMode"
+      mat-button
+      (click)="editMode = true"
+      matTooltip="Channel-Namen bearbeiten"
+      aria-label="Channel-Namen bearbeiten"
+    >
       Bearbeiten
     </button>
   </div>
-  <mat-form-field *ngIf="editMode && !isSystemChannel" appearance="fill" class="full-width">
+  <div *ngIf="!editMode">{{ name }}</div>
+  <mat-form-field *ngIf="editMode" appearance="fill" class="full-width">
     <input matInput [(ngModel)]="name" />
   </mat-form-field>
 </div>
 
-<!-- BESCHREIBUNG -->
-<div class="section">
-  <label class="label">Beschreibung</label>
-  <div class="row">
-    <div>{{ description }}</div>
-    <button *ngIf="!isSystemChannel && !editMode" mat-button (click)="editMode = true">
+<!-- Beschreibung -->
+<div class="info-card">
+  <div class="info-header">
+    <span class="info-label">Beschreibung</span>
+    <button
+      *ngIf="!isSystemChannel && !editMode"
+      mat-button
+      (click)="editMode = true"
+      matTooltip="Beschreibung bearbeiten"
+      aria-label="Beschreibung bearbeiten"
+    >
       Bearbeiten
     </button>
   </div>
-  <mat-form-field *ngIf="editMode && !isSystemChannel" appearance="fill" class="full-width">
-    <textarea matInput [(ngModel)]="description"></textarea>
+  <div *ngIf="!editMode">{{ description }}</div>
+  <mat-form-field *ngIf="editMode" appearance="fill" class="full-width">
+    <textarea matInput [(ngModel)]="description" rows="3"></textarea>
   </mat-form-field>
 </div>
 
-<!-- ERSTELLT VON -->
-<div class="section">
-  <label class="label">Erstellt von</label>
+<!-- Erstellt von -->
+<div class="info-card">
+  <span class="info-label">Erstellt von</span>
   <div class="creator-name">{{ createdBy }}</div>
-  <mat-form-field *ngIf="editMode && !isSystemChannel" appearance="fill" class="full-width">
-    <input matInput [(ngModel)]="createdBy" />
-  </mat-form-field>
 </div>
 
-<!-- BUTTONS -->
+<!-- Aktionen -->
 <div class="actions">
-  <button mat-button (click)="cancel()">Abbrechen</button>
+  <button
+    mat-button
+    (click)="cancel()"
+    matTooltip="Änderungen verwerfen"
+    aria-label="Abbrechen"
+  >
+    Abbrechen
+  </button>
 
-  <button mat-button color="primary" *ngIf="editMode && !isSystemChannel" (click)="saveChanges()">
+  <button
+    *ngIf="editMode && !isSystemChannel"
+    mat-flat-button
+    color="primary"
+    (click)="saveChanges()"
+    matTooltip="Änderungen speichern"
+    aria-label="Speichern"
+  >
     Speichern
   </button>
 
   <button
-    mat-button
-    class="leave-button"
-    color="warn"
-    *ngIf="!editMode && !isSystemChannel"
-    (click)="leaveChannel()"
-  >
-    Channel verlassen
-  </button>
-
-  <!-- Systemchannel: Nur Verlassen-Button anzeigen -->
-  <button
-    mat-button
+    mat-flat-button
     color="warn"
     class="leave-button"
-    *ngIf="!editMode && isSystemChannel"
     (click)="leaveChannel()"
+    matTooltip="Diesen Channel verlassen"
+    aria-label="Channel verlassen"
   >
     Channel verlassen
   </button>

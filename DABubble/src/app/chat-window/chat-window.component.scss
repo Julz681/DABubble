@@ -580,3 +580,19 @@
   z-index: 100;
 }
 
+// ✅ Entfernt graue Hintergründe im Overlay
+::ng-deep .cdk-overlay-backdrop {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+// ✅ Erzwingt exakte Kanten und entfernt graue Übergänge
+::ng-deep .custom-channel-dialog .mat-dialog-container {
+  background: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 0 20px 20px 20px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  margin: 0 !important;
+  border: none !important;
+}

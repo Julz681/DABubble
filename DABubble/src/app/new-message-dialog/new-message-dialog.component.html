@@ -1,49 +1,71 @@
-<h2>Neue Nachricht</h2>
+<h2 class="headline">Neue Nachricht</h2>
 
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>Empfänger</mat-label>
-  <input
-    matInput
-    [(ngModel)]="inputValue"
-    (input)="onRecipientInput()"
-    (keydown.enter)="onEnter()"
-    placeholder="#channel oder @Name"
-  />
-</mat-form-field>
+<div class="message-container">
+  <mat-form-field appearance="outline" class="full-width recipient-field">
+    <input
+      matInput
+      [(ngModel)]="inputValue"
+      (input)="onRecipientInput()"
+      (keydown.enter)="onEnter()"
+      placeholder="An: #channel, oder @jemand oder E-Mail Adresse"
+      matTooltip="Empfänger eingeben: @Benutzer, #Channel oder E-Mail"
+    />
+  </mat-form-field>
 
-<!-- 🔽 Vorschläge -->
-<div class="suggestion-box" *ngIf="showSuggestions">
-  <div
-    class="suggestion"
-    *ngFor="let suggestion of filteredSuggestions"
-    (click)="selectSuggestion(suggestion)"
-  >
-    {{ isUserMode ? '@' : '#' }}{{ suggestion }}
+  <div class="suggestion-box" *ngIf="showSuggestions">
+    <div
+      class="suggestion"
+      *ngFor="let suggestion of filteredSuggestions"
+      (click)="selectSuggestion(suggestion)"
+      matTooltip="Empfänger auswählen"
+    >
+      <img
+        class="avatar"
+        [src]="suggestion.avatarUrl"
+        alt="{{ suggestion.name }}"
+      />
+      <span>{{ isUserMode ? '@' : '#' }}{{ suggestion.name }}</span>
+    </div>
   </div>
-</div>
 
-<!-- 🔽 Chips für gewählte Empfänger -->
-<div class="selected-recipients" *ngIf="selectedRecipients.length">
-  <span
-    class="chip"
-    *ngFor="let r of selectedRecipients; let i = index"
-  >
-    {{ r }}
-    <button (click)="removeRecipient(i)">×</button>
-  </span>
-</div>
+  <div class="selected-recipients" *ngIf="selectedRecipients.length">
+    <span class="chip" *ngFor="let r of selectedRecipients; let i = index">
+      {{ r }}
+      <button
+        (click)="removeRecipient(i)"
+        matTooltip="Empfänger entfernen"
+        type="button"
+      >
+        ×
+      </button>
+    </span>
+  </div>
 
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>Nachricht</mat-label>
-  <textarea
-    matInput
-    [(ngModel)]="message"
-    placeholder="Gib deine Nachricht ein…"
-    rows="5"
-  ></textarea>
-</mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <textarea
+      matInput
+      [(ngModel)]="message"
+      placeholder="Starte eine neue Nachricht"
+      rows="4"
+      matTooltip="Deine Nachricht hier schreiben"
+    ></textarea>
+  </mat-form-field>
 
-<div class="actions">
-  <button mat-button (click)="cancel()">Abbrechen</button>
-  <button mat-flat-button color="primary" (click)="send()">Senden</button>
+  <div class="actions">
+    <button
+      mat-button
+      (click)="cancel()"
+      matTooltip="Abbrechen und Fenster schließen"
+    >
+      Abbrechen
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="send()"
+      matTooltip="Nachricht senden"
+    >
+      Senden
+    </button>
+  </div>
 </div>

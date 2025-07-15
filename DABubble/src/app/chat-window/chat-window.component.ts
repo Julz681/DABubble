@@ -652,15 +652,17 @@ openChannelInfo() {
 
   const isSystemChannel = channel.name === 'Entwicklerteam';
 
-  const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
-    width: '500px',
-    data: {
-      name: channel.name,
-      description,
-      createdBy,
-      isSystemChannel
-    }
-  });
+const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
+  width: '500px',
+  panelClass: 'custom-channel-dialog',
+  data: {
+    name: channel.name,
+    description,
+    createdBy,
+    isSystemChannel
+  }
+});
+
 
   dialogRef.afterClosed().subscribe((result) => {
     console.log('[DEBUG] Dialog geschlossen mit:', result);
