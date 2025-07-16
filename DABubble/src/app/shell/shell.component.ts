@@ -87,21 +87,27 @@ export class ShellComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  openProfileDialog() {
-    this.dropdownOpen = false;
+openProfileDialog() {
+  this.dropdownOpen = false;
 
-    const dialogRef = this.dialog.open(ProfileComponent, {
-      width: '360px',
-      panelClass: 'custom-dialog-container',
-    });
+  const dialogRef = this.dialog.open(ProfileComponent, {
+    width: '360px',
+    panelClass: 'profile-dialog',
+    position: {
+      top: '70px',
+      right: '16px'
+    },
+    hasBackdrop: false // Optional: wenn du kein Overlay willst
+  });
 
-    dialogRef.afterClosed().subscribe((result: string | undefined) => {
-      if (result) {
-        // Name wurde aktualisiert → direkt im Service gesetzt
-        this.currentUserService.updateName(result);
-      }
-    });
-  }
+  dialogRef.afterClosed().subscribe((result: string | undefined) => {
+    if (result) {
+      this.currentUserService.updateName(result);
+    }
+  });
+}
+
+
 
   @HostListener('document:click', ['$event.target'])
   onClickOutside(targetElement: HTMLElement) {

@@ -12,7 +12,6 @@ import { AuthService } from '../services/auth.service';
 import { FileService } from '../services/file.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -30,9 +29,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
-  fullName: string = '';
-  editedName: string = '';
-  selectedAvatar: string = '';
+  fullName = '';
+  editedName = '';
+  selectedAvatar = '';
   isEditing = false;
 
   availableAvatars: string[] = [
@@ -56,6 +55,10 @@ export class ProfileComponent implements OnInit {
     this.fullName = currentUser.name;
     this.editedName = currentUser.name;
     this.selectedAvatar = currentUser.avatar;
+  }
+
+  get currentUserEmail(): string {
+    return this.authService.currentUser?.email ?? 'Unbekannt';
   }
 
   close(): void {
@@ -84,34 +87,27 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  selectAvatar(avatar: string) {
+  selectAvatar(avatar: string): void {
     this.selectedAvatar = avatar;
   }
 
-  get currentUserEmail(): string {
-    return this.authService.currentUser?.email ?? 'Unbekannt';
-  }
-
   onFileSelected(event: Event): void {
-  const input = event.target as HTMLInputElement;
+    const input = event.target as HTMLInputElement;
 
-  if (input.files && input.files.length > 0) {
-    const file = input.files[0];
-    const path = `avatars/${Date.now()}_${file.name}`;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      const path = `avatars/${Date.now()}_${file.name}`;
 
-    const { url$ } = this.fileService.uploadFile(file, path);
+      const { url$ } = this.fileService.uploadFile(file, path);
 
-    url$.subscribe({
-      next: (downloadUrl: string) => {
-        this.selectedAvatar = downloadUrl;
-      },
-      error: (err) => {
-        console.error('Fehler beim Hochladen des Avatars:', err);
-      },
-    });
+      url$.subscribe({
+        next: (downloadUrl: string) => {
+          this.selectedAvatar = downloadUrl;
+        },
+        error: (err) => {
+          console.error('Fehler beim Hochladen des Avatars:', err);
+        },
+      });
+    }
   }
 }
-
-}
-
-

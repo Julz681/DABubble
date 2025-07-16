@@ -1,8 +1,11 @@
 .layout {
   display: grid;
   grid-template-columns: 260px 1fr 320px;
+  gap: 16px;
+  padding: 16px;
+  background: #eceeff;
   height: 100vh;
-  position: relative;
+  box-sizing: border-box;
   transition: grid-template-columns 0.3s ease;
 
   &.sidebar-collapsed {
@@ -15,28 +18,36 @@
     &.sidebar-collapsed {
       grid-template-columns: 0 1fr 0;
     }
+
+    // Stelle sicher, dass .main den kompletten Platz bekommt
+    .main {
+      grid-column: span 2;
+    }
+  }
+
+  .sidebar,
+  .main,
+  .thread {
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
 
   .sidebar {
-    background-color: white;
-    border-right: 1px solid #ddd;
-    overflow: hidden;
-    transition: all 0.3s ease;
+    border-right: none;
   }
 
   .main {
-    background: #f8f9fd;
-    padding: 1rem;
-    overflow-y: auto;
-    transition: all 0.3s ease;
+    padding: 0;
+    transition: width 0.3s ease;
   }
 
   .thread {
-    background: white;
-    border-left: 1px solid #ddd;
-    padding: 1rem;
-    overflow-y: auto;
-    transition: all 0.3s ease;
+    border-left: none;
   }
 }
 
@@ -61,50 +72,20 @@
   }
 }
 
-.chat-layout {
-  display: flex;
-  height: 100%;
-  width: 100%;
-}
-
 app-chat-window {
   flex: 1;
-  transition: flex 0.3s ease;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 app-thread-panel {
   width: 400px;
-  border-left: 1px solid #ccc;
-}
-
-
-.layout {
-  display: flex;
-  height: 100%;
-  width: 100%;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
   transition: all 0.3s ease;
-
-  &.sidebar-collapsed .sidebar {
-    width: 0;
-    overflow: hidden;
-  }
-
-  &.thread-open .main {
-    flex: 1;
-  }
-
-  .sidebar {
-    width: 220px;
-    transition: width 0.3s ease;
-  }
-
-  .main {
-    flex: 1;
-    transition: flex 0.3s ease;
-  }
-
-  .thread {
-    width: 400px;
-    border-left: 1px solid #ccc;
-  }
 }

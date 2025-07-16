@@ -1,7 +1,18 @@
+:host {
+  display: block;
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 20px 0px 20px 20px !important;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeInScale 0.2s ease;
+}
+
 .profile-card {
   padding: 1.5rem;
   width: 320px;
-  border-radius: 16px;
+  background: white;
+  animation: fadeInScale 0.2s ease;
 
   .card-header {
     display: flex;
@@ -113,31 +124,55 @@
       }
     }
   }
-}
 
-.upload-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.5rem;
-  color: #666;
-  transition: background 0.2s;
+  .upload-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #666;
+    transition: background 0.2s;
 
-  &:hover {
-    background: #ccc;
-  }
+    &:hover {
+      background: #ccc;
+    }
 
-  input {
-    display: none;
-  }
-
-  .plus {
-    user-select: none;
+    .plus {
+      user-select: none;
+    }
   }
 }
 
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Dialog-Wrapper vollständig stylen
+::ng-deep .cdk-overlay-pane.profile-dialog {
+  position: absolute !important;
+  top: 70px !important;
+  right: 16px !important;
+  margin: 0 !important;
+  border-radius: 20px 0px 20px 20px !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-surface,
+::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-container {
+  background: transparent !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  border-radius: 20px 0px 20px 20px !important;
+}

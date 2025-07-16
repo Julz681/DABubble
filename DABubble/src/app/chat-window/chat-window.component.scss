@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f4f6ff;
+  background-color: #FFFFFF;
   padding: 16px;
   font-family: 'Segoe UI', sans-serif;
 
@@ -586,7 +586,7 @@
   backdrop-filter: none !important;
 }
 
-// ✅ Erzwingt exakte Kanten und entfernt graue Übergänge
+
 ::ng-deep .custom-channel-dialog .mat-dialog-container {
   background: #ffffff !important;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08) !important;

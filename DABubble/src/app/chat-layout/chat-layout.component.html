@@ -4,7 +4,11 @@
 </button>
 
 
-<div class="layout" [class.sidebar-collapsed]="isSidebarCollapsed" [class.thread-open]="isThreadPanelOpen">
+<div class="layout" 
+     [class.sidebar-collapsed]="isSidebarCollapsed"
+     [class.thread-open]="isThreadPanelOpen"
+     [class.thread-closed]="!isThreadPanelOpen">
+
   <aside class="sidebar">
     <app-sidebar *ngIf="!isSidebarCollapsed"></app-sidebar>
   </aside>

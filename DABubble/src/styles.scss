@@ -99,3 +99,30 @@
 .custom-channel-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
   width: auto !important;
 }
+
+::ng-deep .cdk-overlay-pane.profile-dialog {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-container {
+  background: transparent !important;
+  border-radius: 0 20px 20px 20px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-surface {
+  background-color: white !important;
+  border-radius: 0 20px 20px 20px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+}
+
+body {
+  margin: 0;
+  
+}

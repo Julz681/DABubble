@@ -2,10 +2,11 @@
   background-color: #f3f4ff;
   height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
   position: relative;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
 }
 
 .top-left {
@@ -34,6 +35,9 @@
   background: white;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
   text-align: center;
+  margin-top: auto; // Abstand von oben
+  margin-bottom: 2rem; // Platz über Footer
+  z-index: 1;
 
   .header {
     display: flex;
@@ -104,15 +108,17 @@
 }
 
 .footer {
-  position: absolute;
-  bottom: 1.5rem;
+  margin-top: auto;
+  padding-bottom: 1.5rem;
   display: flex;
   gap: 2rem;
   font-size: 0.85rem;
+  z-index: 10;
 
   a {
     color: #5a65ea;
     text-decoration: none;
+    cursor: pointer;
 
     &:hover {
       text-decoration: underline;

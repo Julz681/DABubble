@@ -205,31 +205,24 @@
   </div>
 
   <!-- Eingabe -->
-  <div class="chat-input">
-    <input [(ngModel)]="newMessage"
-      [placeholder]="activeUser ? 'Nachricht an ' + getDisplayName(activeUser) : 'Nachricht an #' + activeChannelName"
-      (keydown.enter)="sendMessage()" (input)="onMessageInput()" />
+<div class="chat-input">
+  <input
+    [(ngModel)]="newMessage"
+    [placeholder]="activeUser ? 'Nachricht an ' + getDisplayName(activeUser) : 'Nachricht an #' + activeChannelName"
+    (keydown.enter)="sendMessage()"
+    (input)="onMessageInput()"
+  />
 
-    <button (click)="toggleEmojiPicker()" matTooltip="Emoji auswählen">😊</button>
-    <button *ngIf="!activeUser" (click)="toggleUserList()" matTooltip="Nutzer erwähnen">&#64;</button>
-    <button (click)="fileInput.click()" matTooltip="Datei anhängen">
-      <mat-icon>attach_file</mat-icon>
-    </button>
-    <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
-    <button class="send" (click)="sendMessage()" matTooltip="Nachricht senden">➤</button>
+  <button (click)="toggleEmojiPicker()" matTooltip="Emoji auswählen">😊</button>
+  <button *ngIf="!activeUser" (click)="toggleUserList()" matTooltip="Nutzer erwähnen">&#64;</button>
+  <button (click)="fileInput.click()" matTooltip="Datei anhängen">
+    <mat-icon>attach_file</mat-icon>
+  </button>
+  <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
 
-    <div class="emoji-picker" *ngIf="showEmojis">
-      <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
-    </div>
+  <button class="send" (click)="sendMessage()" matTooltip="Nachricht senden">
+    <mat-icon>send</mat-icon>
+  </button>
+</div>
 
-    <div class="mention-picker" *ngIf="showUsers" #mentionPickerRef>
-      <div class="user-option" *ngFor="let user of filteredUsers" (click)="mentionUser(user)">
-        <img [src]="user.avatar" />
-        <span>{{ getDisplayName(user) }}</span>
-      </div>
-      <div class="channel-option" *ngFor="let channel of filteredChannels" (click)="mentionChannel(channel)">
-        #{{ channel }}
-      </div>
-    </div>
-  </div>
 </div>

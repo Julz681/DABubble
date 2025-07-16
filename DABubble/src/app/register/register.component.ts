@@ -11,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AuthService } from '../services/auth.service';
 import { CurrentUserService } from '../services/current.user.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +25,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
-    MatTooltipModule
+    MatTooltipModule,
+    RouterModule,
+    
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']

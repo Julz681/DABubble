@@ -67,7 +67,8 @@
         name="datenschutz"
         matTooltip="Du musst der Datenschutzerklärung zustimmen"
       >
-        Ich stimme der <a href="#">Datenschutzerklärung</a> zu.
+        Ich stimme der <a routerLink="/datenschutz" (click)="$event.stopPropagation()">Datenschutzerklärung</a>
+ zu.
       </mat-checkbox>
 
       <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
@@ -86,7 +87,7 @@
 
   <!-- Footer -->
   <footer class="footer">
-    <a routerLink="/impressum" matTooltip="Zum Impressum">Impressum</a>
-    <a routerLink="/datenschutz" matTooltip="Datenschutzerklärung anzeigen">Datenschutz</a>
+    <a routerLink="/impressum" matTooltip="Angaben zum Betreiber">Impressum</a>
+    <a routerLink="/datenschutz" matTooltip="Informationen zum Datenschutz">Datenschutz</a>
   </footer>
 </div>
