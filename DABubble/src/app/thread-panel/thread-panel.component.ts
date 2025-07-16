@@ -430,6 +430,9 @@ extractFileName(text: string): string {
 }
 
 
+get currentUserId(): string {
+  return this.currentUser?.id;
+}
 
   
 }
