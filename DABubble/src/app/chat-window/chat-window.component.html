@@ -128,7 +128,8 @@
       >
         <img
           class="avatar"
-          [src]="message.avatar"
+          [src]="getAvatarFromId(message.userId)"
+
           [alt]="getDisplayNameFromString(message.userId, message.author)"
           (click)="openUserProfile(message)"
           matTooltip="Profil anzeigen"
@@ -156,13 +157,14 @@
             <span class="time">{{ message.time }}<span *ngIf="message.edited" class="edited-flag">· bearbeitet</span></span>
           </div>
 
-          <div class="content" *ngIf="editingMessageId !== message.id">
-            {{ message.content }}
-            <img *ngIf="message.url?.toLowerCase().endsWith('.png') || message.url?.toLowerCase().endsWith('.jpg') || message.url?.toLowerCase().endsWith('.jpeg')"
-              [src]="message.url" alt="Bildanhang" style="max-width: 200px; border-radius: 8px; margin-top: 8px;" />
-            <a *ngIf="message.url && !(message.url.toLowerCase().endsWith('.png') || message.url.toLowerCase().endsWith('.jpg') || message.url.toLowerCase().endsWith('.jpeg'))"
-              [href]="message.url" target="_blank" style="display: block; margin-top: 8px; color: #5a65ea;">Datei öffnen</a>
-          </div>
+<div class="bubble" *ngIf="editingMessageId !== message.id">
+  {{ message.content }}
+  <img *ngIf="message.url?.toLowerCase().endsWith('.png') || message.url?.toLowerCase().endsWith('.jpg') || message.url?.toLowerCase().endsWith('.jpeg')"
+    [src]="message.url" alt="Bildanhang" style="max-width: 200px; border-radius: 8px; margin-top: 8px;" />
+  <a *ngIf="message.url && !(message.url.toLowerCase().endsWith('.png') || message.url.toLowerCase().endsWith('.jpg') || message.url.toLowerCase().endsWith('.jpeg'))"
+    [href]="message.url" target="_blank" style="display: block; margin-top: 8px; color: #5a65ea;">Datei öffnen</a>
+</div>
+
 
           <div *ngIf="editingMessageId === message.id" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
@@ -174,7 +176,8 @@
             <ng-container *ngIf="activeUser; else channelReplyLink">
               <div class="dm-replies">
                 <div *ngFor="let reply of message.replies" class="message-wrapper reply" [ngClass]="{ self: reply.isSelf }">
-                  <img class="avatar" [src]="reply.avatar" [alt]="getDisplayNameFromString(reply.userId, reply.author)"
+                  <img class="avatar" [src]="getAvatarFromId(reply.userId)"
+ [alt]="getDisplayNameFromString(reply.userId, reply.author)"
                     (click)="openUserProfile(reply)" style="cursor: pointer" matTooltip="Profil anzeigen" />
                   <div class="message">
                     <div class="meta">
@@ -206,23 +209,49 @@
 
   <!-- Eingabe -->
 <div class="chat-input">
-  <input
-    [(ngModel)]="newMessage"
-    [placeholder]="activeUser ? 'Nachricht an ' + getDisplayName(activeUser) : 'Nachricht an #' + activeChannelName"
-    (keydown.enter)="sendMessage()"
-    (input)="onMessageInput()"
-  />
+  <div class="input-box">
+    <input
+      [(ngModel)]="newMessage"
+      [placeholder]="activeUser ? 'Nachricht an ' + getDisplayName(activeUser) : 'Nachricht an #' + activeChannelName"
+      (keyup.enter)="sendMessage()"
+      (input)="onMessageInput()"
+    />
 
-  <button (click)="toggleEmojiPicker()" matTooltip="Emoji auswählen">😊</button>
-  <button *ngIf="!activeUser" (click)="toggleUserList()" matTooltip="Nutzer erwähnen">&#64;</button>
-  <button (click)="fileInput.click()" matTooltip="Datei anhängen">
-    <mat-icon>attach_file</mat-icon>
-  </button>
-  <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
+    <div class="input-footer">
+      <div class="left-icons">
+        <button type="button" (click)="toggleEmojiPicker()" matTooltip="Emoji-Picker öffnen">😊</button>
+        <button *ngIf="!activeUser" type="button" (click)="toggleUserList()" matTooltip="Nutzer erwähnen">&#64;</button>
+        <button type="button" (click)="fileInput.click()" matTooltip="Datei anhängen">
+          <mat-icon>attach_file</mat-icon>
+        </button>
+        <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
+      </div>
 
-  <button class="send" (click)="sendMessage()" matTooltip="Nachricht senden">
-    <mat-icon>send</mat-icon>
-  </button>
+      <div class="right-icons">
+        <button type="button" class="send" (click)="sendMessage()" matTooltip="Nachricht senden">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emoji & Mention Picker -->
+  <div class="emoji-picker" *ngIf="showEmojis" (click)="$event.stopPropagation()">
+    <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)" matTooltip="Emoji einfügen">{{ emoji }}</span>
+  </div>
+
+  <div class="mention-picker" *ngIf="showUsers" #mentionMenuRef>
+    <div
+      class="user-option"
+      *ngFor="let user of filteredUsers"
+      (click)="mentionUser(user)"
+      matTooltip="@{{ user.name }} einfügen"
+    >
+      <img [src]="user.avatar" />
+      <span>{{ user.name }}</span>
+    </div>
+  </div>
 </div>
+
 
 </div>

@@ -53,6 +53,7 @@
     background: #FFFFFF;
 
     .message.own {
+
  
 
   .bubble {
@@ -458,3 +459,6 @@
   border-left-color: #7c82ff;
 }
 
+.message.own .message-content {
+  flex-direction: row-reverse;
+}

@@ -102,6 +102,7 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.currentUserService.currentUser$.subscribe((user) => {
         this.currentUser = user;
+        this.updateOwnAvatars(user.avatar);
         this.loadUsers(); // ⬅ Nutzerliste initial laden
       })
     );
@@ -434,5 +435,18 @@ get currentUserId(): string {
   return this.currentUser?.id;
 }
 
-  
+  private updateOwnAvatars(newAvatar: string): void {
+  // Root Message prüfen
+  if (this.rootMessage && this.rootMessage.userId === this.currentUser?.id) {
+    this.rootMessage.avatar = newAvatar;
+  }
+
+  // Alle eigenen Antworten im Thread aktualisieren
+  this.replies = this.replies.map(reply =>
+    reply.userId === this.currentUser?.id
+      ? { ...reply, avatar: newAvatar }
+      : reply
+  );
+}
+
 }

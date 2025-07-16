@@ -80,6 +80,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   activeChannelDescription = '';
   activeChannelCreatedBy = '';
   emojiPopoverMessage: ChatMessage | null = null;
+  private initialized = false;
+
 
 
   activeUser: ChatUser | null = null;
@@ -140,43 +142,47 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
       ]);
 
       // 5. Beispielhafte Nachrichten
-      this.channelService.channelMessages[defaultChannel] = [
+if (!this.initialized) {
+  this.channelService.channelMessages[defaultChannel] = [
+    {
+      id: 1,
+      author: 'Noah Braun',
+      userId: 'noah',
+      time: '14:25 Uhr',
+      content: 'Welche Version ist aktuell von Angular?',
+      avatar: 'assets/Noah Braun.png',
+      reactions: [],
+      isSelf: false,
+      replies: [
         {
-          id: 1,
-          author: 'Noah Braun',
-          userId: 'noah',
-          time: '14:25 Uhr',
-          content: 'Welche Version ist aktuell von Angular?',
-          avatar: 'assets/Noah Braun.png',
+          id: 2,
+          author: 'Sofia Müller',
+          userId: 'sofia',
+          time: '14:26 Uhr',
+          content: 'Ich glaube 17.1, oder?',
+          avatar: 'assets/Sofia Müller.png',
           reactions: [],
           isSelf: false,
-          replies: [
-            {
-              id: 2,
-              author: 'Sofia Müller',
-              userId: 'sofia',
-              time: '14:26 Uhr',
-              content: 'Ich glaube 17.1, oder?',
-              avatar: 'assets/Sofia Müller.png',
-              reactions: [],
-              isSelf: false,
-              createdAt: new Date(),
-            },
-            {
-              id: 3,
-              author: this.currentUser.name,
-              userId: this.currentUser.id,
-              time: '14:27 Uhr',
-              content: 'Die aktuelle Version ist 17.2.1.',
-              avatar: this.currentUser.avatar,
-              reactions: [],
-              isSelf: true,
-              createdAt: new Date(),
-            },
-          ],
-          createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+          createdAt: new Date(),
         },
-      ];
+        {
+          id: 3,
+          author: user.name,
+          userId: user.id,
+          time: '14:27 Uhr',
+          content: 'Die aktuelle Version ist 17.2.1.',
+          avatar: user.avatar,
+          reactions: [],
+          isSelf: true,
+          createdAt: new Date(),
+        },
+      ],
+      createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+    },
+  ];
+  this.initialized = true;
+}
+
 
       // 6. Channel aktivieren
       this.channelService.setActiveChannel({
@@ -769,6 +775,26 @@ url,
     const target = this.activeUser ? this.activeUser.id : this.activeChannelName;
     this.channelService.addMessage(target, msg, !!this.activeUser);
   });
+}
+
+isImageUrl(url: string): boolean {
+  return /\.(jpe?g|png)$/i.test(url);
+}
+
+isFileUrl(url: string): boolean {
+  return !!url && !this.isImageUrl(url);
+}
+
+getAvatarFromId(userId: string): string {
+  if (userId === this.currentUser.id) {
+    return this.currentUser.avatar; // aktuelles Profilbild
+  }
+
+  const user =
+    this.allUsers.find(u => u.id === userId) ||
+    this.currentChannelUsers.find(u => u.id === userId);
+
+  return user?.avatar || 'assets/default-avatar.png';
 }
 
 }
