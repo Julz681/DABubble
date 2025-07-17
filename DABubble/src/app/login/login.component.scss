@@ -23,7 +23,7 @@
     gap: 0.5rem;
 
     .logo {
-      height: 32px;
+      width: 180px;
     }
 
     .brand-name {
@@ -34,6 +34,9 @@
 
   .register-top {
     font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
     a {
       margin-left: 0.5rem;
@@ -59,8 +62,7 @@
 
   h1 {
     color: #4440f6;
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+    font-size: 36px;
   }
 
   .hint-text {
@@ -69,15 +71,36 @@
     margin-bottom: 2rem;
   }
 
-  .input {
-    width: 100%;
-    margin-bottom: 1rem;
+.input {
+  width: 100%;
+  margin-bottom: 1rem;
 
-    input {
-      border-radius: 999px;
-      background: #f0f2ff;
-    }
+
+  ::ng-deep .mat-form-field-outline {
+    border-radius: 999px !important;
   }
+
+  ::ng-deep .mat-form-field-outline-start,
+  ::ng-deep .mat-form-field-outline-end {
+    border-radius: 999px !important;
+  }
+
+  ::ng-deep .mat-input-element {
+    font-family: "Nunito", sans-serif;
+    font-weight: 500;
+  }
+
+  ::ng-deep .mat-mdc-form-field-has-icon-prefix,
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    border-radius: 999px;
+    border: none;
+  }
+
+  ::ng-deep .mdc-text-field--filled .mdc-line-ripple {
+    display: none;
+  }
+}
+
 
   .forgot-password {
     display: block;
@@ -102,7 +125,7 @@
 
     &::before,
     &::after {
-      content: '';
+      content: "";
       display: inline-block;
       width: 35%;
       border-top: 1px solid #ccc;
@@ -124,6 +147,12 @@
     img {
       height: 20px;
     }
+
+    ::ng-deep .mat-mdc-outlined-button,
+    ::ng-deep.mdc-button__label {
+      display: flex;
+      gap: 4px;
+    }
   }
 
   .login-actions {
@@ -143,6 +172,7 @@
   display: flex;
   gap: 2rem;
   font-size: 0.85rem;
+  font-family: "Nunito", sans-serif;
 
   a {
     color: #5a65ea;
@@ -152,4 +182,9 @@
       text-decoration: underline;
     }
   }
+}
+
+.login-card h1 {
+  font-family: "Nunito", sans-serif;
+  font-weight: 700;
 }

@@ -2,11 +2,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #FFFFFF;
-  font-family: "Segoe UI", sans-serif;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
-
+  background: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
+  
   .thread-header {
     padding: 1.25rem 1.5rem;
     background: white;
@@ -44,13 +42,12 @@
   }
 
   .thread-body {
-    flex: 1;
+    height: 65%;
     overflow-y: auto;
+    padding: 1rem 1.5rem 0.5rem;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem;
-    gap: 1.25rem;
-    background: #FFFFFF;
+    gap: 1rem;
 
     .message.own {
 
@@ -151,13 +148,12 @@
     &::after {
       content: "";
       display: block;
-      height: 6rem;
     }
   }
 
 .thread-input {
-  padding: 1rem 1.5rem;
-  position: relative;
+    padding: 1rem 1.5rem;
+    margin-top: auto;
 
   .input-box {
     background: white;
@@ -461,4 +457,34 @@
 
 .message.own .message-content {
   flex-direction: row-reverse;
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; 
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5c7ff;
+  border-radius: 999px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8abff;
+}
+
+
+::-webkit-scrollbar-horizontal {
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  background: #c5c7ff;
 }

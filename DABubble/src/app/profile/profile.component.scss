@@ -29,8 +29,8 @@
       position: relative;
 
       img {
-        width: 96px;
-        height: 96px;
+        width: 160px;
+        height: 160px;
         border-radius: 50%;
       }
 
@@ -83,6 +83,7 @@
       .label {
         font-weight: 500;
         color: #555;
+        padding-bottom: 6px;
       }
 
       .value {
