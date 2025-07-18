@@ -3,14 +3,12 @@
   flex-direction: column;
   height: 100%;
   background-color: #ffffff;
-  padding: 16px;
   font-family: "Segoe UI", sans-serif;
 
   .chat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
 
     .left {
       display: flex;
@@ -112,7 +110,7 @@
   }
 
   .chat-messages {
-    height: 65%;
+    flex: 1 1 auto;
     overflow-y: auto;
     padding: 1rem 1.5rem 0.5rem;
     display: flex;
@@ -266,8 +264,8 @@
   }
 
   .chat-input {
-    padding: 1rem 1.5rem;
-    position: relative;
+   padding: 1rem 1.5rem;
+    margin-top: auto;
 
     .input-box {
       background: white;

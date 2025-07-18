@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -20,6 +19,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./new-message-dialog.component.scss']
 })
 export class NewMessageDialogComponent {
+  @Output() cancel = new EventEmitter<void>();
+  @Output() sent = new EventEmitter<any>();  // Event mit Nachricht & Empfängern
+
   inputValue = '';
   message = '';
   selectedRecipients: string[] = [];
@@ -31,39 +33,16 @@ export class NewMessageDialogComponent {
   channels = ['Entwicklerteam'];
 
   users = [
-    {
-      id: 'sofia',
-      name: 'Sofia Müller',
-      avatarUrl: 'assets/Sofia Müller.png'
-    },
-    {
-      id: 'noah',
-      name: 'Noah Braun',
-      avatarUrl: 'assets/Noah Braun.png'
-    },
-    {
-      id: 'frederik',
-      name: 'Frederik Beck (Du)',
-      avatarUrl: 'assets/Frederik Beck.png'
-    },
-    {
-      id: 'elise',
-      name: 'Elise Roth',
-      avatarUrl: 'assets/Elise Roth.png'
-    },
-    {
-      id: 'elias',
-      name: 'Elias Neumann',
-      avatarUrl: 'assets/Elias Neumann.png'
-    },
-    {
-      id: 'steffen',
-      name: 'Steffen Hoffmann',
-      avatarUrl: 'assets/Steffen Hoffmann.png'
-    }
+    { id: 'sofia', name: 'Sofia Müller', avatarUrl: 'assets/Sofia Müller.png' },
+    { id: 'noah', name: 'Noah Braun', avatarUrl: 'assets/Noah Braun.png' },
+    { id: 'frederik', name: 'Frederik Beck (Du)', avatarUrl: 'assets/Frederik Beck.png' },
+    { id: 'elise', name: 'Elise Roth', avatarUrl: 'assets/Elise Roth.png' },
+    { id: 'elias', name: 'Elias Neumann', avatarUrl: 'assets/Elias Neumann.png' },
+    { id: 'steffen', name: 'Steffen Hoffmann', avatarUrl: 'assets/Steffen Hoffmann.png' }
   ];
 
-  constructor(private dialogRef: MatDialogRef<NewMessageDialogComponent>) {}
+  fileData?: File;
+  emojiPickerVisible = false;
 
   onRecipientInput(): void {
     const val = this.inputValue.trim();
@@ -106,11 +85,31 @@ export class NewMessageDialogComponent {
     this.selectedRecipients.splice(index, 1);
   }
 
+  toggleEmojiPicker() {
+    this.emojiPickerVisible = !this.emojiPickerVisible;
+  }
+
+  addEmoji(emoji: string) {
+    this.message += emoji;
+    this.emojiPickerVisible = false;
+  }
+
+  onFileSelected(event: any) {
+    if (event.target.files && event.target.files.length) {
+      this.fileData = event.target.files[0];
+    }
+  }
+
+  triggerFileInputClick(fileInput: HTMLInputElement) {
+    fileInput.click();
+  }
+
   send(): void {
     if (!this.message.trim() || this.selectedRecipients.length === 0) {
       return;
     }
 
+    // Baue Payload ähnlich wie vorher
     const results = this.selectedRecipients.map(r => {
       const isUser = r.startsWith('@');
       const name = r.slice(1).trim();
@@ -138,10 +137,27 @@ export class NewMessageDialogComponent {
       }
     }).filter(Boolean);
 
-    this.dialogRef.close(results);
+    // Emit Event mit Nachricht & Empfängern (und Datei wenn gesetzt)
+    this.sent.emit({
+      recipients: results,
+      message: this.message,
+      file: this.fileData
+    });
+
+    this.resetForm();
   }
 
-  cancel(): void {
-    this.dialogRef.close();
+  cancelDialog(): void {
+    this.cancel.emit();
+  }
+
+  private resetForm() {
+    this.inputValue = '';
+    this.message = '';
+    this.selectedRecipients = [];
+    this.showSuggestions = false;
+    this.filteredSuggestions = [];
+    this.fileData = undefined;
+    this.emojiPickerVisible = false;
   }
 }

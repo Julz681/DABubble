@@ -23,6 +23,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class ChatLayoutComponent {
   isSidebarCollapsed = false;
   isThreadPanelOpen = false;
+  isComposingNewMessage = false;
 
   constructor(public router: Router) {}
 
@@ -41,4 +42,9 @@ export class ChatLayoutComponent {
   isLoginPage(): boolean {
     return this.router.url.startsWith('/login');
   }
+
+  startNewMessage() {
+  this.isComposingNewMessage = true;
+}
+
 }

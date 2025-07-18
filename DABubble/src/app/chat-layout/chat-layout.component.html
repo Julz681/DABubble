@@ -1,20 +1,60 @@
-
 <button *ngIf="!isLoginPage()" class="sidebar-toggle" (click)="toggleSidebar()">
   {{ isSidebarCollapsed ? 'Workspace Menü öffnen' : 'Workspace Menü schließen' }}
 </button>
 
-
-<div class="layout" 
+<div class="layout"
      [class.sidebar-collapsed]="isSidebarCollapsed"
      [class.thread-open]="isThreadPanelOpen"
-     [class.thread-closed]="!isThreadPanelOpen">
+     [class.thread-closed]="!isThreadPanelOpen"
+     [class.message-composer-open]="isComposingNewMessage">
 
   <aside class="sidebar">
-    <app-sidebar *ngIf="!isSidebarCollapsed"></app-sidebar>
+    <app-sidebar *ngIf="!isSidebarCollapsed" (composeNewMessage)="startNewMessage()"></app-sidebar>
   </aside>
 
   <main class="main">
-    <app-chat-window [threadToggle]="openThreadPanel.bind(this)"></app-chat-window>
+    <ng-container *ngIf="!isComposingNewMessage; else composeMode">
+      <app-chat-window [threadToggle]="openThreadPanel.bind(this)"></app-chat-window>
+    </ng-container>
+
+    <ng-template #composeMode>
+      <div class="new-message-layout">
+        <h2 class="headline">Neue Nachricht</h2>
+
+        <form class="new-message-form">
+          <mat-form-field appearance="outline" class="recipient-field full-width">
+            <input
+              matInput
+              [(ngModel)]="inputValue"
+              (input)="onRecipientInput()"
+              (keydown.enter)="onEnter()"
+              placeholder="An: #channel, oder @jemand oder E-Mail Adresse"
+            />
+          </mat-form-field>
+
+          <div class="selected-recipients" *ngIf="selectedRecipients?.length">
+            <span class="chip" *ngFor="let r of selectedRecipients; let i = index">
+              {{ r }}
+              <button (click)="removeRecipient(i)" type="button">&times;</button>
+            </span>
+          </div>
+
+          <mat-form-field appearance="outline" class="message-input full-width">
+            <textarea
+              matInput
+              [(ngModel)]="message"
+              placeholder="Starte eine neue Nachricht"
+              rows="4"
+            ></textarea>
+          </mat-form-field>
+
+          <div class="actions">
+            <button mat-button (click)="isComposingNewMessage = false">Abbrechen</button>
+            <button mat-flat-button color="primary" (click)="send()">Senden</button>
+          </div>
+        </form>
+      </div>
+    </ng-template>
   </main>
 
   <section class="thread" *ngIf="isThreadPanelOpen">

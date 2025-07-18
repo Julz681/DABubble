@@ -1,68 +1,61 @@
 .headline {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #1e1e1e;
 }
 
 .message-container {
-  background: #f8f9ff;
+  background: #ffffff;
+  border-radius: 16px;
   padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: 1.2rem;
 }
 
-.recipient-field input {
-  font-weight: 500;
+.recipient-field {
+  ::ng-deep .mat-form-field-outline {
+    border-radius: 999px !important;
+  }
+  ::ng-deep .mat-form-field-flex {
+    background: #f8f9ff;
+    height: 48px;
+    align-items: center;
+    padding: 0 1rem;
+    border-radius: 999px;
+  }
+  ::ng-deep .mat-input-element {
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  ::ng-deep .mat-form-field-infix {
+    width: 100%;
+  }
 }
 
-.suggestion-box {
-  position: absolute;
-  background: #ffffff;
-  border: 1px solid #dce0f0;
-  border-radius: 8px;
-  padding: 0.25rem 0;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000;
-  width: 100%;
+.message-input {
+  ::ng-deep textarea.mat-input-element {
+    border-radius: 16px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
 }
-
-.suggestion {
-  display: flex;
-  align-items: center;
-  padding: 0.65rem 1rem;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: background 0.2s ease;
-  color: #333;
-}
-
-.suggestion:hover {
-  background: #f1f4ff;
-}
-
-/* Avatar links neben dem Namen */
-.avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  margin-right: 0.75rem;
-  object-fit: cover;
-}
-
 
 .selected-recipients {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 1.2rem;
 }
 
 .chip {
@@ -73,22 +66,60 @@
   font-size: 0.875rem;
   display: flex;
   align-items: center;
-}
 
-.chip button {
-  background: none;
-  border: none;
-  margin-left: 6px;
-  font-weight: bold;
-  font-size: 1rem;
-  color: #1e3a8a;
-  cursor: pointer;
-  line-height: 1;
+  button {
+    background: none;
+    border: none;
+    margin-left: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #1e3a8a;
+    cursor: pointer;
+    line-height: 1;
+  }
 }
 
 .actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-info {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  button {
+    background: none;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+  }
+}
+
+.flex-spacer {
+  flex-grow: 1;
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 60px;
+  left: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 8px 12px;
+  display: flex;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.emoji:hover {
+  background: #e0e7ff;
+  border-radius: 50%;
 }
