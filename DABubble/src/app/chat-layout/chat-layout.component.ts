@@ -5,6 +5,7 @@ import { ChatWindowComponent } from '../chat-window/chat-window.component';
 import { ThreadPanelComponent } from '../thread-panel/thread-panel.component';
 import { Router, RouterModule } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { NewMessageComponent } from '../new-message/new-message.component';
 
 @Component({
   selector: 'app-chat-layout',
@@ -15,7 +16,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ChatWindowComponent,
     ThreadPanelComponent,
     RouterModule,
-    MatTooltipModule
+    MatTooltipModule,
+    NewMessageComponent
   ],
   templateUrl: './chat-layout.component.html',
   styleUrls: ['./chat-layout.component.scss']

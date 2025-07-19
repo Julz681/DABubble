@@ -18,42 +18,7 @@
     </ng-container>
 
     <ng-template #composeMode>
-      <div class="new-message-layout">
-        <h2 class="headline">Neue Nachricht</h2>
-
-        <form class="new-message-form">
-          <mat-form-field appearance="outline" class="recipient-field full-width">
-            <input
-              matInput
-              [(ngModel)]="inputValue"
-              (input)="onRecipientInput()"
-              (keydown.enter)="onEnter()"
-              placeholder="An: #channel, oder @jemand oder E-Mail Adresse"
-            />
-          </mat-form-field>
-
-          <div class="selected-recipients" *ngIf="selectedRecipients?.length">
-            <span class="chip" *ngFor="let r of selectedRecipients; let i = index">
-              {{ r }}
-              <button (click)="removeRecipient(i)" type="button">&times;</button>
-            </span>
-          </div>
-
-          <mat-form-field appearance="outline" class="message-input full-width">
-            <textarea
-              matInput
-              [(ngModel)]="message"
-              placeholder="Starte eine neue Nachricht"
-              rows="4"
-            ></textarea>
-          </mat-form-field>
-
-          <div class="actions">
-            <button mat-button (click)="isComposingNewMessage = false">Abbrechen</button>
-            <button mat-flat-button color="primary" (click)="send()">Senden</button>
-          </div>
-        </form>
-      </div>
+      <app-new-message (cancel)="isComposingNewMessage = false"></app-new-message>
     </ng-template>
   </main>
 
@@ -61,3 +26,4 @@
     <app-thread-panel (closePanel)="closeThreadPanel()"></app-thread-panel>
   </section>
 </div>
+

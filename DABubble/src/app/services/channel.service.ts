@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { CurrentUser } from './current.user.service';
 
 export interface ChatUser {
   id: string;
@@ -19,6 +20,8 @@ export class ChannelService {
   private channels: Channel[] = [];
   private channelsSubject = new BehaviorSubject<Channel[]>([]);
   channels$ = this.channelsSubject.asObservable();
+
+   users: CurrentUser[] = [];
 
   private activeChannelSubject = new BehaviorSubject<Channel | null>(null);
   activeChannel$ = this.activeChannelSubject.asObservable();
@@ -224,5 +227,17 @@ clearMessages() {
   this.messagesSubject.next([]);
 }
 
-  
+  setActiveChannelByName(name: string) {
+  const channel = this.channels.find((c) => c.name === name);
+  if (channel) {
+    this.setActiveChannel(channel);
+  }
+}
+
+setActiveUserById(id: string) {
+  const user = this.users.find((u) => u.id === id);
+  if (user) {
+    this.setActiveUser(user);
+  }
+}
 }

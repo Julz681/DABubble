@@ -1,22 +1,41 @@
 <div class="dialog-header">
   <h2>Channel erstellen</h2>
-  <button mat-icon-button mat-dialog-close matTooltip="Dialog schließen">
+  <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
     <mat-icon>close</mat-icon>
   </button>
 </div>
 
-<p>Channels dienen deinem Team zur Kommunikation.</p>
+<p>
+  Channels dienen deinem Team zur Kommunikation.
+  Am besten sollten sie themenbezogen sein <strong>#marketing</strong> zum Beispiel.
+</p>
 
-<mat-form-field appearance="outline" class="full-width">
+<mat-form-field appearance="fill" class="custom-field">
   <mat-label>Channel-Name</mat-label>
-  <input matInput [(ngModel)]="channelName" placeholder="# z.B. Kooperationsprojekte" matTooltip="Gib einen aussagekräftigen Namen für deinen Channel ein" />
+  <input
+    matInput
+    [(ngModel)]="channelName"
+    placeholder="Channel-Name"
+  />
 </mat-form-field>
 
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>Beschreibung (optional)</mat-label>
-  <textarea matInput [(ngModel)]="description" placeholder="Dein Text hier" matTooltip="Beschreibe den Zweck oder Inhalt des Channels (optional)"></textarea>
+<mat-form-field appearance="fill" class="custom-field">
+  <mat-label>Beschreibung <span class="optional">(optional)</span></mat-label>
+  <textarea
+    matInput
+    [(ngModel)]="description"
+    placeholder="Beschreibung"
+    rows="3"
+  ></textarea>
 </mat-form-field>
 
 <div class="actions">
-  <button mat-flat-button color="primary" (click)="nextStep()" matTooltip="Channel erstellen und zum nächsten Schritt gehen">Erstellen</button>
+  <button
+    mat-flat-button
+    color="primary"
+    class="create-button"
+    (click)="nextStep()"
+  >
+    Erstellen
+  </button>
 </div>

@@ -1,9 +1,11 @@
 <div class="login-page">
-  <!-- Header mit Logo & Registrieren-Link -->
+  <!-- Header mit Logo -->
   <header class="top-bar">
     <div class="logo-container">
       <img src="assets/Logo_small.png" alt="DABubble Logo" class="logo" />
     </div>
+
+    <!-- Nur bei breiten/höheren Screens -->
     <div class="register-top">
       <span>Neu bei DABubble?</span>
       <a routerLink="/register" matTooltip="Neues Konto anlegen">Konto erstellen</a>
@@ -27,7 +29,6 @@
           [(ngModel)]="email"
           name="email"
           required
-          matTooltip="Deine geschäftliche oder private E-Mail-Adresse"
         />
       </mat-form-field>
 
@@ -40,57 +41,34 @@
           [(ngModel)]="password"
           name="password"
           required
-          matTooltip="Dein persönliches Passwort"
         />
       </mat-form-field>
 
-      <a
-        class="forgot-password"
-        (click)="resetPassword()"
-        matTooltip="Neues Passwort anfordern"
-        style="cursor: pointer"
-      >
+      <a class="forgot-password" (click)="resetPassword()">
         Passwort vergessen?
       </a>
 
       <div class="divider"><span>ODER</span></div>
 
-      <button
-        mat-stroked-button
-        type="button"
-        class="google-btn"
-        (click)="loginWithGoogle()"
-        matTooltip="Mit deinem Google-Konto anmelden"
-      >
+      <button mat-stroked-button type="button" class="google-btn" (click)="loginWithGoogle()">
         <img src="assets/google-icon.png" alt="Google" />
         <span>Anmelden mit Google</span>
       </button>
 
       <div class="login-actions">
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          matTooltip="Mit E-Mail und Passwort anmelden"
-        >
+        <button mat-flat-button color="primary" type="submit">
           Anmelden
         </button>
-
-        <button
-          mat-stroked-button
-          type="button"
-          (click)="loginAsGuest()"
-          matTooltip="App ohne Registrierung testen"
-        >
+        <button mat-stroked-button type="button" (click)="loginAsGuest()">
           Gäste-Login
         </button>
       </div>
     </form>
   </mat-card>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <a routerLink="/impressum" matTooltip="Angaben zum Betreiber">Impressum</a>
-    <a routerLink="/datenschutz" matTooltip="Informationen zum Datenschutz">Datenschutz</a>
-  </footer>
+  <!-- Nur bei kleinen Screens -->
+  <div class="register-bottom">
+    <span>Neu bei DABubble?</span>
+    <a routerLink="/register">Konto erstellen</a>
+  </div>
 </div>

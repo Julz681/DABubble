@@ -28,10 +28,12 @@
       <a class="edit-link" (click)="edit()">Bearbeiten</a>
     </div>
 
-    <div class="status">
-      <span class="status-dot"></span>
-      <span>Aktive</span>
-    </div>
+<div class="status">
+  <span class="status-dot" [class.offline]="!isOnline"></span>
+  <span>{{ isOnline ? 'Aktiv' : 'Offline' }}</span>
+</div>
+
+
 
     <div class="email">
       <mat-icon>mail</mat-icon>

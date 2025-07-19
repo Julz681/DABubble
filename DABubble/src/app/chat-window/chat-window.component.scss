@@ -629,7 +629,7 @@
 
 .emoji-picker.popover {
   position: absolute;
-  bottom: 100%; // Über der Nachricht
+  bottom: 100%; 
   left: 0;
   background: white;
   border: 1px solid #ccc;
@@ -643,7 +643,7 @@
   z-index: 100;
 }
 
-// ✅ Entfernt graue Hintergründe im Overlay
+
 ::ng-deep .cdk-overlay-backdrop {
   background: transparent !important;
   backdrop-filter: none !important;

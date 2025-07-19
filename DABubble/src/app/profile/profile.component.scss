@@ -177,3 +177,17 @@
   overflow: visible !important;
   border-radius: 20px 0px 20px 20px !important;
 }
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+  background-color: #4caf50; // grün
+
+  &.offline {
+    background-color: grey;
+    opacity: 0.6;
+  }
+}

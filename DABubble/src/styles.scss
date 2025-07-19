@@ -1,4 +1,7 @@
-/* Splash-Screen Startzustand */
+/* ------------------- */
+/* 🌊 Splash-Screen    */
+/* ------------------- */
+
 #splash-screen {
   position: fixed;
   z-index: 9999;
@@ -10,37 +13,33 @@
   animation: splashFadeOut 0.4s ease 2.8s forwards;
 }
 
-/* Logo-Wrapper */
 .logo-wrapper {
   display: flex;
   align-items: center;
+  gap: 12px;
   opacity: 0;
   transform: scale(0.6);
-  gap: 12px;
-  animation: logoPopIn 0.6s ease-out 0.1s forwards,
-             logoSlideLeft 0.6s ease-in-out 1.1s forwards,
-             logoMoveTopLeft 0.5s ease-in-out 2.2s forwards;
-            
+  animation:
+    logoPopIn 0.6s ease-out 0.1s forwards,
+    logoSlideLeft 0.6s ease-in-out 1.1s forwards,
+    logoMoveTopLeft 0.5s ease-in-out 2.2s forwards;
 }
 
-/* Logo */
 .logo {
   width: 142px;
 }
 
-/* Schriftzug */
 .title {
   margin-left: 20px;
   font-family: "Nunito", sans-serif !important;
   font-weight: bolder;
-  font-size: 560px;
+  font-size: 56px;
   color: black;
   opacity: 0;
   animation: titleFadeIn 0.6s ease-out 1.2s forwards;
-
 }
 
-/* Logo erscheint */
+/* Splash Keyframes */
 @keyframes logoPopIn {
   to {
     opacity: 1;
@@ -48,14 +47,12 @@
   }
 }
 
-/* Logo nach links verschieben */
 @keyframes logoSlideLeft {
   to {
     transform: translateX(-80px);
   }
 }
 
-/* Schriftzug fade + slide */
 @keyframes titleFadeIn {
   to {
     opacity: 1;
@@ -63,48 +60,26 @@
   }
 }
 
-/* Gesamt nach oben links */
 @keyframes logoMoveTopLeft {
   to {
     transform: translate(-40vw, -40vh) scale(0.5);
   }
 }
 
-/* Splash ausblenden */
 @keyframes splashFadeOut {
   to {
     opacity: 0;
     visibility: hidden;
+    display: none;
   }
 }
 
+/* -------------------------- */
+/* 📦 Angular Material Dialoge */
+/* -------------------------- */
 
-::ng-deep .cdk-overlay-pane.custom-channel-dialog .mat-mdc-dialog-container {
-  border-radius: 0 20px 20px 20px !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  padding: 0 !important;
-}
-
-::ng-deep .cdk-overlay-pane.custom-channel-dialog .mat-mdc-dialog-surface {
-  border-radius: 0 20px 20px 20px !important;
-  background-color: white !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-.custom-channel-dialog .mat-mdc-dialog-container,
-.custom-channel-dialog .mat-mdc-dialog-surface {
-  border-radius: 0 20px 20px 20px !important;
-  box-shadow: none !important;
-  background: white !important;
-  padding: 0 !important;
-}
-
-.custom-channel-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
-  width: auto !important;
-}
-
+/* Einheitliches Dialog-Styling (z. B. Channel & Profile) */
+::ng-deep .cdk-overlay-pane.custom-channel-dialog,
 ::ng-deep .cdk-overlay-pane.profile-dialog {
   padding: 0 !important;
   background: transparent !important;
@@ -112,22 +87,71 @@
   overflow: visible !important;
 }
 
-::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-container {
-  background: transparent !important;
-  border-radius: 0 20px 20px 20px !important;
+::ng-deep .cdk-overlay-pane.custom-channel-dialog .mat-mdc-dialog-container,
+::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-container,
+.custom-channel-dialog .mat-mdc-dialog-container,
+.profile-dialog .mat-mdc-dialog-container {
+  border-radius: 1.5rem !important;
+  background: white !important;
   padding: 0 !important;
-  overflow: visible !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+::ng-deep .cdk-overlay-pane.custom-channel-dialog .mat-mdc-dialog-surface,
+::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-surface {
+  border-radius: 1.5rem !important;
+  background-color: white !important;
+  padding: 0 !important;
   box-shadow: none !important;
 }
 
+/* Optional: Dialog-Inhalte nicht beschneiden */
 ::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-surface {
-  background-color: white !important;
-  border-radius: 0 20px 20px 20px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
+/* -------------------------- */
+/* 🧩 Angular Material Inputs */
+/* -------------------------- */
 
+/* Basis für runde, moderne Input-Felder */
+::ng-deep .mat-mdc-form-field {
+  border-radius: 999px !important;
+  overflow: hidden;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  border-radius: 999px !important;
+  background-color: #f3f3f3 !important;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+::ng-deep .mdc-notched-outline {
+  border: none !important;
+}
+
+::ng-deep .mat-mdc-form-field-infix {
+  padding: 0.75rem 0 !important;
+  min-height: 3rem;
+}
+
+::ng-deep input.mat-mdc-input-element,
+::ng-deep textarea.mat-mdc-input-element {
+  border-radius: 999px !important;
+  background-color: transparent !important;
+  padding: 0.75rem 1rem !important;
+}
+
+::ng-deep textarea.mat-mdc-input-element {
+  resize: none;
+  height: 5rem;
+  border-radius: 1.5rem !important;
+}
+
+/* ------------------- */
+/* 🖼️ Sonstige Stile   */
+/* ------------------- */
 
 img {
   cursor: pointer;
@@ -136,6 +160,38 @@ img {
 body {
   font-family: 'Nunito', sans-serif;
   font-weight: 500;
-    margin: 0;
-    background: #eceeff;
+  margin: 0;
+  background: #eceeff;
 }
+
+::ng-deep .mat-mdc-form-field::after {
+  border-bottom: none !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-mdc-form-field-has-bottom-line::after {
+  display: none !important;
+}
+::ng-deep .mdc-dialog__surface::before {
+  border: none !important;
+  box-shadow: none !important;
+  content: none !important;
+}
+::ng-deep .mat-mdc-dialog-surface::before {
+  border: none !important;
+  box-shadow: none !important;
+  content: none !important;
+}
+::ng-deep .mat-mdc-dialog-surface::before {
+  border: none !important;
+  box-shadow: none !important;
+  content: '' !important;
+  display: none !important;
+}
+::ng-deep .mat-mdc-dialog-surface::before,
+::ng-deep .mdc-dialog__surface::before {
+  display: none !important;
+  content: '' !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+

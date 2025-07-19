@@ -11,6 +11,10 @@ import { CurrentUserService } from '../services/current.user.service';
 import { AuthService } from '../services/auth.service';
 import { FileService } from '../services/file.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CurrentUser } from '../services/current.user.service';
+
 
 @Component({
   selector: 'app-profile',
@@ -33,6 +37,7 @@ export class ProfileComponent implements OnInit {
   editedName = '';
   selectedAvatar = '';
   isEditing = false;
+  isOnline = false;
 
   availableAvatars: string[] = [
     'assets/Frederik Beck.png',
@@ -45,17 +50,22 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<ProfileComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: CurrentUser,
     private currentUserService: CurrentUserService,
     private authService: AuthService,
     private fileService: FileService
   ) {}
 
-  ngOnInit(): void {
-    const currentUser = this.currentUserService.getCurrentUser();
-    this.fullName = currentUser.name;
-    this.editedName = currentUser.name;
-    this.selectedAvatar = currentUser.avatar;
-  }
+ngOnInit(): void {
+  const currentUser = this.data ?? this.currentUserService.getCurrentUser();
+
+  this.fullName = currentUser.name;
+  this.editedName = currentUser.name;
+  this.selectedAvatar = currentUser.avatar;
+  this.isOnline = currentUser.isOnline === true;
+}
+
+
 
   get currentUserEmail(): string {
     return this.authService.currentUser?.email ?? 'Unbekannt';
@@ -110,4 +120,5 @@ export class ProfileComponent implements OnInit {
       });
     }
   }
+  
 }

@@ -1,23 +1,23 @@
 <div class="register-page">
-  <!-- Logo oben links -->
-  <div class="top-left">
+  <!-- Statisches, zentriertes Logo -->
+  <div class="page-logo">
     <img src="assets/Logo_small.png" alt="DABubble Logo" />
   </div>
 
+  <!-- Zurück-Pfeil oben links -->
+  <button
+    mat-icon-button
+    class="back-floating"
+    (click)="goBack()"
+    matTooltip="Zurück zur Anmeldung"
+    aria-label="Zurück"
+  >
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+
   <!-- Registrierungs-Karte -->
   <mat-card class="register-card">
-    <div class="header">
-      <button
-        mat-icon-button
-        class="back-btn"
-        (click)="goBack()"
-        matTooltip="Zurück zur Anmeldung"
-        aria-label="Zurück"
-      >
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1>Konto erstellen</h1>
-    </div>
+    <h1>Konto erstellen</h1>
 
     <p class="description">
       Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.
@@ -32,7 +32,6 @@
           [(ngModel)]="name"
           name="name"
           required
-          matTooltip="Gib deinen vollständigen Namen ein"
         />
       </mat-form-field>
 
@@ -45,7 +44,6 @@
           [(ngModel)]="email"
           name="email"
           required
-          matTooltip="Deine geschäftliche oder private E-Mail-Adresse"
         />
       </mat-form-field>
 
@@ -58,17 +56,15 @@
           [(ngModel)]="password"
           name="password"
           required
-          matTooltip="Wähle ein sicheres Passwort"
         />
       </mat-form-field>
 
-      <mat-checkbox
-        [(ngModel)]="agreed"
-        name="datenschutz"
-        matTooltip="Du musst der Datenschutzerklärung zustimmen"
-      >
-        Ich stimme der <a routerLink="/datenschutz" (click)="$event.stopPropagation()">Datenschutzerklärung</a>
- zu.
+      <mat-checkbox [(ngModel)]="agreed" name="datenschutz">
+        Ich stimme der
+        <a routerLink="/datenschutz" (click)="$event.stopPropagation()">
+          Datenschutzerklärung
+        </a>
+        zu.
       </mat-checkbox>
 
       <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
@@ -78,16 +74,9 @@
         color="primary"
         type="submit"
         class="submit-btn"
-        matTooltip="Registrierung abschließen"
       >
         Weiter
       </button>
     </form>
   </mat-card>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <a routerLink="/impressum" matTooltip="Angaben zum Betreiber">Impressum</a>
-    <a routerLink="/datenschutz" matTooltip="Informationen zum Datenschutz">Datenschutz</a>
-  </footer>
 </div>

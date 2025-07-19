@@ -10,17 +10,13 @@
     class="edit-icon"
     (click)="openNewMessageDialog()"
     matTooltip="Neue Nachricht starten"
-    style="cursor: pointer"
   >
     edit_square
   </mat-icon>
 </div>
 
-
-
-<!-- CHANNELS -->
 <div class="section">
-  <h3 (click)="toggleChannels()" style="cursor: pointer" matTooltip="Channels ein-/ausklappen">
+  <h3 (click)="toggleChannels()" matTooltip="Channels ein-/ausklappen">
     <mat-icon class="toggle-icon">
       {{ showChannels ? 'expand_more' : 'chevron_right' }}
     </mat-icon>
@@ -40,7 +36,6 @@
       *ngFor="let channel of channels"
       class="channel-item"
       (click)="selectChannelOnly(channel)"
-
     >
       <mat-icon matListIcon>tag</mat-icon>
       <span>{{ channel.name }}</span>
@@ -57,9 +52,8 @@
   </mat-nav-list>
 </div>
 
-<!-- DIREKTNACHRICHTEN -->
 <div class="section">
-  <h3 (click)="toggleDMs()" style="cursor: pointer" matTooltip="Direktnachrichten ein-/ausklappen">
+  <h3 (click)="toggleDMs()" matTooltip="Direktnachrichten ein-/ausklappen">
     <mat-icon class="toggle-icon">
       {{ showDMs ? 'expand_more' : 'chevron_right' }}
     </mat-icon>
@@ -71,19 +65,24 @@
     <mat-list-item
       *ngFor="let user of users"
       (click)="selectUser(user)"
-
     >
-      <img
-        [src]="user.avatar"
-        class="avatar"
-        alt="avatar"
-        (click)="openUserProfile(user); $event.stopPropagation()"
+      <div class="avatar-wrapper">
+        <img
+          [src]="user.avatar"
+          class="avatar"
+          alt="avatar"
+          (click)="openUserProfile(user); $event.stopPropagation()"
+        />
+<span
+  class="status-dot"
+  [ngClass]="{ 'offline': !user.isOnline }"
+  [matTooltip]="user.isOnline ? 'Online' : 'Offline'"
+></span>
 
-      />
+      </div>
       <span class="username">
         {{ user.id === currentUser.id ? user.name + ' (Du)' : user.name }}
       </span>
-      <mat-icon class="online-icon" color="primary" >circle</mat-icon>
     </mat-list-item>
   </mat-nav-list>
 </div>

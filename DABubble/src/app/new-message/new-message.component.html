@@ -1,0 +1,45 @@
+<div class="wrapper">
+  <h2>Neue Nachricht</h2>
+
+  <div class="recipient-input">
+    <div class="chip" *ngFor="let r of selectedRecipients; let i = index">
+      {{ r }}
+      <button (click)="removeRecipient(i)">×</button>
+    </div>
+    <input
+      type="text"
+      [formControl]="recipientInput"
+      placeholder="An: #channel, oder @jemand oder E-Mail Adresse"
+    />
+    <ul class="suggestions" *ngIf="showRecipientSuggestions">
+      <li *ngFor="let user of filteredRecipients" (click)="selectRecipient(user)">
+        &#64;{{ user.name }}
+      </li>
+    </ul>
+  </div>
+
+  <textarea
+    #textArea
+    [(ngModel)]="message"
+    (input)="onMessageInput()"
+    placeholder="Starte eine neue Nachricht"
+    rows="6"
+  ></textarea>
+
+  <ul class="mention-suggestions" *ngIf="showMentionSuggestions">
+    <li *ngFor="let user of mentionSuggestions" (click)="insertMention(user)">
+      &#64;{{ user.name }}
+    </li>
+  </ul>
+
+  <div class="footer">
+    <div class="tools">
+      <button type="button" (click)="toggleEmoji()">😊</button>
+      <label class="file-upload">
+        📎
+        <input type="file" (change)="onFileSelected($event)" multiple hidden />
+      </label>
+    </div>
+    <button class="send" (click)="sendMessage()">➤</button>
+  </div>
+</div>

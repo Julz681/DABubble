@@ -116,11 +116,10 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // 1. Aktuellen Benutzer abonnieren
+ 
     this.currentUserService.currentUser$.subscribe((user) => {
       this.currentUser = user;
 
-      // 2. User zur Liste hinzufügen oder aktualisieren
       const existing = this.allUsers.find((u) => u.id === user.id);
       if (existing) {
         existing.name = user.name;
@@ -129,11 +128,9 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
         this.allUsers.unshift(user);
       }
 
-      // 3. Standard-Channel festlegen
       const defaultChannel = 'Entwicklerteam';
       this.activeChannelName = defaultChannel;
 
-      // 4. Mitglieder setzen
       this.channelService.setMembersForChannel(defaultChannel, [
         this.currentUser,
         this.allUsers.find((u) => u.id === 'sofia')!,
@@ -141,7 +138,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
         this.allUsers.find((u) => u.id === 'elise')!,
       ]);
 
-      // 5. Beispielhafte Nachrichten
 if (!this.initialized) {
   this.channelService.channelMessages[defaultChannel] = [
     {
@@ -184,14 +180,12 @@ if (!this.initialized) {
 }
 
 
-      // 6. Channel aktivieren
       this.channelService.setActiveChannel({
         name: defaultChannel,
         members: this.channelService.getMembersForChannel(defaultChannel),
       });
     });
 
-    // 7. Direktnachrichten-Aktivierung
     this.channelService.activeUser$.subscribe((user) => {
       this.activeUser = user;
 
@@ -215,7 +209,7 @@ if (!this.initialized) {
         : [];
     });
 
-    // 8. Channelwechsel
+
     this.channelService.activeChannel$.subscribe((channel) => {
       if (channel) {
         this.activeUser = null;
@@ -233,17 +227,17 @@ if (!this.initialized) {
         this.currentChannelUsers = [];
         this.currentChannelMessages = [];
         this.groupedMessages = [];
-        this.newMessage = ''; // Leere Eingabezeile
+        this.newMessage = ''; 
       }
     });
 
-    // 9. Nachrichten-Stream
+  
     this.channelService.messages$.subscribe((messages) => {
       this.currentChannelMessages = messages;
       this.groupMessagesByDate();
     });
 
-    // 10. Thread-Aktualisierung
+   
     this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
       if (!updatedRoot) return;
 
@@ -266,7 +260,7 @@ if (!this.initialized) {
       }
     });
 
-    // 11. Direktnachricht aus Profil starten
+   
     window.addEventListener('startDirectChat', this.startDirectChatHandler);
   }
 
@@ -373,7 +367,6 @@ toggleUserList() {
 replyTo(message: ChatMessage): void {
   const mention = `@${this.getUserNameFromId(message.userId)} `;
 
-  // 👇 Das ist die entscheidende Änderung:
   this.threadPanelService.openThread(message, mention);
 
   if (this.threadToggle) {
@@ -389,10 +382,6 @@ replyTo(message: ChatMessage): void {
     }
   }, 0);
 }
-
-
-
-
 
 
   toggleReaction(message: ChatMessage, emoji: string) {
@@ -454,7 +443,6 @@ replyTo(message: ChatMessage): void {
 handleGlobalClick(event: MouseEvent): void {
   const clickedTarget = event.target as HTMLElement;
 
-  // === USER DROPDOWN ===
   const clickedInsideUserDropdown =
     this.userDropdownRef?.nativeElement.contains(clickedTarget);
 
@@ -462,7 +450,6 @@ handleGlobalClick(event: MouseEvent): void {
     this.showFullUserList = false;
   }
 
-  // === MENTION PICKER ===
   const clickedInsideMention =
     this.mentionPickerRef?.nativeElement.contains(clickedTarget);
 
@@ -474,7 +461,7 @@ handleGlobalClick(event: MouseEvent): void {
     this.mentionMode = null;
   }
 
-  // === EMOJI POPOVER ===
+  
   const isInPopover = !!clickedTarget.closest('.emoji-picker.popover');
   const isEmojiPlus = !!clickedTarget.closest('.emoji-plus');
 
@@ -482,8 +469,6 @@ handleGlobalClick(event: MouseEvent): void {
     this.emojiPopoverMessage = null;
   }
 }
-
-
 
 
   openAddUserDialog() {
@@ -563,7 +548,7 @@ mentionUser(user: ChatUser) {
   this.showUsers = false;
   this.mentionMode = null;
 
-  // Optional: Cursor an das Ende setzen
+  
   setTimeout(() => {
     const input = document.querySelector('input');
     if (input instanceof HTMLInputElement) {

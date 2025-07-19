@@ -1,32 +1,37 @@
 .register-page {
   background-color: #f3f4ff;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-
+  padding: 3rem 1.5rem 2rem;
   box-sizing: border-box;
   font-family: "Nunito", sans-serif;
   font-weight: 500;
+  position: relative;
 }
 
-.top-left {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
+/* Statisches Logo über der Karte */
+.page-logo {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 
   img {
-    width: 180px;
-  }
+    width: 160px;
 
-  .brand-name {
-    font-size: 1.25rem;
-    font-weight: 600;
+    @media (max-width: 500px) {
+      width: 120px;
+    }
   }
+}
+
+/* Zurück-Pfeil oben links */
+.back-floating {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 10;
 }
 
 .register-card {
@@ -37,43 +42,26 @@
   background: white;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
   text-align: center;
-  margin-top: auto;
-  z-index: 1;
 
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-
-    .back-btn {
-      position: absolute;
-      left: 0;
-    }
-
-    h1 {
-      margin: 0 auto;
-      font-size: 36px;
-      font-family: "Nunito", sans-serif;
-      font-weight: 700;
-      color: #4440f6;
-    }
+  h1 {
+    font-size: 36px;
+    font-family: "Nunito", sans-serif;
+    font-weight: 700;
+    color: #4440f6;
+    margin-bottom: 0.5rem;
   }
 
   .description {
     color: #333;
     font-size: 0.95rem;
-    margin: 1rem 0 2rem;
+    margin: 0 0 2rem;
   }
 
   .input {
     width: 100%;
     margin-bottom: 1rem;
 
-    ::ng-deep .mat-form-field-outline {
-      border-radius: 999px !important;
-    }
-
+    ::ng-deep .mat-form-field-outline,
     ::ng-deep .mat-form-field-outline-start,
     ::ng-deep .mat-form-field-outline-end {
       border-radius: 999px !important;
@@ -87,10 +75,8 @@
     ::ng-deep .mat-mdc-form-field-has-icon-prefix,
     ::ng-deep .mat-mdc-text-field-wrapper {
       border-radius: 999px;
-      border: none;
       background: #f0f2ff !important;
-      padding-left: 0.75rem;
-      padding-right: 0.75rem;
+      padding: 0 0.75rem;
       height: 48px;
       align-items: center;
     }
@@ -127,30 +113,9 @@
   }
 
   .submit-btn {
-    width: 107px;
+    width: 100%;
     border-radius: 999px;
     font-weight: 500;
     padding: 0.75rem 1.5rem;
-    margin-right: -200px;
-  }
-}
-
-.footer {
-  margin-top: auto;
-  padding-bottom: 1.5rem;
-  display: flex;
-  gap: 2rem;
-  font-size: 0.85rem;
-  z-index: 10;
-  font-family: "Nunito", sans-serif;
-
-  a {
-    color: #5a65ea;
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover {
-      text-decoration: underline;
-    }
   }
 }
