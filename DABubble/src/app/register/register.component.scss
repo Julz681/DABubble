@@ -4,96 +4,142 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 3rem 1.5rem 2rem;
+  padding: 2rem 1rem;
   box-sizing: border-box;
   font-family: "Nunito", sans-serif;
   font-weight: 500;
-  position: relative;
-}
 
-/* Statisches Logo über der Karte */
-.page-logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-
-  img {
-    width: 160px;
-
-    @media (max-width: 500px) {
-      width: 120px;
-    }
-  }
-}
-
-/* Zurück-Pfeil oben links */
-.back-floating {
-  position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
-  z-index: 10;
-}
-
-.register-card {
-  width: 100%;
-  max-width: 440px;
-  padding: 2rem;
-  border-radius: 1rem;
-  background: white;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-  text-align: center;
-
-  h1 {
-    font-size: 36px;
-    font-family: "Nunito", sans-serif;
-    font-weight: 700;
-    color: #4440f6;
-    margin-bottom: 0.5rem;
-  }
-
-  .description {
-    color: #333;
-    font-size: 0.95rem;
-    margin: 0 0 2rem;
-  }
-
-  .input {
+  .top-left {
     width: 100%;
-    margin-bottom: 1rem;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
 
-    ::ng-deep .mat-form-field-outline,
-    ::ng-deep .mat-form-field-outline-start,
-    ::ng-deep .mat-form-field-outline-end {
-      border-radius: 999px !important;
+    img {
+      width: 142px;
     }
 
-    ::ng-deep .mat-input-element {
-      font-family: "Nunito", sans-serif;
-      font-weight: 500;
-    }
-
-    ::ng-deep .mat-mdc-form-field-has-icon-prefix,
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      border-radius: 999px;
-      background: #f0f2ff !important;
-      padding: 0 0.75rem;
-      height: 48px;
-      align-items: center;
-    }
-
-    ::ng-deep .mdc-text-field--filled .mdc-line-ripple {
-      display: none;
+    .brand-name {
+      font-size: 1.25rem;
+      font-weight: 600;
     }
   }
 
-  mat-checkbox {
-    display: block;
-    text-align: left;
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
+  .register-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 2rem;
+    border-radius: 1rem;
+    background: white;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      .back-btn {
+        position: absolute;
+        left: 0;
+      }
+
+      h1 {
+        margin: 0 auto;
+        font-size: 36px;
+        font-weight: 700;
+        color: #4440f6;
+      }
+    }
+
+    .description {
+      color: #333;
+      font-size: 0.95rem;
+      margin: 1rem 0 2rem;
+    }
+
+    .input {
+      width: 100%;
+      margin-bottom: 1rem;
+
+      ::ng-deep .mat-form-field-outline {
+        border-radius: 999px !important;
+      }
+
+      ::ng-deep .mat-form-field-outline-start,
+      ::ng-deep .mat-form-field-outline-end {
+        border-radius: 999px !important;
+      }
+
+      ::ng-deep .mat-input-element {
+        font-family: "Nunito", sans-serif;
+        font-weight: 500;
+      }
+
+      ::ng-deep .mat-mdc-form-field-has-icon-prefix,
+      ::ng-deep .mat-mdc-text-field-wrapper {
+        border-radius: 999px;
+        background: #f0f2ff !important;
+        padding: 0 0.75rem;
+        height: 48px;
+        align-items: center;
+      }
+
+      ::ng-deep .mdc-text-field--filled .mdc-line-ripple {
+        display: none;
+      }
+    }
+
+    mat-checkbox {
+      display: block;
+      text-align: left;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+
+      a {
+        color: #5a65ea;
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .error-message {
+      min-height: 1.5rem;
+      color: red;
+      text-align: left;
+      font-size: 0.85rem;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .submit-btn {
+      width: 100%;
+      border-radius: 999px;
+      font-weight: 500;
+      padding: 0.75rem;
+    }
+  }
+
+  .register-bottom {
+    display: none;
+    margin-top: 2rem;
+    text-align: center;
+
+    span {
+      display: block;
+    }
 
     a {
       color: #5a65ea;
+      margin-top: 0.25rem;
       text-decoration: none;
       font-weight: 500;
 
@@ -103,19 +149,57 @@
     }
   }
 
-  .error-message {
-    min-height: 1.5rem;
-    color: red;
-    text-align: left;
+  .footer {
+    display: flex;
+    gap: 2rem;
     font-size: 0.85rem;
-    margin-top: -0.5rem;
-    margin-bottom: 1rem;
+    margin-top: 2rem;
+
+    a {
+      color: #5a65ea;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
-  .submit-btn {
-    width: 100%;
-    border-radius: 999px;
-    font-weight: 500;
-    padding: 0.75rem 1.5rem;
+  @media (max-width: 600px) {
+    .top-left {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+
+      img {
+        width: 142px;
+      }
+
+      .brand-name {
+        font-size: 1.2rem;
+      }
+    }
+
+    .register-card {
+      padding: 1.5rem;
+      margin: 0 1rem;
+
+      .header h1 {
+        font-size: 26px;
+      }
+
+      .submit-btn {
+        width: 100%;
+      }
+    }
+
+    .footer {
+      display: none;
+    }
+
+    .register-bottom {
+      display: block;
+    }
   }
 }

@@ -10,15 +10,27 @@
 
 .top-bar {
   width: 100%;
-  max-width: 440px;
+  max-width: 1200px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  padding: 0 1rem;
 
-  .logo-container {
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
     .logo {
-      width: 160px;
+      width: 40px;
+      height: auto;
+    }
+
+    .brand-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #222;
     }
   }
 
@@ -29,7 +41,6 @@
     align-items: flex-end;
 
     a {
-      margin-left: 0.5rem;
       color: #5a65ea;
       font-weight: 500;
       text-decoration: none;
@@ -170,20 +181,29 @@
   }
 }
 
-/* Responsive: Breite <= 500px oder Höhe <= 800px */
-@media (max-width: 500px), (max-height: 800px) {
+/* Responsive für Mobile */
+@media (max-width: 600px) {
   .top-bar {
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 1rem;
 
-    .register-top {
-      display: none !important;
+    .brand {
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .logo {
+        width: 80px;
+      }
+
+      .brand-name {
+        font-size: 1.2rem;
+      }
     }
 
-    .logo-container .logo {
-      width: 120px;
+    .register-top {
+      display: none !important;
     }
   }
 
@@ -206,6 +226,28 @@
   }
 
   .register-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 2rem;
+  text-align: center;
+
+  span {
     display: block;
+    font-size: 0.95rem;
   }
+
+  a {
+    display: block;
+    color: #5a65ea;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 }
