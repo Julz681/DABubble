@@ -175,6 +175,52 @@
               border-left-color: #7c82ff;
             }
           }
+
+          .file-preview-image {
+  max-width: 240px;
+  border-radius: 12px;
+  margin-top: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.file-preview-box {
+  display: flex;
+  align-items: center;
+  background: #f7f8ff;
+  border: 1px solid #dcdffd;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 10px;
+  gap: 10px;
+
+  .file-icon {
+    font-size: 32px;
+    color: #5c6bc0;
+  }
+
+  .file-info {
+    display: flex;
+    flex-direction: column;
+
+    .file-name {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .file-open-link {
+      font-size: 0.85rem;
+      color: #5c6bc0;
+      font-weight: 500;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
         }
       }
 
@@ -686,3 +732,35 @@
 ::-webkit-scrollbar-thumb:horizontal {
   background: #c5c7ff;
 }
+.file-preview-below-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0.5rem;
+  background: #f4f4ff;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #333;
+
+  .file-icon {
+    color: #5c6bc0;
+    font-size: 20px;
+  }
+}
+.file-preview-unsent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  background: #f4f6ff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+
+  .file-icon {
+    font-size: 20px;
+    color: #666;
+  }
+}
+

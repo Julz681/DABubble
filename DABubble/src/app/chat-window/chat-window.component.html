@@ -159,11 +159,25 @@
 
 <div class="bubble" *ngIf="editingMessageId !== message.id">
   {{ message.content }}
-  <img *ngIf="message.url?.toLowerCase().endsWith('.png') || message.url?.toLowerCase().endsWith('.jpg') || message.url?.toLowerCase().endsWith('.jpeg')"
-    [src]="message.url" alt="Bildanhang" style="max-width: 200px; border-radius: 8px; margin-top: 8px;" />
-  <a *ngIf="message.url && !(message.url.toLowerCase().endsWith('.png') || message.url.toLowerCase().endsWith('.jpg') || message.url.toLowerCase().endsWith('.jpeg'))"
-    [href]="message.url" target="_blank" style="display: block; margin-top: 8px; color: #5a65ea;">Datei öffnen</a>
+
+  <!-- 🖼 Bildvorschau -->
+  <img
+    *ngIf="isImageUrl(message.url)"
+    [src]="message.url"
+    alt="Bildanhang"
+    class="file-preview-image"
+/>
+
+  <!-- 📄 Dateivorschau für andere Formate -->
+  <div *ngIf="isFileUrl(message.url)" class="file-preview-box">
+    <mat-icon class="file-icon">insert_drive_file</mat-icon>
+    <div class="file-info">
+      <div class="file-name">{{ message.content.replace('Datei: ', '') }}</div>
+      <a [href]="message.url" target="_blank" class="file-open-link">Öffnen</a>
+    </div>
+  </div>
 </div>
+
 
 
           <div *ngIf="editingMessageId === message.id" class="edit-form">
@@ -216,6 +230,10 @@
       (keyup.enter)="sendMessage()"
       (input)="onMessageInput()"
     />
+    <div *ngIf="selectedFileName" class="file-preview-unsent">
+  <mat-icon class="file-icon">insert_drive_file</mat-icon>
+  <span>{{ selectedFileName }}</span>
+</div>
 
     <div class="input-footer">
       <div class="left-icons">

@@ -13,12 +13,19 @@
     font-weight: 600;
     font-size: 1.2rem;
     flex-grow: 1;
+    color: #000;
   }
 
   .edit-icon {
-    font-size: 18px;
+    font-size: 20px;
     color: #888;
     cursor: pointer;
+  }
+
+  @media (max-width: 900px) {
+    .edit-icon {
+      display: none; // nur Floating-Button in Mobile
+    }
   }
 }
 
@@ -47,18 +54,6 @@
     }
   }
 
-  .active-channel {
-    background-color: #e5e8ff;
-    border-radius: 12px;
-    padding: 0.5rem 1rem;
-    margin-bottom: 0.5rem;
-
-    span {
-      color: #3a47e1;
-      font-weight: 500;
-    }
-  }
-
   mat-list-item {
     padding: 0.4rem 0.6rem;
     border-radius: 8px;
@@ -68,8 +63,8 @@
       background-color: #f3f4ff;
     }
 
-    ::ng-deep .mdc-list-item__content {
-      display: flex !important;
+    .user-entry {
+      display: flex;
       align-items: center;
       gap: 0.75rem;
     }
@@ -93,22 +88,22 @@
         right: 0;
         width: 10px;
         height: 10px;
-        background-color: #4caf50; // Online
+        background-color: #4caf50;
         border: 2px solid white;
         border-radius: 50%;
-      }
 
-      .status-dot.offline {
-        background-color: gray;
-        opacity: 0.5;
+        &.offline {
+          background-color: gray;
+          opacity: 0.5;
+        }
       }
     }
 
     .username {
       font-size: 0.95rem;
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
     }
   }
 }
@@ -130,8 +125,44 @@
   margin-right: 4px;
   cursor: pointer;
 }
-::ng-deep .mat-mdc-list-item .mat-mdc-list-item-unscoped-content {
-  display: flex !important;
-  align-items: center;
-  gap: 0.75rem;
+
+/* Floating Action Button (nur im Mobile) */
+.fab-edit {
+  display: none;
+
+  @media (max-width: 900px) {
+    display: flex;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    width: 48px;
+    height: 48px;
+    background-color: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    align-items: center;
+    justify-content: center;
+    z-index: 1002;
+
+    mat-icon {
+      font-size: 24px;
+    }
+  }
+}
+
+/* Sichtbarkeitsklassen */
+.desktop-only {
+  @media (max-width: 900px) {
+    display: none !important;
+  }
+}
+
+.mobile-only {
+  display: none;
+
+  @media (max-width: 900px) {
+    display: flex;
+  }
 }

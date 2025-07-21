@@ -1,7 +1,6 @@
 .app-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   background: #ECEEFF;
   padding: 0.8rem 1.2rem;
   position: fixed;
@@ -11,9 +10,17 @@
   z-index: 1000;
 }
 
-.logo-bar {
+.header-top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
   .logo {
     width: 32px;
@@ -34,51 +41,81 @@
   border-radius: 42px;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
   padding: 8px 12px;
-  width: 60%;
   justify-content: space-between;
 
   input {
     border: none;
     background: transparent;
     outline: none;
-    width: 200px;
+    flex: 1;
     padding: 4px;
-    margin-right: 0.5rem;
+    font-size: 0.95rem;
   }
 
   mat-icon {
-    font-size: 26px;
-    padding-left: 12px;
+    font-size: 24px;
+    padding-left: 8px;
   }
 
-  .search-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    z-index: 1000;
-    max-height: 200px;
-    overflow-y: auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+ .search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1001;
+  padding: 4px 0;
 
-    .search-result {
-      padding: 8px 12px;
+  .search-result {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background-color: #f3f5f7;
+    }
+
+    img,
+    mat-icon.icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    mat-icon.icon {
+      border-radius: 50%;
+      background-color: #ececec;
       display: flex;
+      justify-content: center;
       align-items: center;
-      cursor: pointer;
+      font-size: 20px;
+      padding: 6px;
+    }
 
-      .icon {
-        margin-right: 8px;
-      }
-
-      &:hover {
-        background: #f5f5f5;
-      }
+    span {
+      font-size: 0.95rem;
+      color: #333;
     }
   }
+}
+
+}
+
+// Desktop-Suche sichtbar, Mobile-Suche ausblenden
+.desktop-search {
+  width: 60%;
+}
+.mobile-search {
+  display: none;
 }
 
 .user-profile {
@@ -98,14 +135,11 @@
     top: 110%;
     right: 0;
     background: white;
-    border: none;
-    border-radius: 0 12px 12px 12px;
+    border-radius: 16px 0 16px 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 0.5rem 0;
-    overflow: hidden;
     min-width: 140px;
     z-index: 9999;
-    border-radius: 16px 0 16px 16px;
 
     button {
       background: none;
@@ -126,4 +160,35 @@
 .app-main {
   margin-top: 60px;
   height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+// 🔽 MOBILE ANPASSUNGEN
+@media (max-width: 900px) {
+  .header-top {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .desktop-search {
+    display: none;
+  }
+
+  .mobile-search {
+    display: flex;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+
+  .user-profile {
+    .user-name,
+    .user-icon {
+      display: none;
+    }
+  }
+
+  .app-main {
+    margin-top: 160px;
+    height: calc(100vh - 160px);
+  }
 }

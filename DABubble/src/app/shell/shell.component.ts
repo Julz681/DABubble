@@ -19,6 +19,14 @@ import { RouterOutlet } from '@angular/router';
 import { ProfileComponent } from '../profile/profile.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+interface SearchResult {
+  name: string;
+  avatar?: string;
+  type: 'user' | 'channel';
+  id: string;
+}
+
+
 @Component({
   selector: 'app-shell',
   standalone: true,
@@ -41,11 +49,8 @@ export class ShellComponent implements OnInit {
   users: CurrentUser[] = [];
   currentUser!: CurrentUser;
 
-  filteredResults: Array<{
-    type: 'channel' | 'user';
-    display: string;
-    id: string;
-  }> = [];
+filteredResults: SearchResult[] = [];
+
 
   @ViewChild('dropdownContainer') dropdownRef!: ElementRef;
 
@@ -118,28 +123,29 @@ openProfileDialog() {
     }
   }
 
-  onSearch() {
-    const term = this.searchTerm.toLowerCase();
+onSearch() {
+  const term = this.searchTerm.toLowerCase();
 
-    const channels = this.channelService
-      .getChannels()
-      .filter((c) => c.name.toLowerCase().includes(term))
-      .map((c) => ({
-        type: 'channel' as const,
-        display: `#${c.name}`,
-        id: c.name,
-      }));
+  const channels: SearchResult[] = this.channelService.getChannels()
+    .filter((c) => c.name.toLowerCase().includes(term))
+    .map((c) => ({
+      type: 'channel',
+      name: c.name,
+      id: c.name,
+    }));
 
-    const users = this.users
-      .filter((u) => u.name.toLowerCase().includes(term))
-      .map((u) => ({
-        type: 'user' as const,
-        display: u.name,
-        id: u.id,
-      }));
+  const users: SearchResult[] = this.users
+    .filter((u) => u.name.toLowerCase().includes(term))
+    .map((u) => ({
+      type: 'user',
+      name: u.name,
+      id: u.id,
+      avatar: u.avatar,
+    }));
 
-    this.filteredResults = [...channels, ...users];
-  }
+  this.filteredResults = [...channels, ...users];
+}
+
 
   onBlur() {
     setTimeout(() => (this.searchFocused = false), 150);

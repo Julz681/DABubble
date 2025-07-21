@@ -21,6 +21,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FileService } from '../services/file.service';
 
 
+
 import {
   CurrentUserService,
   CurrentUser,
@@ -65,6 +66,7 @@ interface ChatMessage {
 })
 export class ChatWindowComponent implements OnInit, OnDestroy {
   @Input() threadToggle?: () => void;
+  @Input() setMobileViewToMain?: () => void;
 
   newMessage = '';
   showEmojis = false;
@@ -81,6 +83,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   activeChannelCreatedBy = '';
   emojiPopoverMessage: ChatMessage | null = null;
   private initialized = false;
+  selectedFileName: string | null = null;
+
 
 
 
@@ -103,6 +107,32 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     },
   ];
 
+  messages: ChatMessage[] = [
+  {
+    id: 1,
+    userId: 'sofia',
+    author: 'Sofia Müller',
+    time: '09:12',
+    content: 'Willkommen im Channel! 😊',
+    avatar: 'assets/avatars/sofia.png',
+    createdAt: new Date(),
+    reactions: [],
+    replies: []
+  },
+  {
+    id: 2,
+    userId: 'noah',
+    author: 'Noah Braun',
+    time: '09:15',
+    content: 'Hey! Ich freue mich auf den Austausch hier 🚀',
+    avatar: 'assets/avatars/noah.png',
+    createdAt: new Date(),
+    reactions: [],
+    replies: []
+  }
+];
+
+
   currentUser!: CurrentUser;
 
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
@@ -116,18 +146,23 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
- 
-    this.currentUserService.currentUser$.subscribe((user) => {
-      this.currentUser = user;
+  this.currentUserService.currentUser$.subscribe((user) => {
+    this.currentUser = user;
 
-      const existing = this.allUsers.find((u) => u.id === user.id);
-      if (existing) {
-        existing.name = user.name;
-        existing.avatar = user.avatar;
-      } else {
-        this.allUsers.unshift(user);
-      }
+    const existing = this.allUsers.find((u) => u.id === user.id);
+    if (existing) {
+      existing.name = user.name;
+      existing.avatar = user.avatar;
+    } else {
+      this.allUsers.unshift(user);
+    }
 
+    // Fallback nur wenn kein Chat aktiv ist
+    if (
+      !this.channelService.getCurrentChannel() &&
+      !this.channelService.getCurrentUser()
+
+    ) {
       const defaultChannel = 'Entwicklerteam';
       this.activeChannelName = defaultChannel;
 
@@ -138,131 +173,124 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
         this.allUsers.find((u) => u.id === 'elise')!,
       ]);
 
-if (!this.initialized) {
-  this.channelService.channelMessages[defaultChannel] = [
-    {
-      id: 1,
-      author: 'Noah Braun',
-      userId: 'noah',
-      time: '14:25 Uhr',
-      content: 'Welche Version ist aktuell von Angular?',
-      avatar: 'assets/Noah Braun.png',
-      reactions: [],
-      isSelf: false,
-      replies: [
-        {
-          id: 2,
-          author: 'Sofia Müller',
-          userId: 'sofia',
-          time: '14:26 Uhr',
-          content: 'Ich glaube 17.1, oder?',
-          avatar: 'assets/Sofia Müller.png',
-          reactions: [],
-          isSelf: false,
-          createdAt: new Date(),
-        },
-        {
-          id: 3,
-          author: user.name,
-          userId: user.id,
-          time: '14:27 Uhr',
-          content: 'Die aktuelle Version ist 17.2.1.',
-          avatar: user.avatar,
-          reactions: [],
-          isSelf: true,
-          createdAt: new Date(),
-        },
-      ],
-      createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-    },
-  ];
-  this.initialized = true;
+      if (!this.initialized) {
+        this.channelService.channelMessages[defaultChannel] = [
+          {
+            id: 1,
+            author: 'Noah Braun',
+            userId: 'noah',
+            time: '14:25 Uhr',
+            content: 'Welche Version ist aktuell von Angular?',
+            avatar: 'assets/Noah Braun.png',
+            reactions: [],
+            replies: [
+              {
+                id: 2,
+                author: 'Sofia Müller',
+                userId: 'sofia',
+                time: '14:26 Uhr',
+                content: 'Ich glaube 17.1, oder?',
+                avatar: 'assets/Sofia Müller.png',
+                reactions: [],
+                createdAt: new Date(),
+              },
+              {
+                id: 3,
+                author: user.name,
+                userId: user.id,
+                time: '14:27 Uhr',
+                content: 'Die aktuelle Version ist 17.2.1.',
+                avatar: user.avatar,
+                reactions: [],
+                isSelf: true,
+                createdAt: new Date(),
+              },
+            ],
+            createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+          },
+        ];
+        this.initialized = true;
+      }
+
+      this.channelService.setActiveChannelByName(defaultChannel);
+    }
+  });
+
+  this.channelService.activeUser$.subscribe((user) => {
+    this.activeUser = user;
+
+    const currentChannel = this.channelService.getCurrentChannel();
+    const isValidChannel =
+      currentChannel &&
+      this.channelService.getChannels().some((c) => c.name === currentChannel.name);
+
+    this.activeChannelName = user
+      ? user.name
+      : isValidChannel
+      ? currentChannel!.name
+      : '';
+
+    this.currentChannelUsers = user
+      ? [this.currentUser, user]
+      : isValidChannel
+      ? this.channelService.getMembersForChannel(currentChannel!.name)
+      : [];
+  });
+
+  this.channelService.activeChannel$.subscribe((channel) => {
+    if (channel) {
+      this.activeUser = null;
+      this.activeChannelName = channel.name;
+      this.activeChannelDescription = channel.description || '';
+      this.activeChannelCreatedBy = channel.createdBy || '';
+      this.currentChannelUsers = this.channelService.getMembersForChannel(
+        channel.name
+      );
+    } else {
+      this.activeUser = null;
+      this.activeChannelName = '';
+      this.activeChannelDescription = '';
+      this.activeChannelCreatedBy = '';
+      this.currentChannelUsers = [];
+      this.currentChannelMessages = [];
+      this.groupedMessages = [];
+      this.newMessage = '';
+    }
+  });
+
+  this.channelService.messages$.subscribe((messages) => {
+    this.currentChannelMessages = messages.map((msg) => ({
+      ...msg,
+      isSelf: msg.userId === this.currentUser.id,
+    }));
+    this.groupMessagesByDate();
+  });
+
+  this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
+    if (!updatedRoot) return;
+
+    const target = this.activeUser?.id ?? this.activeChannelName;
+    const messages = this.activeUser
+      ? this.channelService.directMessages[target] || []
+      : this.channelService.channelMessages[target] || [];
+
+    const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
+    if (index !== -1) {
+      messages[index] = updatedRoot;
+
+      if (this.activeUser) {
+        this.channelService.directMessages[target] = messages;
+      } else {
+        this.channelService.channelMessages[target] = messages;
+      }
+
+      this.channelService.updateMessagesForActiveTarget();
+    }
+  });
+
+  window.addEventListener('startDirectChat', this.startDirectChatHandler);
 }
 
-
-      this.channelService.setActiveChannel({
-        name: defaultChannel,
-        members: this.channelService.getMembersForChannel(defaultChannel),
-      });
-    });
-
-    this.channelService.activeUser$.subscribe((user) => {
-      this.activeUser = user;
-
-      const currentChannel = this.channelService.getCurrentChannel();
-      const isValidChannel =
-        currentChannel &&
-        this.channelService
-          .getChannels()
-          .some((c) => c.name === currentChannel.name);
-
-      this.activeChannelName = user
-        ? user.name
-        : isValidChannel
-        ? currentChannel!.name
-        : '';
-
-      this.currentChannelUsers = user
-        ? [this.currentUser, user]
-        : isValidChannel
-        ? this.channelService.getMembersForChannel(currentChannel!.name)
-        : [];
-    });
-
-
-    this.channelService.activeChannel$.subscribe((channel) => {
-      if (channel) {
-        this.activeUser = null;
-        this.activeChannelName = channel.name;
-        this.activeChannelDescription = channel.description || '';
-        this.activeChannelCreatedBy = channel.createdBy || '';
-        this.currentChannelUsers = this.channelService.getMembersForChannel(
-          channel.name
-        );
-      } else {
-        this.activeUser = null;
-        this.activeChannelName = '';
-        this.activeChannelDescription = '';
-        this.activeChannelCreatedBy = '';
-        this.currentChannelUsers = [];
-        this.currentChannelMessages = [];
-        this.groupedMessages = [];
-        this.newMessage = ''; 
-      }
-    });
-
-  
-    this.channelService.messages$.subscribe((messages) => {
-      this.currentChannelMessages = messages;
-      this.groupMessagesByDate();
-    });
-
-   
-    this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
-      if (!updatedRoot) return;
-
-      const target = this.activeUser?.id ?? this.activeChannelName;
-      const messages = this.activeUser
-        ? this.channelService.directMessages[target] || []
-        : this.channelService.channelMessages[target] || [];
-
-      const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
-      if (index !== -1) {
-        messages[index] = updatedRoot;
-
-        if (this.activeUser) {
-          this.channelService.directMessages[target] = messages;
-        } else {
-          this.channelService.channelMessages[target] = messages;
-        }
-
-        this.channelService.updateMessagesForActiveTarget();
-      }
-    });
-
-   
-    window.addEventListener('startDirectChat', this.startDirectChatHandler);
-  }
 
   sendMessage(): void {
     const content = this.newMessage.trim();
@@ -365,13 +393,16 @@ toggleUserList() {
   }
 
 replyTo(message: ChatMessage): void {
-  const mention = `@${this.getUserNameFromId(message.userId)} `;
+  console.log('replyTo() called');
 
+  const mention = `@${this.getUserNameFromId(message.userId)} `;
   this.threadPanelService.openThread(message, mention);
 
   if (this.threadToggle) {
     this.threadToggle();
   }
+
+  this.setMobileViewToMain?.(); // Mobile-Ansicht aktivieren
 
   setTimeout(() => {
     const input = this.chatInputRef?.nativeElement;
@@ -382,6 +413,7 @@ replyTo(message: ChatMessage): void {
     }
   }, 0);
 }
+
 
 
   toggleReaction(message: ChatMessage, emoji: string) {
@@ -515,17 +547,32 @@ handleGlobalClick(event: MouseEvent): void {
   }
 
 onMessageInput() {
-  const match = this.newMessage.match(/@([^@\s]*)$/);
+  const cursorPos = this.newMessage.length;
+
+  // Match für @... am Ende oder mitten im Text
+  const match = this.newMessage.slice(0, cursorPos).match(/@([\wäöüß\-]*)$/i);
+
   if (match) {
     const term = match[1].toLowerCase();
     this.mentionMode = 'user';
+
     const availableUsers = this.activeUser
       ? [this.currentUser, this.activeUser]
-      : this.currentChannelUsers;
+      : [...this.currentChannelUsers];
 
+    // Filter: Nach Vornamen, Nachnamen oder beidem
     this.filteredUsers = availableUsers.filter((user) =>
       user.name.toLowerCase().includes(term)
     );
+
+    // Optional: Eigener Benutzer mit (Du) ergänzen
+    this.filteredUsers = this.filteredUsers.map((user) => ({
+      ...user,
+      name:
+        user.id === this.currentUser.id && !user.name.includes('(Du)')
+          ? `${user.name} (Du)`
+          : user.name,
+    }));
 
     this.showUsers = this.filteredUsers.length > 0;
   } else {
@@ -533,6 +580,7 @@ onMessageInput() {
     this.mentionMode = null;
   }
 }
+
 
 
 mentionUser(user: ChatUser) {
@@ -739,28 +787,40 @@ onFileSelected(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;
 
+  this.selectedFileName = file.name; // 👈 Vorschau setzen
+
   const path = `chat-files/${Date.now()}_${file.name}`;
   const { percent$, url$ } = this.fileService.uploadFile(file, path);
 
-  percent$.subscribe(pct => console.log(`Hochladen: ${pct.toFixed(0)}%`));
+  percent$.subscribe(pct =>
+    console.log(`Hochladen: ${pct.toFixed(0)}%`)
+  );
+
   url$.subscribe(url => {
     const msg = {
       id: Date.now(),
       author: this.currentUser.name,
       userId: this.currentUser.id,
-      time: new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }),
+      time: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
       content: `Datei: ${file.name}`,
-url, 
-
+      url,
       avatar: this.currentUser.avatar,
       isSelf: true,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
-    // Füge Nachricht hinzu
+
     const target = this.activeUser ? this.activeUser.id : this.activeChannelName;
     this.channelService.addMessage(target, msg, !!this.activeUser);
+
+    this.selectedFileName = null; // 👈 Vorschau zurücksetzen
+    this.fileInput.nativeElement.value = ''; // 👈 Reset für gleiche Datei nochmal
   });
 }
+
+
 
 isImageUrl(url: string): boolean {
   return /\.(jpe?g|png)$/i.test(url);
@@ -771,9 +831,7 @@ isFileUrl(url: string): boolean {
 }
 
 getAvatarFromId(userId: string): string {
-  if (userId === this.currentUser.id) {
-    return this.currentUser.avatar; // aktuelles Profilbild
-  }
+  if (userId === this.currentUser.id) return this.currentUser.avatar;
 
   const user =
     this.allUsers.find(u => u.id === userId) ||
@@ -781,5 +839,6 @@ getAvatarFromId(userId: string): string {
 
   return user?.avatar || 'assets/default-avatar.png';
 }
+
 
 }

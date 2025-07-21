@@ -76,6 +76,8 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   editingMessageId: number | null = null;
   editedMessageContent = '';
   emojiPopoverMessage: ChatMessage | null = null;
+  selectedFileName: string | null = null;
+
 
   mentionMode: 'user' | null = null;
   allUsers: any[] = [];
@@ -382,13 +384,14 @@ onMessageInput(): void {
     this.emojiPopoverMessage = null;
   }
 
- onFileSelected(event: Event): void {
+onFileSelected(event: Event): void {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     const file = input.files[0];
+    this.selectedFileName = file.name; // Vorschau anzeigen
+
     const now = new Date();
     const path = `uploads/${Date.now()}_${file.name}`;
-
     const { url$ } = this.fileService.uploadFile(file, path);
 
     url$.subscribe({
@@ -406,7 +409,10 @@ onMessageInput(): void {
         };
 
         this.threadService.addReply(newReply);
-        this.fileInput.nativeElement.value = ''; // Zurücksetzen
+
+        // Reset
+        this.selectedFileName = null;
+        this.fileInput.nativeElement.value = ''; // wichtig für gleiche Datei nochmal
       },
       error: (err) => {
         console.error('Upload fehlgeschlagen:', err);
@@ -414,6 +420,7 @@ onMessageInput(): void {
     });
   }
 }
+
 
 
 isMarkdownLink(text: string): boolean {

@@ -1,3 +1,4 @@
+<!-- 🔝 Sidebar Header -->
 <div class="sidebar-header">
   <img
     src="../../assets/Dev.png"
@@ -6,8 +7,10 @@
     matTooltip="Zur Startseite"
   />
   <span class="brand-name">Devspace</span>
+
+  <!-- Edit-Icon für Desktop -->
   <mat-icon
-    class="edit-icon"
+    class="edit-icon desktop-only"
     (click)="openNewMessageDialog()"
     matTooltip="Neue Nachricht starten"
   >
@@ -15,6 +18,7 @@
   </mat-icon>
 </div>
 
+<!-- 📦 Channel-Bereich -->
 <div class="section">
   <h3 (click)="toggleChannels()" matTooltip="Channels ein-/ausklappen">
     <mat-icon class="toggle-icon">
@@ -52,6 +56,7 @@
   </mat-nav-list>
 </div>
 
+<!-- 👥 Direktnachrichten -->
 <div class="section">
   <h3 (click)="toggleDMs()" matTooltip="Direktnachrichten ein-/ausklappen">
     <mat-icon class="toggle-icon">
@@ -62,27 +67,30 @@
   </h3>
 
   <mat-nav-list *ngIf="showDMs">
-    <mat-list-item
-      *ngFor="let user of users"
-      (click)="selectUser(user)"
-    >
-      <div class="avatar-wrapper">
-        <img
-          [src]="user.avatar"
-          class="avatar"
-          alt="avatar"
-          (click)="openUserProfile(user); $event.stopPropagation()"
-        />
-<span
-  class="status-dot"
-  [ngClass]="{ 'offline': !user.isOnline }"
-  [matTooltip]="user.isOnline ? 'Online' : 'Offline'"
-></span>
+<mat-list-item *ngFor="let user of users" (click)="selectUser(user)">
+  <div class="user-entry">
+    <div class="avatar-wrapper">
+      <img [src]="user.avatar" class="avatar" alt="avatar" />
+      <span
+        class="status-dot"
+        [ngClass]="{ 'offline': !user.isOnline }"
+        [matTooltip]="user.isOnline ? 'Online' : 'Offline'"
+      ></span>
+    </div>
+    <span class="username">
+      {{ user.id === currentUser.id ? user.name + ' (Du)' : user.name }}
+    </span>
+  </div>
+</mat-list-item>
 
-      </div>
-      <span class="username">
-        {{ user.id === currentUser.id ? user.name + ' (Du)' : user.name }}
-      </span>
-    </mat-list-item>
   </mat-nav-list>
 </div>
+
+<!-- ✏️ Floating Edit-Button (nur Mobile) -->
+<button
+  class="fab-edit mobile-only"
+  (click)="openNewMessageDialog()"
+  matTooltip="Neue Nachricht"
+>
+  <mat-icon>edit</mat-icon>
+</button>

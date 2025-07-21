@@ -34,152 +34,122 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
+    height: 100%;
   }
 
   .main {
     padding: 0;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+
+    app-chat-window {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex: 1;
+
+      .chat-content {
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      .input-footer {
+        border-top: 1px solid #eee;
+      }
+    }
+
+    app-new-message.composer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
   }
 
   .thread {
-    border-left: none;
+    padding: 0;
+
+    app-thread-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+
+      .thread-content {
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      .input-area {
+        border-top: 1px solid #eee;
+      }
+    }
   }
 }
 
 .sidebar-toggle {
   position: fixed;
-  left: 10px;
   top: 50%;
-  transform: translateY(-50%) rotate(-90deg);
-  transform-origin: left center;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px 6px 0 0;
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10000;
-  cursor: pointer;
-
-  &:hover {
-    background: #f0f0f0;
-  }
-}
-
-app-chat-window {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-}
-
-.new-message-layout {
-  padding: 2rem;
-  overflow-y: auto;
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-.headline {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: #1e1e1e;
-}
-
-.new-message-form {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  height: 100%;
-}
-
-.recipient-field,
-.message-input {
-  width: 100%;
-
-  ::ng-deep .mat-form-field-outline {
-    border-radius: 999px !important;
-  }
-
-  ::ng-deep .mat-form-field-flex {
-    background: #f8f9ff;
-    height: 48px;
-    align-items: center;
-    padding: 0 1rem;
-    border-radius: 999px;
-  }
-
-  ::ng-deep .mat-input-element {
-    font-size: 0.95rem;
-    font-weight: 500;
-    font-family: 'Segoe UI', sans-serif;
-  }
-
-  ::ng-deep .mat-form-field-infix {
-    width: 100%;
-  }
-}
-
-.message-input {
-  ::ng-deep textarea.mat-input-element {
-    border-radius: 16px !important;
-    padding: 0.75rem 1rem !important;
-    font-size: 0.95rem;
-    line-height: 1.4;
-  }
-}
-
-.selected-recipients {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip {
-  background: #dbeafe;
-  color: #1e3a8a;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-
-  button {
-    background: none;
-    border: none;
-    margin-left: 6px;
-    font-weight: bold;
-    font-size: 1rem;
-    color: #1e3a8a;
-    cursor: pointer;
-    line-height: 1;
-  }
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-}
-
-app-thread-panel {
-  width: 400px;
-  height: 100%;
-  border-radius: 20px;
+  left: 12px;
+  transform: rotate(-90deg) translateY(-50%);
+  transform-origin: left top;
   background: white;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  border: 1px solid #ccc;
+  padding: 0.4rem 1rem;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  z-index: 1001;
+}
+@media (max-width: 900px) {
+  .layout.mobile-view-sidebar,
+  .layout.mobile-view-main,
+  .layout.mobile-view-thread {
+    display: flex !important;
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+  }
+
+  .layout.mobile-view-sidebar {
+    .sidebar {
+      display: flex !important;
+      width: 100%;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .main,
+    .thread {
+      display: none !important;
+    }
+  }
+
+  .layout.mobile-view-main {
+    .main {
+      display: flex !important;
+      width: 100%;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .sidebar,
+    .thread {
+      display: none !important;
+    }
+  }
+
+  .layout.mobile-view-thread {
+    .thread {
+      display: flex !important;
+      width: 100%;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .sidebar,
+    .main {
+      display: none !important;
+    }
+  }
 }

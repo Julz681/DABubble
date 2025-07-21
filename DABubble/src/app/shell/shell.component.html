@@ -1,17 +1,60 @@
 <header class="app-header">
-  <!-- Logo-Bereich -->
-  <div class="logo-bar">
-    <img
-      src="assets/Logo.png"
-      alt="Logo"
-      class="logo"
-      matTooltip="Zur Startseite"
-    />
-    <span class="title">DABubble</span>
+  <!-- Oberer Header-Inhalt -->
+  <div class="header-top">
+    <div class="logo-group">
+      <img
+        src="assets/Logo.png"
+        alt="Logo"
+        class="logo"
+        matTooltip="Zur Startseite"
+      />
+      <span class="title">DABubble</span>
+    </div>
+
+    <!-- 🔍 Suchleiste (im Desktop sichtbar) -->
+    <div class="search-container desktop-search" (click)="$event.stopPropagation()">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        (focus)="searchFocused = true"
+        (blur)="onBlur()"
+        placeholder="Devspace durchsuchen"
+        matTooltip="Channel oder Person suchen"
+      />
+      <mat-icon>search</mat-icon>
+
+      <div class="search-dropdown" *ngIf="searchFocused && filteredResults.length">
+<div class="search-result" *ngFor="let result of filteredResults" (click)="selectResult(result)">
+  <img
+    class="avatar"
+    [src]="result.type === 'channel' ? 'assets/channel.png' : (result.avatar || 'assets/default-avatar.png')"
+    alt="Avatar"
+  />
+  <div class="info">
+    <div class="name">{{ result.name }}</div>
+    <div class="tag">{{ result.type === 'channel' ? '#' : '@' }}{{ result.name }}</div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <!-- Benutzerprofil -->
+    <div class="user-profile" #dropdownContainer (click)="toggleDropdown()">
+      <span class="user-name" matTooltip="Angemeldet als {{ userName }}">{{ userName }}</span>
+      <mat-icon class="user-icon">expand_more</mat-icon>
+      <img [src]="currentUser?.avatar" class="avatar" alt="Avatar" />
+
+      <div class="dropdown-menu" *ngIf="dropdownOpen" (click)="$event.stopPropagation()">
+        <button (click)="openProfileDialog()">Profil</button>
+        <button (click)="logout()">Logout</button>
+      </div>
+    </div>
   </div>
 
-  <!-- 🔍 Suchleiste -->
-  <div class="search-container" (click)="$event.stopPropagation()">
+  <!-- 🔍 Suchleiste (nur im Mobile sichtbar) -->
+  <div class="search-container mobile-search" (click)="$event.stopPropagation()">
     <input
       type="text"
       [(ngModel)]="searchTerm"
@@ -21,9 +64,8 @@
       placeholder="Devspace durchsuchen"
       matTooltip="Channel oder Person suchen"
     />
-    <mat-icon matTooltip="Suchen">search</mat-icon>
+    <mat-icon>search</mat-icon>
 
-    <!-- 🔽 Ergebnisliste -->
     <div class="search-dropdown" *ngIf="searchFocused && filteredResults.length">
       <div
         class="search-result"
@@ -35,34 +77,6 @@
         <mat-icon class="icon" *ngIf="result.type === 'user'">person</mat-icon>
         <span>{{ result.display }}</span>
       </div>
-    </div>
-  </div>
-
-  <!-- Benutzerprofil -->
-  <div class="user-profile" #dropdownContainer>
-    <span matTooltip="Angemeldet als {{ userName }}">{{ userName }}</span>
-    <mat-icon
-      (click)="toggleDropdown()"
-      matTooltip="Menü öffnen"
-      style="cursor: pointer;"
-    >expand_more</mat-icon>
-    <img
-      [src]="currentUser?.avatar"
-      class="avatar"
-      alt="Avatar"
-    />
-
-    <div
-      class="dropdown-menu"
-      *ngIf="dropdownOpen"
-      (click)="$event.stopPropagation()"
-    >
-      <button (click)="openProfileDialog()" matTooltip="Profil ansehen und bearbeiten">
-        Profil
-      </button>
-      <button (click)="logout()" matTooltip="Abmelden">
-        Logout
-      </button>
     </div>
   </div>
 </header>

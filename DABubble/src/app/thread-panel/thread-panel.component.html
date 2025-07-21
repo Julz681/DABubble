@@ -191,6 +191,11 @@
       (keyup.enter)="sendMessage()"
       (input)="onMessageInput()"
     />
+    <!-- Datei-Vorschau -->
+<div *ngIf="selectedFileName" class="file-preview">
+  <span>{{ selectedFileName }}</span>
+</div>
+
 
 <div class="input-footer">
   <div class="left-icons">

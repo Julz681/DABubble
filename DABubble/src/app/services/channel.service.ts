@@ -240,4 +240,16 @@ setActiveUserById(id: string) {
     this.setActiveUser(user);
   }
 }
+
+getDateKey(msg: any): string {
+  const date = msg.timestamp ? new Date(msg.timestamp) : new Date();
+  return isNaN(date.getTime()) ? 'unbekannt' : date.toISOString().split('T')[0];
+}
+
+getCurrentUser(): ChatUser | null {
+  return this.activeUserSubject.getValue();
+}
+
+
+
 }

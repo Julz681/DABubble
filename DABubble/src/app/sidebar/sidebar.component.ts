@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { HostListener } from '@angular/core';
+
 
 import { ChannelDialogComponent } from '../channel-dialog/channel-dialog.component';
 import { ChannelInfoDialogComponent } from '../channel-info-dialog/channel-info-dialog.component';
@@ -31,6 +33,8 @@ import {
 })
 export class SidebarComponent implements OnInit {
   @Output() composeNewMessage = new EventEmitter<void>();
+  @Output() chatSelected = new EventEmitter<void>();
+
 
   currentUser!: CurrentUser;
   users: CurrentUser[] = [];
@@ -38,6 +42,10 @@ export class SidebarComponent implements OnInit {
 
   showChannels = true;
   showDMs = true;
+  isMobile = window.innerWidth <= 900;
+isSidebarCollapsed = false;
+showNewMessageView = false;
+
 
   constructor(
     private channelService: ChannelService,
@@ -106,14 +114,18 @@ ngOnInit() {
     this.composeNewMessage.emit();
   }
 
-  selectChannelOnly(channel: Channel) {
-    this.channelService.setActiveUser(null);
-    this.channelService.setActiveChannel(channel);
-  }
+selectChannelOnly(channel: Channel) {
+  this.channelService.setActiveUser(null);
+  this.channelService.setActiveChannel(channel);
+  this.chatSelected.emit();
+}
 
-  selectUser(user: CurrentUser) {
-    this.channelService.setActiveUser(user);
-  }
+
+selectUser(user: CurrentUser) {
+  this.channelService.setActiveUser(user);
+  this.chatSelected.emit();
+}
+
 
   updateUserInList(updatedUser: CurrentUser) {
     const existing = this.users.find((u) => u.id === updatedUser.id);
@@ -147,4 +159,13 @@ ngOnInit() {
       }
     });
   }
+
+  toggleSidebar() {
+  this.isSidebarCollapsed = !this.isSidebarCollapsed;
+}
+
+@HostListener('window:resize')
+onResize() {
+  this.isMobile = window.innerWidth <= 900;
+}
 }
