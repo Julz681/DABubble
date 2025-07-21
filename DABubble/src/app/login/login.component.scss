@@ -251,3 +251,27 @@
 }
 
 }
+
+.footer {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  font-size: 0.85rem;
+
+  a {
+    color: #5a65ea;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}

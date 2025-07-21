@@ -57,7 +57,8 @@ export class RegisterComponent {
       .then((cred) => {
         this.currentUserService.refreshCurrentUser();
         localStorage.setItem('username', this.name);
-        this.router.navigate(['/app']);
+        this.router.navigate(['/avatar-select']);
+
       })
       .catch((err) => this.errorMessage = err.message);
   }

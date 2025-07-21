@@ -177,50 +177,49 @@
           }
 
           .file-preview-image {
-  max-width: 240px;
-  border-radius: 12px;
-  margin-top: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
+            max-width: 240px;
+            border-radius: 12px;
+            margin-top: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+          }
 
-.file-preview-box {
-  display: flex;
-  align-items: center;
-  background: #f7f8ff;
-  border: 1px solid #dcdffd;
-  border-radius: 10px;
-  padding: 10px;
-  margin-top: 10px;
-  gap: 10px;
+          .file-preview-box {
+            display: flex;
+            align-items: center;
+            background: #f7f8ff;
+            border: 1px solid #dcdffd;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            gap: 10px;
 
-  .file-icon {
-    font-size: 32px;
-    color: #5c6bc0;
-  }
+            .file-icon {
+              font-size: 32px;
+              color: #5c6bc0;
+            }
 
-  .file-info {
-    display: flex;
-    flex-direction: column;
+            .file-info {
+              display: flex;
+              flex-direction: column;
 
-    .file-name {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #333;
-    }
+              .file-name {
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: #333;
+              }
 
-    .file-open-link {
-      font-size: 0.85rem;
-      color: #5c6bc0;
-      font-weight: 500;
-      text-decoration: none;
+              .file-open-link {
+                font-size: 0.85rem;
+                color: #5c6bc0;
+                font-weight: 500;
+                text-decoration: none;
 
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-}
-
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+            }
+          }
         }
       }
 
@@ -310,7 +309,7 @@
   }
 
   .chat-input {
-   padding: 1rem 1.5rem;
+    padding: 1rem 1.5rem;
     margin-top: auto;
 
     .input-box {
@@ -675,7 +674,7 @@
 
 .emoji-picker.popover {
   position: absolute;
-  bottom: 100%; 
+  bottom: 100%;
   left: 0;
   background: white;
   border: 1px solid #ccc;
@@ -688,7 +687,6 @@
   gap: 6px;
   z-index: 100;
 }
-
 
 ::ng-deep .cdk-overlay-backdrop {
   background: transparent !important;
@@ -761,6 +759,12 @@
   .file-icon {
     font-size: 20px;
     color: #666;
+  }
+}
+
+@media (max-width: 900px) {
+  h2 {
+    font-size: 16px;
   }
 }
 

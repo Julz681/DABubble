@@ -57,18 +57,28 @@ showNewMessageView = false;
 ngOnInit() {
   this.currentUserService.currentUser$.subscribe((user) => {
     this.currentUser = user;
+
+    // ⬅️ HIER einfügen
     this.updateUserInList(user);
-    this.initDefaultChannel(user);
 
-    const allUsers = this.currentUserService.getAllUsers();
+    const users = this.currentUserService.getAllUsers();
 
-    this.users = allUsers.sort((a, b) => {
-      if (a.id === user.id) return -1; // aktueller Benutzer immer oben
+    // Falls der eigene User noch nicht in der Liste ist:
+    const exists = users.find(u => u.id === user.id);
+    if (!exists) {
+      users.unshift(user);
+    }
+
+    // Sortieren: eigener User ganz oben
+    this.users = users.sort((a, b) => {
+      if (a.id === user.id) return -1;
       if (b.id === user.id) return 1;
       return a.name.localeCompare(b.name);
     });
 
     this.channelService.users = [...this.users];
+
+    this.initDefaultChannel(user);
     this.cdr.detectChanges();
   });
 
@@ -76,6 +86,7 @@ ngOnInit() {
     this.channels = channels;
   });
 }
+
 
 
 

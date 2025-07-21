@@ -11,7 +11,10 @@ export interface CurrentUser {
 
 @Injectable({ providedIn: 'root' })
 export class CurrentUserService {
-  private readonly STORAGE_KEY = 'username';
+  private readonly STORAGE_NAME_KEY = 'username';
+  private readonly STORAGE_AVATAR_KEY = 'selectedAvatar';
+
+  private readonly defaultAvatar = 'assets/unknown.png';
 
   private readonly initialUsers: CurrentUser[] = [
     { id: 'frederik', name: 'Frederik Beck', avatar: 'assets/Frederik Beck.png', isOnline: true },
@@ -23,9 +26,9 @@ export class CurrentUserService {
   ];
 
   private currentUserSubject = new BehaviorSubject<CurrentUser>({
-    id: 'frederik',
-    name: localStorage.getItem(this.STORAGE_KEY) || 'Frederik Beck',
-    avatar: 'assets/Frederik Beck.png',
+    id: 'local',
+    name: localStorage.getItem(this.STORAGE_NAME_KEY) || 'Unbekannt',
+    avatar: localStorage.getItem(this.STORAGE_AVATAR_KEY) || this.defaultAvatar,
     isOnline: true
   });
 
@@ -35,30 +38,32 @@ export class CurrentUserService {
 
   constructor(private authService: AuthService) {}
 
+  /**
+   * Holt den aktuell eingeloggten Firebase-Nutzer und setzt ihn inkl. Avatar
+   */
   refreshCurrentUser(): void {
     const firebaseUser = this.authService.currentUser;
 
     if (firebaseUser) {
       const displayName = firebaseUser.displayName ?? firebaseUser.email ?? 'Unbekannt';
+      const avatar = localStorage.getItem(this.STORAGE_AVATAR_KEY) || this.defaultAvatar;
 
       const user: CurrentUser = {
         id: firebaseUser.uid,
         name: displayName,
-        avatar: 'assets/Frederik Beck.png',
+        avatar,
         isOnline: true
       };
 
       this.currentUserSubject.next(user);
-
-      const exists = this.usersSubject.value.some(u => u.id === user.id);
-      if (!exists) {
-        this.usersSubject.next([...this.usersSubject.value, user]);
-      }
-
-      localStorage.setItem(this.STORAGE_KEY, displayName);
+      this.addOrUpdateUser(user);
+      localStorage.setItem(this.STORAGE_NAME_KEY, displayName);
     }
   }
 
+  /**
+   * Gibt das aktuell gesetzte User-Objekt zurück
+   */
   getCurrentUser(): CurrentUser {
     return this.currentUserSubject.value;
   }
@@ -67,6 +72,9 @@ export class CurrentUserService {
     return this.usersSubject.value;
   }
 
+  /**
+   * Aktualisiert den Namen des Nutzers
+   */
   updateName(newName: string): void {
     const trimmedName = newName.trim();
     if (!trimmedName) return;
@@ -78,12 +86,16 @@ export class CurrentUserService {
     };
 
     this.currentUserSubject.next(updatedUser);
-    this.updateUserInList(updatedUser);
-    localStorage.setItem(this.STORAGE_KEY, trimmedName);
+    this.addOrUpdateUser(updatedUser);
+    localStorage.setItem(this.STORAGE_NAME_KEY, trimmedName);
 
+    // Event für Live-Aktualisierung
     window.dispatchEvent(new CustomEvent('usernameChanged', { detail: trimmedName }));
   }
 
+  /**
+   * Aktualisiert das Avatar-Bild des Nutzers
+   */
   updateAvatar(newAvatar: string): void {
     const currentUser = this.currentUserSubject.value;
     const updatedUser: CurrentUser = {
@@ -92,24 +104,27 @@ export class CurrentUserService {
     };
 
     this.currentUserSubject.next(updatedUser);
-    this.updateUserInList(updatedUser);
+    this.addOrUpdateUser(updatedUser);
+    localStorage.setItem(this.STORAGE_AVATAR_KEY, newAvatar);
   }
 
-  private updateUserInList(updatedUser: CurrentUser): void {
-    const users = this.usersSubject.value;
+  /**
+   * Fügt neuen User hinzu oder aktualisiert bestehenden in der User-Liste
+   */
+  private addOrUpdateUser(updatedUser: CurrentUser): void {
+    const users = [...this.usersSubject.value];
     const index = users.findIndex(u => u.id === updatedUser.id);
 
     if (index !== -1) {
-      const existing = users[index];
       users[index] = {
-        ...existing,
+        ...users[index],
         ...updatedUser,
-        isOnline: existing.isOnline // nicht überschreiben
+        isOnline: users[index].isOnline // Online-Status behalten
       };
     } else {
       users.push(updatedUser);
     }
 
-    this.usersSubject.next([...users]);
+    this.usersSubject.next(users);
   }
 }

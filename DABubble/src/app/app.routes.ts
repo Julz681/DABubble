@@ -3,29 +3,33 @@ import { Routes } from '@angular/router';
 // 🔹 Public Components (ohne Layout)
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { AvatarSelectComponent } from './avatar-select/avatar-select.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component'; // ⬅️ NEU
 
-// 🔹 Shell Layout & App-intern
+// 🔹 Rechtliche Seiten
+import { ImpressumComponent } from './impressum/impressum.component';
+import { DatenschutzComponent } from './datenschutz/datenschutz.component';
+
+// 🔹 Haupt-App-Komponenten (mit Shell-Layout)
 import { ShellComponent } from './shell/shell.component';
 import { ChatLayoutComponent } from './chat-layout/chat-layout.component';
 import { ChatWindowComponent } from './chat-window/chat-window.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ChannelDialogComponent } from './channel-dialog/channel-dialog.component';
 
-// 🔹 Rechtliche Seiten
-import { ImpressumComponent } from './impressum/impressum.component';
-import { DatenschutzComponent } from './datenschutz/datenschutz.component';
-
 export const routes: Routes = [
-  // 🔸 Startseite leitet weiter zur Login-Seite
+  // 🔸 Startseite leitet direkt zur Login-Seite
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // 🔸 Öffentliche Seiten (Login, Registrierung, Rechtliches)
+  // 🔸 Öffentliche Seiten
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'avatar-select', component: AvatarSelectComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'impressum', component: ImpressumComponent },
   { path: 'datenschutz', component: DatenschutzComponent },
 
-  // 🔹 Haupt-App (mit Shell als Layout-Komponente)
+  // 🔹 Geschützte App-Routen mit Layout
   {
     path: 'app',
     component: ShellComponent,
@@ -34,17 +38,17 @@ export const routes: Routes = [
         path: '',
         component: ChatLayoutComponent,
         children: [
-          { path: '', component: ChatWindowComponent }, // /app
-          { path: 'chat/:user', component: ChatWindowComponent } // /app/chat/max
+          { path: '', component: ChatWindowComponent },             // /app
+          { path: 'chat/:user', component: ChatWindowComponent }    // /app/chat/max
         ]
       },
-      { path: 'profile', component: ProfileComponent }
+      { path: 'profile', component: ProfileComponent }              // /app/profile
     ]
   },
 
-  // 🔸 Optional: Channel-Dialog direkt aufrufbar
+  // 🔸 Optional direkt aufrufbarer Channel-Dialog
   { path: 'channel', component: ChannelDialogComponent },
 
-  // 🔸 Fallback: Alles andere zur Login-Seite
+  // 🔸 Fallback für ungültige Pfade
   { path: '**', redirectTo: 'login' }
 ];

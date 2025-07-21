@@ -44,9 +44,11 @@
         />
       </mat-form-field>
 
-      <a class="forgot-password" (click)="resetPassword()">
-        Passwort vergessen?
-      </a>
+<a class="forgot-password" routerLink="/reset-password">
+  Passwort vergessen?
+</a>
+
+
 
       <div class="divider"><span>ODER</span></div>
 
@@ -66,9 +68,17 @@
     </form>
   </mat-card>
 
+  <!-- Footer -->
+<footer class="footer">
+  <a routerLink="/impressum">Impressum</a>
+  <a routerLink="/datenschutz">Datenschutz</a>
+</footer>
+
+
   <!-- Nur bei kleinen Screens -->
   <div class="register-bottom">
     <span>Neu bei DABubble?</span>
     <a routerLink="/register">Konto erstellen</a>
   </div>
 </div>
+

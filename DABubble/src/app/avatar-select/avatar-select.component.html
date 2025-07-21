@@ -1,0 +1,35 @@
+<div class="avatar-select-page">
+  <div class="card">
+    <h1>Wähle deinen Avatar</h1>
+
+    <div class="avatar-preview">
+      <img [src]="selectedAvatar || defaultAvatar" alt="Avatar" />
+    </div>
+
+    <div class="user-name">{{ userName }}</div>
+    <div class="instruction">Aus der Liste wählen oder eigenen hochladen</div>
+
+    <div class="avatar-options">
+      <img
+        *ngFor="let avatar of avatars"
+        [src]="avatar"
+        [class.selected]="avatar === selectedAvatar"
+        (click)="onAvatarSelect(avatar)"
+        alt="Avatar"
+      />
+
+      <label class="upload-avatar">
+        <input type="file" (change)="onFileSelected($event)" hidden />
+        <div class="plus">+</div>
+      </label>
+    </div>
+
+    <button
+      class="continue-button"
+      [disabled]="!selectedAvatar"
+      (click)="continue()"
+    >
+      Weiter
+    </button>
+  </div>
+</div>
