@@ -1,32 +1,53 @@
 :host {
   display: block;
   padding: 2rem;
-  max-width: 500px;
-  background: #fff;
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background: white;
+  border-radius: 2rem;
+  width: 100%;
+  max-width: 900px; // 💻 Begrenzung nach oben
+  box-sizing: border-box;
+  font-family: 'Nunito', sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
 
   .dialog-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 
     h2 {
-      font-size: 1.2rem;
-      font-weight: 600;
+      font-size: 1.3rem;
+      font-weight: 700;
       margin: 0;
     }
 
     button {
-      margin-left: auto;
+      background: #f3f4ff;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+
+      mat-icon {
+        font-size: 20px;
+      }
     }
   }
 
-  p {
+  .description {
     font-size: 0.95rem;
-    color: #555;
-    margin: 0 0 1.5rem 0;
+    color: #444;
+    margin-bottom: 2rem;
     line-height: 1.4;
 
     strong {
@@ -40,45 +61,70 @@
     font-size: 0.85rem;
   }
 
-  .custom-field {
+  .pill-field {
     width: 100%;
     margin-bottom: 1.5rem;
 
-    ::ng-deep .mat-form-field-flex {
-      border-radius: 1rem;
-      background: #f9f9f9;
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background: #f3f3f3 !important;
+      border-radius: 999px !important;
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
     }
 
-    ::ng-deep .mat-form-field-appearance-fill .mat-form-field-outline {
-      border: 1px solid #ddd;
-      border-radius: 1rem;
+    ::ng-deep .mdc-notched-outline {
+      border: none !important;
     }
 
-    ::ng-deep input.mat-input-element,
-    ::ng-deep textarea.mat-input-element {
-      padding: 0.75rem 1rem;
-      border-radius: 1rem !important;
+    ::ng-deep input.mat-mdc-input-element,
+    ::ng-deep textarea.mat-mdc-input-element {
+      padding: 0.75rem 1rem !important;
+      font-size: 0.95rem;
+      border-radius: 999px !important;
+      background-color: transparent !important;
+    }
+
+    ::ng-deep textarea.mat-mdc-input-element {
+      resize: none;
+      height: auto;
+      min-height: 5rem;
+      border-radius: 1.5rem !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-infix {
+      padding: 0.75rem 0 !important;
+      min-height: 3rem;
+    }
+
+    ::ng-deep .mat-form-field-prefix {
+      font-weight: 500;
+      color: #444;
+      font-size: 1rem;
     }
   }
 
   .actions {
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
 
-    .create-button {
-      background-color: #3f51b5;
+    .create-btn {
+      background-color: #4c4cfc;
       color: white;
       border-radius: 999px;
+      font-weight: 600;
       padding: 0.5rem 1.5rem;
-      font-weight: 500;
+      box-shadow: none;
+      text-transform: none;
+      font-size: 0.95rem;
 
       &:hover {
-        background-color: #3244a5;
+        background-color: #3a3ae0;
       }
     }
   }
 }
-::ng-deep .mat-mdc-dialog-surface::before {
-  border: none !important;
-  box-shadow: none !important;
-  border-radius: inherit !important;
+
+::ng-deep .mat-mdc-form-field-flex {
+    padding-left: 20px;
 }

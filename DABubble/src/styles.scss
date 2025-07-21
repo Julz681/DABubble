@@ -1,44 +1,60 @@
-/* ------------------- */
-/* 🌊 Splash-Screen    */
-/* ------------------- */
-
 #splash-screen {
   position: fixed;
-  z-index: 9999;
-  background-color: #666CF0;
   inset: 0;
+  z-index: 9999;
+  background-color: #666cf0;
   display: flex;
   justify-content: center;
   align-items: center;
   animation: splashFadeOut 0.4s ease 2.8s forwards;
 }
 
+/* Animierter Container */
 .logo-wrapper {
   display: flex;
   align-items: center;
   gap: 12px;
+  transform: scale(1.2);
   opacity: 0;
-  transform: scale(0.6);
   animation:
     logoPopIn 0.6s ease-out 0.1s forwards,
     logoSlideLeft 0.6s ease-in-out 1.1s forwards,
-    logoMoveTopLeft 0.5s ease-in-out 2.2s forwards;
+    logoMoveTopLeft 0.6s ease-in-out 2.2s forwards;
 }
 
+/* Logo-Größe */
 .logo {
-  width: 142px;
+  width: 130px;
 }
 
+/* Titel während Splash */
 .title {
-    content: "DABubble";
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #222;
+  font-family: "Nunito", sans-serif!important;
+  font-size: 8rem;
+  font-weight: 700!important;
+  color: white;
   opacity: 0;
-  animation: titleFadeIn 0.6s ease-out 1.2s forwards;
+  transform: translateX(-150%) scale(1.3);
+  white-space: nowrap;
+  animation: titleFlyIn 0.8s ease-out 0.8s forwards;
+  transition: all 0.5s ease-in-out;
+  padding-left: 12px;
 }
 
-/* Splash Keyframes */
+
+
+/* Nach dem Splash (klein + schwarz in Ecke) */
+.title.final {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #222;
+  transform: translate(0, 0) scale(0.5);
+  opacity: 1;
+}
+
+
+/* ---------------- Keyframes ---------------- */
+
 @keyframes logoPopIn {
   to {
     opacity: 1;
@@ -52,26 +68,39 @@
   }
 }
 
-@keyframes titleFadeIn {
+@keyframes logoMoveTopLeft {
   to {
-    opacity: 1;
-    transform: translateX(0);
+    transform: translate(-42vw, -38vh) scale(0.5);
   }
 }
 
-@keyframes logoMoveTopLeft {
-  to {
-    transform: translate(-40vw, -40vh) scale(0.5);
+@keyframes titleFlyIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-150%) scale(1.3);
+    
+  }
+  60% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1.3);
   }
 }
+
 
 @keyframes splashFadeOut {
   to {
     opacity: 0;
     visibility: hidden;
-    display: none;
   }
 }
+
+
 
 /* -------------------------- */
 /* 📦 Angular Material Dialoge */
@@ -157,7 +186,7 @@ img {
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-weight: 500;
   margin: 0;
   background: #eceeff;
@@ -183,14 +212,42 @@ body {
 ::ng-deep .mat-mdc-dialog-surface::before {
   border: none !important;
   box-shadow: none !important;
-  content: '' !important;
+  content: "" !important;
   display: none !important;
 }
 ::ng-deep .mat-mdc-dialog-surface::before,
 ::ng-deep .mdc-dialog__surface::before {
   display: none !important;
-  content: '' !important;
+  content: "" !important;
   border: none !important;
   box-shadow: none !important;
 }
 
+::ng-deep .rounded-dialog .mat-mdc-dialog-surface {
+  border-radius: 1.75rem;
+}
+
+.custom-dialog-container .mat-mdc-dialog-surface {
+  border-radius: 2rem !important;
+  padding: 0 !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+/* Globale Klasse */
+.custom-dialog-container .mat-mdc-dialog-surface {
+  border-radius: 1.5rem !important;
+  background-color: #fff !important;
+  padding: 0 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25) !important;
+  font-family: "Nunito", sans-serif;
+}
+
+/* Hintergrund dimmen */
+::ng-deep .cdk-overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+body {
+  font-family: "Nunito", sans-serif;
+}

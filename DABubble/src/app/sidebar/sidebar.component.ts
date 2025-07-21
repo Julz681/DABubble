@@ -148,28 +148,31 @@ selectUser(user: CurrentUser) {
     }
   }
 
-  openChannelDialog() {
-    const dialogRef = this.dialog.open(ChannelDialogComponent, {
-      width: '500px'
-    });
+openChannelDialog() {
+  const dialogRef = this.dialog.open(ChannelDialogComponent, {
+  width: '50vw',                     
+  maxWidth: '95vw',                   
+  panelClass: 'custom-dialog-container' 
+  });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const { name, description, members, createdBy } = result;
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      const { name, description, members, createdBy } = result;
 
-        const newChannel: Channel = {
-          name,
-          description,
-          members,
-          createdBy
-        };
+      const newChannel: Channel = {
+        name,
+        description,
+        members,
+        createdBy
+      };
 
-        this.channelService.addChannel(newChannel);
-        this.channelService.setActiveChannel(newChannel);
-        this.channelService.setMembersForChannel(name, members);
-      }
-    });
-  }
+      this.channelService.addChannel(newChannel);
+      this.channelService.setActiveChannel(newChannel);
+      this.channelService.setMembersForChannel(name, members);
+    }
+  });
+}
+
 
   toggleSidebar() {
   this.isSidebarCollapsed = !this.isSidebarCollapsed;

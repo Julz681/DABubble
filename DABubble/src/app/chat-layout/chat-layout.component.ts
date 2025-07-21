@@ -7,6 +7,8 @@ import { Router, RouterModule } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NewMessageComponent } from '../new-message/new-message.component';
 import { ChangeDetectorRef } from '@angular/core';
+import { ShellComponent } from '../shell/shell.component';
+import { MobileViewService } from '../services/mobile-view.service';
 
 @Component({
   selector: 'app-chat-layout',
@@ -18,7 +20,8 @@ import { ChangeDetectorRef } from '@angular/core';
     ThreadPanelComponent,
     RouterModule,
     MatTooltipModule,
-    NewMessageComponent
+    NewMessageComponent,
+    ShellComponent
   ],
   templateUrl: './chat-layout.component.html',
   styleUrls: ['./chat-layout.component.scss']
@@ -32,23 +35,28 @@ export class ChatLayoutComponent implements OnInit {
   currentMobileView: 'sidebar' | 'main' | 'thread' = 'sidebar';
 
   constructor(
-  public router: Router,
-  private cdRef: ChangeDetectorRef
-) {}
-
-
+    public router: Router,
+    private cdRef: ChangeDetectorRef,
+    private mobileViewService: MobileViewService
+  ) {}
 
   ngOnInit() {
     this.checkMobile();
     window.addEventListener('resize', this.checkMobile.bind(this));
+
+    // 🟢 Aktuellen mobilen View beobachten
+    this.mobileViewService.mobileView$.subscribe(view => {
+      this.currentMobileView = view;
+      this.cdRef.detectChanges();
+    });
   }
 
   checkMobile() {
     this.isMobile = window.innerWidth <= 900;
 
-    // Default to sidebar view on resize if mobile
+    // Optional: Initialer mobiler View beim ersten Laden
     if (this.isMobile && !this.currentMobileView) {
-      this.currentMobileView = 'sidebar';
+      this.mobileViewService.setView('sidebar');
     }
   }
 
@@ -56,54 +64,50 @@ export class ChatLayoutComponent implements OnInit {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 
-openThreadPanel() {
-  this.isComposingNewMessage = false;
-  this.isThreadPanelOpen = true;
-  if (this.isMobile) {
-    this.currentMobileView = 'thread';
+  openThreadPanel() {
+    this.isComposingNewMessage = false;
+    this.isThreadPanelOpen = true;
+    if (this.isMobile) {
+      this.mobileViewService.setView('thread');
+    }
   }
-}
-
 
   closeThreadPanel() {
     this.isThreadPanelOpen = false;
     if (this.isMobile) {
-      this.currentMobileView = 'main';
+      this.mobileViewService.setView('main');
     }
   }
 
   startNewMessage() {
     this.isComposingNewMessage = true;
     if (this.isMobile) {
-      this.currentMobileView = 'main';
+      this.mobileViewService.setView('main');
     }
   }
 
   cancelNewMessage() {
     this.isComposingNewMessage = false;
     if (this.isMobile) {
-      this.currentMobileView = 'sidebar';
+      this.mobileViewService.setView('sidebar');
     }
   }
 
-openChat() {
-  this.isComposingNewMessage = false; 
-  if (this.isMobile) {
-    this.currentMobileView = 'main';
+  openChat() {
+    this.isComposingNewMessage = false;
+    if (this.isMobile) {
+      this.mobileViewService.setView('main');
+    }
   }
-}
-
 
   isLoginPage(): boolean {
     return this.router.url.startsWith('/login');
   }
-switchToMainView() {
-  console.log('[ChatLayout] switchToMainView called');
-  if (this.isMobile) {
-    this.currentMobileView = 'main';
-    this.cdRef.detectChanges(); // <-- neu
+
+  switchToMainView() {
+    console.log('[ChatLayout] switchToMainView called');
+    if (this.isMobile) {
+      this.mobileViewService.setView('main');
+    }
   }
-}
-
-
 }

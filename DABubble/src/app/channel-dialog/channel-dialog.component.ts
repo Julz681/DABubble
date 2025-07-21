@@ -46,12 +46,14 @@ export class ChannelDialogComponent {
 nextStep() {
   if (!this.channelName.trim()) return;
 
-  const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
-    width: '500px',
-    data: {
-      mode: 'creation',
-    },
-  });
+const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
+  width: '500px',
+  panelClass: 'custom-dialog-container', // ➕ HIER
+  data: {
+    mode: 'creation',
+  },
+});
+
 
   dialogRef.afterClosed().subscribe((members) => {
     if (members) {
