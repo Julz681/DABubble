@@ -1,9 +1,7 @@
 <!-- 🌐 Standard-Header: DABubble + Suche (nur wenn NICHT Mobile-Chat/Thread) -->
-<header
-  class="app-header"
-  *ngIf="!isMobile || currentMobileView === 'sidebar'"
+<!-- 🌐 Standard-Header: DABubble + Suche (nur wenn NICHT Mobile-Chat/Thread) -->
+<header class="app-header" [class.hidden]="isMobile && currentMobileView !== 'sidebar'">
 
->
   <div class="header-top">
     <!-- 🔵 DABubble Logo + Name -->
     <div class="logo-group">
@@ -71,12 +69,12 @@
     </div>
   </div>
 
-  <!-- 🔍 Suche (nur Mobile) -->
+  <!-- 🔍 Suche (nur Mobile – sichtbar nur bei currentMobileView === 'sidebar') -->
   <div
-  class="search-container mobile-search"
-  *ngIf="!isMobile || currentMobileView === 'sidebar'"
-  (click)="$event.stopPropagation()">
-
+    class="search-container mobile-search"
+    *ngIf="isMobile && currentMobileView === 'sidebar'"
+    (click)="$event.stopPropagation()"
+  >
     <input
       type="text"
       [(ngModel)]="searchTerm"
@@ -96,18 +94,22 @@
         [matTooltip]="result.display"
       >
         <mat-icon class="icon" *ngIf="result.type === 'channel'">tag</mat-icon>
-        <mat-icon class="icon" *ngIf="result.type === 'user'">person</mat-icon>
+        <img
+  *ngIf="result.type === 'user'"
+  [src]="result.avatar || 'assets/default-avatar.png'"
+  class="avatar"
+/>
+
         <span>{{ result.display }}</span>
       </div>
     </div>
   </div>
 </header>
 
+
 <!-- 📱 Devspace Header (nur in Mobile, wenn NICHT Sidebar) -->
-<header
-  class="app-header devspace-header"
-  *ngIf="isMobile && currentMobileView !== 'sidebar'"
->
+<header class="app-header devspace-header" [class.hidden]="!isMobile || currentMobileView === 'sidebar'">
+
   <div class="header-top">
     <!-- 🔙 Zurück-Button -->
     <button class="back-button" (click)="setMobileView('sidebar')">

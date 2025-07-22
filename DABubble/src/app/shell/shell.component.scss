@@ -191,8 +191,8 @@
   }
 
   .app-main {
-    margin-top: 160px;
-    height: calc(100vh - 160px);
+    margin-top: 120px;
+    height: calc(100vh - 100px);
   }
 }
 
@@ -331,4 +331,34 @@
     font-size: 1.1rem;
     color: #222;
   }
+}
+@media (max-width: 900px) {
+  .mobile-search {
+    display: flex;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+
+  // Fallback für devspace-header (Chatansicht): verstecke die Suche trotzdem
+  .devspace-header .mobile-search {
+    display: none !important;
+  }
+}
+
+.app-header,
+.devspace-header {
+  height: 60px; // feste Höhe hilft!
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: none !important; // kein Übergang!
+}
+
+.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  position: absolute !important; // bleibt aus dem Flow
 }

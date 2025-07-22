@@ -150,8 +150,7 @@ selectUser(user: CurrentUser) {
 
 openChannelDialog() {
   const dialogRef = this.dialog.open(ChannelDialogComponent, {
-  width: '50vw',                     
-  maxWidth: '95vw',                   
+  width: '560px',                                       
   panelClass: 'custom-dialog-container' 
   });
 

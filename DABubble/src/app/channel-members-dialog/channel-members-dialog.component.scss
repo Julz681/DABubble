@@ -1,19 +1,116 @@
-.autocomplete {
-  position: absolute;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+}
+
+// 📦 Container
+::ng-deep .custom-dialog-container .mat-mdc-dialog-container {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto !important;
+  max-width: none !important;
+}
+
+// 💬 Sichtbarer Dialog
+.dialog-wrapper {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  padding: 2rem;
   width: 100%;
-  z-index: 1000;
+  max-width: 560px;
+  box-sizing: border-box;
+}
+
+// 🗂️ Titel + Close
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  button {
+    background: #f3f4f6;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+
+    mat-icon {
+      font-size: 20px;
+      color: #374151;
+    }
+  }
+}
+
+// 📻 Radio Group
+::ng-deep .mode-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+
+  .mat-radio-button {
+    font-size: 0.95rem;
+    color: #111827;
+
+    .mat-radio-label-content {
+      padding-left: 6px;
+    }
+  }
+}
+
+// 🔍 Suchfeld
+::ng-deep .full-width.mat-mdc-form-field {
+  width: 100%;
+  margin-bottom: 0.5rem;
+
+  .mat-mdc-form-field-flex {
+    border-radius: 9999px !important;
+    background-color: white;
+    padding: 0 12px;
+  }
+
+  .mdc-notched-outline {
+    border-radius: 9999px !important;
+  }
+
+  .mat-mdc-form-field-infix {
+    padding: 0.6rem 0 !important;
+    min-height: 48px;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+  }
+}
+
+// 🔽 Dropdown
+.autocomplete {
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem 0;
+  z-index: 999;
   margin-top: 4px;
-  max-height: 200px;
-  overflow-y: auto;
 
   .user-option {
     display: flex;
     align-items: center;
-    padding: 10px 12px;
+    padding: 0.6rem 1rem;
     cursor: pointer;
     transition: background 0.2s ease;
 
@@ -22,40 +119,71 @@
     }
 
     img.avatar {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      margin-right: 12px;
+      margin-right: 10px;
     }
 
     span {
-      font-size: 14px;
-      color: #222;
+      font-size: 0.95rem;
+      color: #111827;
     }
   }
 }
 
-.full-width {
-  width: 100%;
-}
-
+// 👤 Gewählte Nutzer als Chips
 .selected-users {
-  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 1rem;
 
-  span {
+  .user-chip {
+    display: flex;
+    align-items: center;
     background: #e0e7ff;
-    padding: 4px 10px;
-    border-radius: 16px;
-    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.9rem;
     color: #1e3a8a;
+
+    img {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .remove {
+      margin-left: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #6b7280;
+
+      &:hover {
+        color: #111827;
+      }
+    }
   }
 }
 
+// ✅ Button
 .actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 16px;
+  margin-top: 1.5rem;
+
+  button {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 9999px;
+
+    &:hover {
+      background-color: #2563eb;
+    }
+  }
 }

@@ -1,17 +1,18 @@
-<div class="dialog-header">
-  <h2>Channel erstellen</h2>
-  <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
-    <mat-icon>close</mat-icon>
-  </button>
-</div>
+<div class="dialog-wrapper">
+  <div class="dialog-header">
+    <h2>Channel erstellen</h2>
+    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 
-<p class="description">
-  Channels dienen deinem Team zur Kommunikation.
-  Am besten sollten sie themenbezogen sein <strong>#marketing</strong> zum Beispiel.
-</p>
+  <p class="description">
+    Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein <strong>#marketing</strong> zum Beispiel.
+  </p>
 
-<mat-form-field appearance="fill" class="pill-field">
-  <mat-label>Channel-Name</mat-label>
+  <!-- Channel-Name -->
+<label class="field-label">Channel-Name</label>
+<mat-form-field appearance="outline" class="pill-field">
   <span matPrefix>#&nbsp;</span>
   <input
     matInput
@@ -20,8 +21,9 @@
   />
 </mat-form-field>
 
-<mat-form-field appearance="fill" class="pill-field">
-  <mat-label>Beschreibung <span class="optional">(optional)</span></mat-label>
+<!-- Beschreibung -->
+<label class="field-label">Beschreibung <span class="optional">(optional)</span></label>
+<mat-form-field appearance="outline" class="pill-field">
   <textarea
     matInput
     [(ngModel)]="description"
@@ -30,8 +32,8 @@
   ></textarea>
 </mat-form-field>
 
-<div class="actions">
-  <button mat-flat-button color="primary" class="create-btn" (click)="nextStep()">
-    Erstellen
-  </button>
+
+  <div class="actions">
+    <button mat-flat-button color="primary" class="create-btn" (click)="nextStep()">Erstellen</button>
+  </div>
 </div>

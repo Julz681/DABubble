@@ -1,130 +1,157 @@
 :host {
   display: block;
-  padding: 2rem;
-  background: white;
-  border-radius: 2rem;
   width: 100%;
-  max-width: 900px; // 💻 Begrenzung nach oben
+  max-width: none; // damit nichts beschränkt wird
+  font-family: 'Inter', sans-serif;
+}
+
+// 🖼️ Hintergrund abdunkeln & weichzeichnen
+::ng-deep .cdk-overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(2px);
+}
+
+// 💬 mat-dialog selbst: alle Ränder, Boxen entfernen
+::ng-deep .custom-dialog-container .mat-mdc-dialog-container {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto !important; // ⬅️ Wichtig!
+  max-width: none !important;
+}
+
+// 🧱 Outer-Wrapper: sichtbarer Dialog
+.dialog-wrapper {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  padding: 2rem;
+  width: 100%;
+  max-width: 560px; // ⬅️ Breiter als vorher!
   box-sizing: border-box;
-  font-family: 'Nunito', sans-serif;
+}
 
-  @media (max-width: 768px) {
-    padding: 1.5rem;
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
   }
 
-  @media (max-width: 480px) {
-    padding: 1rem;
-  }
+  button {
+    background: #f3f4f6;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
 
-  .dialog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-
-    h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    button {
-      background: #f3f4ff;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-
-      mat-icon {
-        font-size: 20px;
-      }
-    }
-  }
-
-  .description {
-    font-size: 0.95rem;
-    color: #444;
-    margin-bottom: 2rem;
-    line-height: 1.4;
-
-    strong {
-      font-weight: 600;
-    }
-  }
-
-  .optional {
-    color: #aaa;
-    font-weight: normal;
-    font-size: 0.85rem;
-  }
-
-  .pill-field {
-    width: 100%;
-    margin-bottom: 1.5rem;
-
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      background: #f3f3f3 !important;
-      border-radius: 999px !important;
-      padding-left: 0.75rem;
-      padding-right: 0.75rem;
-    }
-
-    ::ng-deep .mdc-notched-outline {
-      border: none !important;
-    }
-
-    ::ng-deep input.mat-mdc-input-element,
-    ::ng-deep textarea.mat-mdc-input-element {
-      padding: 0.75rem 1rem !important;
-      font-size: 0.95rem;
-      border-radius: 999px !important;
-      background-color: transparent !important;
-    }
-
-    ::ng-deep textarea.mat-mdc-input-element {
-      resize: none;
-      height: auto;
-      min-height: 5rem;
-      border-radius: 1.5rem !important;
-    }
-
-    ::ng-deep .mat-mdc-form-field-infix {
-      padding: 0.75rem 0 !important;
-      min-height: 3rem;
-    }
-
-    ::ng-deep .mat-form-field-prefix {
-      font-weight: 500;
-      color: #444;
-      font-size: 1rem;
-    }
-  }
-
-  .actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-
-    .create-btn {
-      background-color: #4c4cfc;
-      color: white;
-      border-radius: 999px;
-      font-weight: 600;
-      padding: 0.5rem 1.5rem;
-      box-shadow: none;
-      text-transform: none;
-      font-size: 0.95rem;
-
-      &:hover {
-        background-color: #3a3ae0;
-      }
+    mat-icon {
+      font-size: 20px;
+      color: #374151;
     }
   }
 }
 
-::ng-deep .mat-mdc-form-field-flex {
-    padding-left: 20px;
+.description {
+  font-size: 0.95rem;
+  color: #374151;
+  margin-bottom: 1.5rem;
+
+  strong {
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+.pill-field {
+  width: 100%;
+  margin-bottom: 1rem;
+
+  ::ng-deep .mat-mdc-form-field-flex {
+    border-radius: 9999px !important;
+    padding-left: 0.75rem;
+    background: white;
+  }
+
+  ::ng-deep .mdc-notched-outline {
+    border-radius: 9999px !important;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding: 0.8rem 0 !important;
+    min-height: 48px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+  }
+
+  ::ng-deep .mat-mdc-form-field-prefix {
+    display: flex;
+    align-items: center;
+    padding-right: 0.25rem;
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin-top: -2px;
+  }
+
+  .optional {
+    font-weight: normal;
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+
+  .create-btn {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 9999px;
+
+    &:hover {
+      background-color: #2563eb;
+    }
+  }
+}
+ ::ng-deep .mat-mdc-form-field:not(.mat-form-field-disabled) .mat-mdc-floating-label.mdc-floating-label {
+  padding-left: 12px;
+ }
+
+ .field-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #111827;
+  margin-bottom: 0.25rem;
+  margin-left: 0.1rem;
+}
+
+::ng-deep .mat-mdc-form-field-outline {
+  border-radius: 9999px !important;
+}
+
+::ng-deep .mdc-notched-outline__leading,
+::ng-deep .mdc-notched-outline__notch,
+::ng-deep .mdc-notched-outline__trailing {
+  border-radius: 9999px !important;
+}
+::ng-deep .mat-mdc-form-field:not(.mat-mdc-form-field-has-label)
+  .mdc-notched-outline__leading {
+  display: none !important;
 }

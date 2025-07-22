@@ -31,6 +31,7 @@
 
 .section {
   padding: 1rem;
+  padding-bottom: 28px;
 
   h3 {
     font-size: 1rem;
@@ -165,4 +166,40 @@
   @media (max-width: 900px) {
     display: flex;
   }
+}
+
+
+.sidebar-scroll-area {
+  max-height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 1rem; // optional, damit Inhalte nicht abgeschnitten werden
+
+  // Nur Scrollbar, wenn nötig
+  scrollbar-width: thin;
+  scrollbar-color: #b0b0b0 transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #bbb;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background-color 0.2s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #888;
+  }
+}
+.section mat-nav-list {
+  max-height: 500px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
 }

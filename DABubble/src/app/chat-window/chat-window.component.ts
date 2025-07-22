@@ -107,32 +107,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     },
   ];
 
-  messages: ChatMessage[] = [
-  {
-    id: 1,
-    userId: 'sofia',
-    author: 'Sofia Müller',
-    time: '09:12',
-    content: 'Willkommen im Channel! 😊',
-    avatar: 'assets/avatars/sofia.png',
-    createdAt: new Date(),
-    reactions: [],
-    replies: []
-  },
-  {
-    id: 2,
-    userId: 'noah',
-    author: 'Noah Braun',
-    time: '09:15',
-    content: 'Hey! Ich freue mich auf den Austausch hier 🚀',
-    avatar: 'assets/avatars/noah.png',
-    createdAt: new Date(),
-    reactions: [],
-    replies: []
-  }
-];
-
-
+ 
   currentUser!: CurrentUser;
 
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
@@ -157,63 +132,78 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
       this.allUsers.unshift(user);
     }
 
-    // Fallback nur wenn kein Chat aktiv ist
-    if (
-      !this.channelService.getCurrentChannel() &&
-      !this.channelService.getCurrentUser()
+    const defaultChannel = 'Entwicklerteam';
+    const members: ChatUser[] = [
+      this.currentUser,
+      this.allUsers.find((u) => u.id === 'sofia')!,
+      this.allUsers.find((u) => u.id === 'noah')!,
+      this.allUsers.find((u) => u.id === 'elise')!,
+    ];
 
-    ) {
-      const defaultChannel = 'Entwicklerteam';
-      this.activeChannelName = defaultChannel;
+    const alreadyExists = this.channelService
+      .getChannels()
+      .some((c) => c.name === defaultChannel);
 
-      this.channelService.setMembersForChannel(defaultChannel, [
-        this.currentUser,
-        this.allUsers.find((u) => u.id === 'sofia')!,
-        this.allUsers.find((u) => u.id === 'noah')!,
-        this.allUsers.find((u) => u.id === 'elise')!,
-      ]);
+    if (!alreadyExists) {
+      this.channelService.setMembersForChannel(defaultChannel, members);
 
-      if (!this.initialized) {
-        this.channelService.channelMessages[defaultChannel] = [
-          {
-            id: 1,
-            author: 'Noah Braun',
-            userId: 'noah',
-            time: '14:25 Uhr',
-            content: 'Welche Version ist aktuell von Angular?',
-            avatar: 'assets/Noah Braun.png',
-            reactions: [],
-            replies: [
-              {
-                id: 2,
-                author: 'Sofia Müller',
-                userId: 'sofia',
-                time: '14:26 Uhr',
-                content: 'Ich glaube 17.1, oder?',
-                avatar: 'assets/Sofia Müller.png',
-                reactions: [],
-                createdAt: new Date(),
-              },
-              {
-                id: 3,
-                author: user.name,
-                userId: user.id,
-                time: '14:27 Uhr',
-                content: 'Die aktuelle Version ist 17.2.1.',
-                avatar: user.avatar,
-                reactions: [],
-                isSelf: true,
-                createdAt: new Date(),
-              },
-            ],
-            createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-          },
-        ];
-        this.initialized = true;
-      }
+      this.channelService.channelMessages[defaultChannel] = [
+        {
+          id: 1,
+          author: 'Noah Braun',
+          userId: 'noah',
+          time: '14:25 Uhr',
+          content: 'Welche Version ist aktuell von Angular?',
+          avatar: 'assets/Noah Braun.png',
+          reactions: [],
+          isSelf: false,
+          replies: [
+            {
+              id: 2,
+              author: 'Sofia Müller',
+              userId: 'sofia',
+              time: '14:26 Uhr',
+              content: 'Ich glaube 17.1, oder?',
+              avatar: 'assets/Sofia Müller.png',
+              reactions: [],
+              isSelf: false,
+              createdAt: new Date(),
+            },
+            {
+              id: 3,
+              author: this.currentUser.name,
+              userId: this.currentUser.id,
+              time: '14:27 Uhr',
+              content: 'Die aktuelle Version ist 17.2.1.',
+              avatar: this.currentUser.avatar,
+              reactions: [],
+              isSelf: true,
+              createdAt: new Date(),
+            },
+          ],
+          createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+        },
+      ];
 
-      this.channelService.setActiveChannelByName(defaultChannel);
+      this.channelService.addChannel({
+        name: defaultChannel,
+        description: 'Allgemeiner Entwickler-Austausch',
+        createdBy: this.currentUser.name,
+        members,
+      });
     }
+
+    // Channel immer aktiv setzen – auch wenn schon vorhanden
+    this.channelService.setActiveChannel({
+      name: defaultChannel,
+      members,
+      description: 'Allgemeiner Entwickler-Austausch',
+      createdBy: this.currentUser.name,
+    });
+
+    this.channelService.updateMessagesForActiveTarget();
+
+    console.log('[DEBUG] Aktiver Channel gesetzt:', this.channelService.getCurrentChannel());
   });
 
   this.channelService.activeUser$.subscribe((user) => {
@@ -243,9 +233,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
       this.activeChannelName = channel.name;
       this.activeChannelDescription = channel.description || '';
       this.activeChannelCreatedBy = channel.createdBy || '';
-      this.currentChannelUsers = this.channelService.getMembersForChannel(
-        channel.name
-      );
+      this.currentChannelUsers = this.channelService.getMembersForChannel(channel.name);
     } else {
       this.activeUser = null;
       this.activeChannelName = '';
@@ -259,10 +247,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   });
 
   this.channelService.messages$.subscribe((messages) => {
-    this.currentChannelMessages = messages.map((msg) => ({
-      ...msg,
-      isSelf: msg.userId === this.currentUser.id,
-    }));
+    console.log('[DEBUG] Nachrichten empfangen:', messages);
+    this.currentChannelMessages = messages;
     this.groupMessagesByDate();
   });
 
@@ -290,7 +276,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
 
   window.addEventListener('startDirectChat', this.startDirectChatHandler);
 }
-
 
   sendMessage(): void {
     const content = this.newMessage.trim();
@@ -398,21 +383,9 @@ replyTo(message: ChatMessage): void {
   const mention = `@${this.getUserNameFromId(message.userId)} `;
   this.threadPanelService.openThread(message, mention);
 
-  if (this.threadToggle) {
-    this.threadToggle();
-  }
-
-  this.setMobileViewToMain?.(); // Mobile-Ansicht aktivieren
-
-  setTimeout(() => {
-    const input = this.chatInputRef?.nativeElement;
-    if (input) {
-      input.focus();
-      const pos = this.newMessage.length;
-      input.setSelectionRange(pos, pos);
-    }
-  }, 0);
+  this.threadToggle?.(); 
 }
+
 
 
 

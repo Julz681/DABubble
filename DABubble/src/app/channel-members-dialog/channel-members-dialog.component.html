@@ -1,52 +1,58 @@
-<h2>Leute hinzufügen</h2>
-
-<mat-radio-group *ngIf="data.mode === 'creation'" [(ngModel)]="mode" class="mode-group">
-  <mat-radio-button value="all" matTooltip="Alle Teammitglieder automatisch hinzufügen">
-    Alle Mitglieder hinzufügen
-  </mat-radio-button>
-  <mat-radio-button value="selected" matTooltip="Nur bestimmte Personen auswählen">
-    Bestimmte Leute hinzufügen
-  </mat-radio-button>
-</mat-radio-group>
-
-<mat-form-field *ngIf="mode === 'selected'" appearance="outline" class="full-width">
-  <input
-    matInput
-    [(ngModel)]="search"
-    placeholder="Name eingeben"
-    matTooltip="Gib einen Namen ein, um Mitglieder zu suchen"
-  />
-</mat-form-field>
-
-<div class="autocomplete" *ngIf="mode === 'selected' && search">
-  <div
-    class="user-option"
-    *ngFor="let user of filteredUsers()"
-    (click)="addUser(user)"
-    matTooltip="Klicken, um {{ user.name }} hinzuzufügen"
-  >
-    <img [src]="user.avatar" class="avatar" />
-    <span>{{ user.name }}</span>
+<div class="dialog-wrapper">
+  <div class="dialog-header">
+    <h2>Leute hinzufügen</h2>
+    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
-</div>
 
-<div class="selected-users" *ngIf="mode === 'selected' && selectedUsers.length">
-  <span
-    *ngFor="let user of selectedUsers"
-    matTooltip="{{ user.name }}"
-  >
-    {{ user.name }}
-  </span>
-</div>
+  <!-- Radio Auswahl -->
+  <mat-radio-group *ngIf="data.mode === 'creation'" [(ngModel)]="mode" class="mode-group">
+    <mat-radio-button value="all">
+      Alle Mitglieder von <span class="team-name">OfficeTeam</span> hinzufügen
+    </mat-radio-button>
+    <mat-radio-button value="selected">
+      Bestimmte Leute hinzufügen
+    </mat-radio-button>
+  </mat-radio-group>
 
-<div class="actions">
-  <button
-    mat-flat-button
-    color="primary"
-    (click)="confirm()"
-    matTooltip="{{ data.mode === 'creation' ? 'Channel mit gewählten Personen erstellen' : 'Mitglieder hinzufügen' }}"
-    aria-label="Bestätigen"
-  >
-    {{ data.mode === 'creation' ? 'Erstellen' : 'Hinzufügen' }}
-  </button>
+  <!-- Suchfeld -->
+  <mat-form-field *ngIf="mode === 'selected'" appearance="outline" class="pill-field">
+    <input
+      matInput
+      [(ngModel)]="search"
+      placeholder="Name eingeben"
+      matTooltip="Gib einen Namen ein, um Mitglieder zu suchen"
+    />
+  </mat-form-field>
+
+  <!-- Autovervollständigung -->
+  <div class="autocomplete" *ngIf="mode === 'selected' && search">
+    <div
+      class="user-option"
+      *ngFor="let user of filteredUsers()"
+      (click)="addUser(user)"
+    >
+      <img [src]="user.avatar" class="avatar" />
+      <span>{{ user.name }}</span>
+    </div>
+  </div>
+
+  <!-- Ausgewählte Mitglieder -->
+  <div class="selected-users" *ngIf="mode === 'selected' && selectedUsers.length">
+    <div class="user-chip" *ngFor="let user of selectedUsers">
+      <img [src]="user.avatar" />
+      {{ user.name }}
+      <button mat-icon-button (click)="removeUser(user)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Aktionen -->
+  <div class="actions">
+    <button mat-flat-button color="primary" class="create-btn" (click)="confirm()">
+      {{ data.mode === 'creation' ? 'Erstellen' : 'Hinzufügen' }}
+    </button>
+  </div>
 </div>

@@ -137,46 +137,59 @@ export class ShellComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSearch() {
-    const term = this.searchTerm.toLowerCase();
+ onSearch() {
+  const term = this.searchTerm.toLowerCase();
 
-    const channels: SearchResult[] = this.channelService.getChannels()
-      .filter(c => c.name.toLowerCase().includes(term))
-      .map(c => ({
-        type: 'channel',
-        name: c.name,
-        id: c.name,
-      }));
+  const channels: SearchResult[] = this.channelService.getChannels()
+    .filter(c => c.name.toLowerCase().includes(term))
+    .map(c => ({
+      type: 'channel',
+      name: c.name,
+      id: c.name,
+      display: `#${c.name}`
+    }));
 
-    const users: SearchResult[] = this.users
-      .filter(u => u.name.toLowerCase().includes(term))
-      .map(u => ({
-        type: 'user',
-        name: u.name,
-        id: u.id,
-        avatar: u.avatar,
-      }));
+  const users: SearchResult[] = this.users
+    .filter(u => u.name.toLowerCase().includes(term))
+    .map(u => ({
+      type: 'user',
+      name: u.name,
+      id: u.id,
+      avatar: u.avatar,
+      display: `@${u.name}`
+    }));
 
-    this.filteredResults = [...channels, ...users];
-  }
+  this.filteredResults = [...channels, ...users];
+}
+
 
   onBlur() {
     setTimeout(() => (this.searchFocused = false), 150);
   }
 
-  selectResult(result: { type: 'channel' | 'user'; id: string }) {
-    if (result.type === 'channel') {
-      const channel = this.channelService.getChannels().find(c => c.name === result.id);
-      if (channel) this.channelService.setActiveChannel(channel);
-    } else {
-      const user = this.users.find(u => u.id === result.id);
-      if (user) this.channelService.setActiveUser(user);
+selectResult(result: { type: 'channel' | 'user'; id: string }) {
+  if (result.type === 'channel') {
+    const channel = this.channelService.getChannels().find(c => c.name === result.id);
+    if (channel) {
+      this.channelService.setActiveChannel(channel);
     }
-
-    this.searchTerm = '';
-    this.filteredResults = [];
-    this.searchFocused = false;
+  } else {
+    const user = this.users.find(u => u.id === result.id);
+    if (user) {
+      this.channelService.setActiveUser(user);
+    }
   }
+
+  // 📱 Mobile: automatisch in die Chatansicht wechseln
+  if (this.isMobile) {
+    this.setMobileView('main');
+  }
+
+  this.searchTerm = '';
+  this.filteredResults = [];
+  this.searchFocused = false;
+}
+
 
   setMobileView(view: 'sidebar' | 'main' | 'thread') {
     this.mobileViewService.setView(view);

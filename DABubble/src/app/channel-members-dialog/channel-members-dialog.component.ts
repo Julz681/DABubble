@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-channel-members-dialog',
@@ -19,7 +20,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatInputModule,
     MatButtonModule,
     MatRadioModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatIconModule
   ],
   templateUrl: './channel-members-dialog.component.html',
   styleUrls: ['./channel-members-dialog.component.scss']
@@ -79,4 +81,9 @@ const result = this.mode === 'all'
 
     this.dialogRef.close(result);
   }
+
+  removeUser(userToRemove: any) {
+  this.selectedUsers = this.selectedUsers.filter(user => user !== userToRemove);
+}
+
 }

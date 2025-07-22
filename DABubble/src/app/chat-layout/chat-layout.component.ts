@@ -21,7 +21,7 @@ import { MobileViewService } from '../services/mobile-view.service';
     RouterModule,
     MatTooltipModule,
     NewMessageComponent,
-    ShellComponent
+
   ],
   templateUrl: './chat-layout.component.html',
   styleUrls: ['./chat-layout.component.scss']

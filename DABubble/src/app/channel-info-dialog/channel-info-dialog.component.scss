@@ -1,6 +1,6 @@
 :host {
   display: block;
-  max-width: 480px;
+  width: 680px;
   padding: 0;
   border-radius: 0 20px 20px 20px;
   background: white;
@@ -82,6 +82,7 @@
     margin-left: auto;
     background-color: #3b82f6;
     color: white;
+    border-radius: 999px;
 
     &:hover {
       background-color: #2563eb;
@@ -95,5 +96,25 @@
   background: #fff;
   padding: 0;
   overflow: hidden;
-  max-width: 480px;
+  width: 680px;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+::ng-deep .mat-mdc-dialog-container {
+  padding: 0 !important;
+}
+
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
+::ng-deep .cdk-overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.6) !important; // vorher 0.3
+  backdrop-filter: blur(2px); // optional für soften Look
 }
