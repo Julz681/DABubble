@@ -347,6 +347,7 @@
   }
 }
 
+
 .app-header,
 .devspace-header {
   position: fixed;
@@ -354,11 +355,13 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  height: 60px;
+}
+
+.devspace-header {
+  height: 60px; // falls speziell
 }
 .hidden {
   opacity: 0 !important;
   pointer-events: none !important;
   visibility: hidden !important;
-  // ❌ KEIN position: absolute!
 }
