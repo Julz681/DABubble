@@ -17,7 +17,7 @@ export class CurrentUserService {
   private readonly defaultAvatar = 'assets/unknown.png';
 
   private readonly initialUsers: CurrentUser[] = [
-    { id: 'frederik', name: 'Frederik Beck', avatar: 'assets/Frederik Beck.png', isOnline: true },
+ 
     { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png', isOnline: true },
     { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png', isOnline: true },
     { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png', isOnline: true },

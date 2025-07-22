@@ -28,7 +28,6 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class ChannelMembersDialogComponent {
   allUsers = [
-    { name: 'Frederik Beck (Du)', avatar: 'assets/Frederik Beck.png' },
     { name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
     { name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
     { name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },

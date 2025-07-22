@@ -8,6 +8,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { AddMembersDialogComponent } from '../app-add-members-dialog/app-add-members-dialog.component';
+
+
+
+import { ChannelService, ChatUser } from '../services/channel.service';
+import { CurrentUserService, CurrentUser } from '../services/current.user.service';
+
 
 @Component({
   selector: 'app-channel-info-dialog',
@@ -23,7 +31,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatDialogModule,
     MatIconModule,
     MatTooltipModule
-  ],
+  ]
 })
 export class ChannelInfoDialogComponent {
   editMode = false;
@@ -32,19 +40,46 @@ export class ChannelInfoDialogComponent {
   createdBy: string;
   isSystemChannel: boolean;
 
-  constructor(
-    public dialogRef: MatDialogRef<ChannelInfoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    this.isSystemChannel = data.isSystemChannel === true;
 
-    this.name = data.name;
-    this.description = this.isSystemChannel
-      ? 'Dieser Channel ist für alles rund um #Entwicklerteam vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.'
-      : data.description || 'Keine Beschreibung';
+  members: ChatUser[] = [];
+  currentUser: CurrentUser | null = null;
 
-    this.createdBy = this.isSystemChannel ? 'Noah Braun' : data.createdBy || 'Unbekannt';
+constructor(
+  public dialogRef: MatDialogRef<ChannelInfoDialogComponent>,
+  @Inject(MAT_DIALOG_DATA) public data: any,
+  private channelService: ChannelService,
+  private currentUserService: CurrentUserService,
+  private dialog: MatDialog
+) {
+  this.isSystemChannel = this.data.isSystemChannel === true;
+  this.name = this.data.name;
+  this.description = this.data.description || 'Keine Beschreibung';
+
+  // ✅ Erst den aktuellen Nutzer laden
+  this.currentUser = this.currentUserService.getCurrentUser();
+
+  // ✅ Danach prüfen, ob Entwicklerchannel
+  const isDevChannel = this.data.name?.toLowerCase()?.includes('entwickler');
+
+this.createdBy = isDevChannel
+  ? 'Noah Braun'
+  : this.currentUser?.name || 'Unbekannt';
+  // ✅ Mitglieder initialisieren
+  this.members = this.channelService.getMembersForChannel(this.name) || [];
+
+  const alreadyInList = this.members.some(
+    (u) => u.name === this.currentUser?.name
+  );
+
+  if (this.currentUser && !alreadyInList) {
+    this.members.unshift({
+      id: this.currentUser.id,
+      name: this.currentUser.name,
+      avatar: this.currentUser.avatar
+    });
   }
+}
+
 
   saveChanges() {
     if (this.isSystemChannel) {
@@ -57,8 +92,8 @@ export class ChannelInfoDialogComponent {
       data: {
         name: this.name,
         description: this.description,
-        createdBy: this.createdBy,
-      },
+        createdBy: this.createdBy
+      }
     });
   }
 
@@ -70,4 +105,38 @@ export class ChannelInfoDialogComponent {
   cancel() {
     this.dialogRef.close();
   }
+
+
+  isUserOnline(user: ChatUser): boolean {
+  return this.currentUserService.getAllUsers().some(
+    (u) => u.id === user.id && u.isOnline
+  );
+}
+
+openMemberDialog() {
+  console.debug('[DEBUG] openMemberDialog() wurde aufgerufen');
+
+  const dialogRef = this.dialog.open(AddMembersDialogComponent, {
+
+  panelClass: 'bottom-dialog',
+  width: '100vw',
+  autoFocus: false,
+  data: { existingMembers: this.members.map(u => u.name) }
+});
+
+  dialogRef.afterClosed().subscribe((newMembers: ChatUser[]) => {
+    if (newMembers && newMembers.length > 0) {
+      const updatedMembers = [...this.members, ...newMembers];
+
+      this.members = updatedMembers;
+
+      // Optional: In Service speichern
+      this.channelService.setMembersForChannel(this.name, updatedMembers);
+
+      console.debug('[DEBUG] Mitglieder aktualisiert:', updatedMembers);
+    }
+  });
+}
+
+
 }

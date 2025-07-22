@@ -58,6 +58,33 @@
   <div class="creator-name">{{ createdBy }}</div>
 </div>
 
+<!-- Mitglieder -->
+<!-- Mitglieder -->
+<div class="info-card">
+  <span class="info-label">Mitglieder</span>
+  <div class="members">
+    <div
+      class="member"
+      *ngFor="let member of members"
+      [class.self]="member.name === currentUser.name"
+    >
+      <img [src]="member.avatar || 'assets/unknown.png'" alt="{{ member.name }}" />
+      <span class="name">
+        {{ member.name }}
+        <span *ngIf="member.name === currentUser.name">(Du)</span>
+      </span>
+      <span class="status-dot" *ngIf="isUserOnline(member.name)"></span>
+    </div>
+
+    <div class="add-member" (click)="openMemberDialog()">
+      <mat-icon>person_add</mat-icon>
+      Mitglieder hinzufügen
+    </div>
+  </div>
+</div>
+
+
+
 <!-- Aktionen -->
 <div class="actions">
   <button

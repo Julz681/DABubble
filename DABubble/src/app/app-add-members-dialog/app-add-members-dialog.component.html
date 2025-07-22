@@ -1,0 +1,39 @@
+<div class="dialog-header">
+  <span>Leute hinzufügen</span>
+  <button mat-icon-button mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="input-area">
+  <div class="user-chip" *ngFor="let user of selectedUsers">
+    <img [src]="user.avatar" />
+    {{ user.name }}
+    <span class="remove" (click)="removeUser(user)">✕</span>
+  </div>
+  <input [(ngModel)]="search" placeholder="Name eingeben" />
+</div>
+
+<div class="autocomplete" *ngIf="search">
+  <div
+    class="option"
+    *ngFor="let user of filteredUsers()"
+    (click)="addUser(user)"
+  >
+    <img [src]="user.avatar" />
+    <span>{{ user.name }}</span>
+  </div>
+</div>
+
+<div class="actions">
+<button
+  mat-flat-button
+  color="primary"
+  [disabled]="selectedUsers.length === 0"
+  (click)="close()"
+>
+  Hinzufügen
+</button>
+
+</div>
+

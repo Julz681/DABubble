@@ -701,7 +701,7 @@ const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
       } else {
 
         const fallbackUsers = [
-          { id: 'frederik', name: 'Frederik Beck', avatar: 'assets/Frederik Beck.png' },
+  
           { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
           { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
           { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },

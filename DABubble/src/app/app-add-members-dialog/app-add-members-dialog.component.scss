@@ -1,0 +1,171 @@
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  padding: 1rem;
+}
+
+// 💬 Container-Wrapper im Overlay
+::ng-deep .cdk-overlay-pane.bottom-dialog {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: flex-end !important;
+  pointer-events: none; // Overlay selbst nicht klickbar
+  z-index: 1000;
+  height: 50vh;
+}
+
+// 🎯 Der sichtbare Dialog
+::ng-deep .bottom-dialog .mat-mdc-dialog-container {
+  pointer-events: all; // Klickbar
+  background: #fff;
+  border-radius: 20px 20px 0 0 !important;
+  width: 100vw;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.25s ease-out;
+}
+
+// 🎞️ Slide-In Animation
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+// 🧭 Header mit Titel + X
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+
+  button {
+    background: transparent;
+    border: none;
+    mat-icon {
+      font-size: 22px;
+      color: #374151;
+    }
+  }
+}
+
+// 🔤 Eingabefeld + Chips in einer Linie
+.input-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  padding: 6px 12px;
+  gap: 8px;
+  background: #f9fafb;
+
+  input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 0.95rem;
+    background: transparent;
+    min-width: 100px;
+  }
+}
+
+// 👤 User-Chip mit Avatar & Remove
+.user-chip {
+  display: flex;
+  align-items: center;
+  background: #e0e7ff;
+  color: #1e3a8a;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  gap: 6px;
+
+  img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+
+  .remove {
+    cursor: pointer;
+    font-size: 16px;
+    color: #6b7280;
+
+    &:hover {
+      color: #111827;
+    }
+  }
+}
+
+// 📋 Dropdown Vorschläge
+.autocomplete {
+  margin-top: 8px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background: white;
+  max-height: 160px;
+  overflow-y: auto;
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+
+    img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+    }
+
+    span {
+      font-size: 0.95rem;
+      color: #111827;
+    }
+  }
+}
+
+.actions {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    background-color: #4f46e5;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+
+    &:hover {
+      background-color: #4338ca;
+    }
+
+    &:disabled {
+      background-color: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+  }
+}

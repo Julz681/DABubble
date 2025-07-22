@@ -166,6 +166,8 @@
   overflow-y: auto;
 }
 
+
+
 // 🔽 MOBILE ANPASSUNGEN
 @media (max-width: 900px) {
   .header-top {
@@ -179,7 +181,7 @@
 
   .mobile-search {
     display: flex;
-    width: 100%;
+    width: 95%;
     margin-top: 0.75rem;
   }
 
@@ -191,7 +193,7 @@
   }
 
   .app-main {
-    margin-top: 120px;
+    margin-top: 100px;
     height: calc(100vh - 100px);
   }
 }
@@ -335,7 +337,7 @@
 @media (max-width: 900px) {
   .mobile-search {
     display: flex;
-    width: 100%;
+    width: 95%;
     margin-top: 0.75rem;
   }
 
@@ -347,18 +349,16 @@
 
 .app-header,
 .devspace-header {
-  height: 60px; // feste Höhe hilft!
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  transition: none !important; // kein Übergang!
+  height: 60px;
 }
-
 .hidden {
   opacity: 0 !important;
   pointer-events: none !important;
   visibility: hidden !important;
-  position: absolute !important; // bleibt aus dem Flow
+  // ❌ KEIN position: absolute!
 }
