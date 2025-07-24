@@ -768,3 +768,24 @@
   }
 }
 
+.message-wrapper.self {
+  .avatar {
+    margin-left: 0;
+    margin-right: 12px;
+  }
+
+  .message {
+    align-items: flex-end;
+    justify-content: flex-end;
+
+    .bubble {
+      background-color: #7c82ff;
+      color: #fff;
+      text-align: right;
+    }
+  }
+
+  .meta {
+    justify-content: flex-end;
+  }
+}

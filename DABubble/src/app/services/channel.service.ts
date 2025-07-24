@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { CurrentUser } from './current.user.service';
+import { CurrentUserService } from './current.user.service';
+
 
 export interface ChatUser {
   id: string;
@@ -39,7 +41,7 @@ export class ChannelService {
   directMessages: Record<string, any[]> = {};
   channelMessages: Record<string, any[]> = {};
 
-  
+  constructor(private currentUserService: CurrentUserService) {}
 
   // CHANNELS
 
@@ -175,16 +177,29 @@ setActiveChannel(channel: Channel | null) {
   }
 
   updateMessagesForActiveTarget() {
-    const user = this.activeUserSubject.value;
-    if (user) {
-      this.messagesSubject.next([...this.directMessages[user.id] || []]);
-    } else {
-      const channel = this.getCurrentChannel()?.name;
-      if (channel) {
-        this.messagesSubject.next([...this.channelMessages[channel] || []]);
-      }
+  const currentUser = this.currentUserService.getCurrentUser();
+  const user = this.activeUserSubject.value;
+
+  let messages: any[] = [];
+
+  if (user) {
+    messages = [...this.directMessages[user.id] || []];
+  } else {
+    const channel = this.getCurrentChannel()?.name;
+    if (channel) {
+      messages = [...this.channelMessages[channel] || []];
     }
   }
+
+  // 👇 Setze isSelf auf Basis von currentUser.id
+  const processed = messages.map((msg) => ({
+    ...msg,
+    isSelf: msg.userId === currentUser?.id,
+  }));
+
+  this.messagesSubject.next(processed);
+}
+
 
   // METADATEN (Beschreibung, Ersteller, Mitglieder)
 

@@ -206,59 +206,75 @@ toggleMentionPicker(): void {
 
 
 
-  async sendMessage() {
-    const content = this.message.trim();
-    if (!content || this.selectedRecipients.length === 0) return;
+async sendMessage() {
+  const content = this.message.trim();
+  if (!content || this.selectedRecipients.length === 0) return;
 
-    const sender = this.currentUserService.getCurrentUser();
-    if (!sender) return;
+  const sender = this.currentUserService.getCurrentUser();
+  if (!sender) return;
 
-    const attachments: string[] = [];
+  const attachments: string[] = [];
 
-    for (const file of this.selectedFiles) {
-      const path = `chat-files/${Date.now()}_${file.name}`;
-      const { url$ } = this.fileService.uploadFile(file, path);
-      const url = await new Promise<string>((resolve, reject) => {
-        url$.subscribe({ next: resolve, error: reject });
-      });
-      attachments.push(url);
-    }
-
-    const now = new Date();
-
-    for (const recipient of this.selectedRecipients) {
-      const msg = {
-        id: Date.now() + Math.floor(Math.random() * 10000),
-        author: sender.name,
-        userId: sender.id,
-        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        content,
-        avatar: sender.avatar || 'assets/default-avatar.png',
-        createdAt: now,
-        reactions: [],
-        replies: [],
-        ...(attachments.length > 0 && { url: attachments[0] }),
-      };
-
-      const isDM = recipient.type === 'user';
-      this.channelService.addMessage(recipient.id, msg, isDM);
-    }
-
-    const first = this.selectedRecipients[0];
-    if (first.type === 'user') {
-      this.channelService.setActiveUserById(first.id);
-      this.router.navigate([`/app/chat/${first.id}`]);
-    } else {
-      this.channelService.setActiveChannelByName(first.id);
-      this.router.navigate([`/app/channels/${first.id}`]);
-    }
-
-    this.message = '';
-    this.selectedRecipients = [];
-    this.selectedFiles = [];
-    this.showEmojis = false;
-    this.showMentionSuggestions = false;
+  for (const file of this.selectedFiles) {
+    const path = `chat-files/${Date.now()}_${file.name}`;
+    const { url$ } = this.fileService.uploadFile(file, path);
+    const url = await new Promise<string>((resolve, reject) => {
+      url$.subscribe({ next: resolve, error: reject });
+    });
+    attachments.push(url);
   }
+
+  const now = new Date();
+
+  for (const recipient of this.selectedRecipients) {
+    const msg = {
+      id: Date.now() + Math.floor(Math.random() * 10000),
+      author: sender.name,
+      userId: sender.id,
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      content,
+      avatar: sender.avatar || 'assets/default-avatar.png',
+      createdAt: now,
+      reactions: [],
+      replies: [],
+      ...(attachments.length > 0 && { url: attachments[0] }),
+    };
+
+    const isDM = recipient.type === 'user';
+    this.channelService.addMessage(recipient.id, msg, isDM);
+  }
+
+  const first = this.selectedRecipients[0];
+
+  if (first.type === 'user') {
+    this.channelService.setActiveUserById(first.id);
+
+    const sub = this.channelService.activeUser$.subscribe(user => {
+      if (user?.id === first.id) {
+        this.router.navigate([`/app/chat/${first.id}`]);
+        sub.unsubscribe();
+      }
+    });
+
+  } else {
+    this.channelService.setActiveChannelByName(first.id);
+
+    const sub = this.channelService.activeChannel$.subscribe(channel => {
+      if (channel?.name === first.id) {
+        this.router.navigate([`/app/channels/${first.id}`]);
+        sub.unsubscribe();
+      }
+    });
+  }
+
+  // Eingaben zurücksetzen
+  this.message = '';
+  this.selectedRecipients = [];
+  this.selectedFiles = [];
+  this.showEmojis = false;
+  this.showMentionSuggestions = false;
+}
+
 
   updateRecipientSuggestions(input: string) {
     const results: Recipient[] = [];

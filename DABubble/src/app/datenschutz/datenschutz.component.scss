@@ -1,15 +1,35 @@
+.legal-page-wrapper {
+  background-color: #eef0ff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.legal-logo {
+  margin-bottom: 1.5rem;
+
+  img {
+    width: 140px;
+  }
+}
+
 .legal-page {
-  max-width: 700px;
-  margin: 4rem auto;
-  padding: 2rem;
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  max-width: 700px;
+  width: 100%;
+  font-family: "Nunito", sans-serif;
+  color: #444;
 
   h1 {
     font-size: 2rem;
     color: #4440f6;
     margin-bottom: 1.5rem;
+    text-align: center;
   }
 
   h2 {
@@ -21,7 +41,6 @@
   p {
     line-height: 1.6;
     margin: 0.5rem 0 1rem;
-    color: #444;
   }
 
   a {
@@ -32,22 +51,26 @@
       text-decoration: underline;
     }
   }
-}
 
 .back-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
   cursor: pointer;
   color: #3f51b5;
+  transition: background-color 0.2s ease;
   margin-bottom: 1.5rem;
 
   mat-icon {
-    font-size: 20px;
+    font-size: 24px;
   }
 
   &:hover {
-    text-decoration: underline;
+    background-color: #f1f2ff;
   }
+}
+
 }
