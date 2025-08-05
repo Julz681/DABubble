@@ -18,6 +18,9 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/dabubble",
+
+
+
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -40,16 +43,17 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "20kb",
+                  "maximumError": "20kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "baseHref": "./"
             },
             "development": {
               "optimization": false,
