@@ -1,22 +1,22 @@
 <div class="login-page">
-  <!-- Header mit Logo -->
   <header class="top-bar">
     <div class="logo-container">
       <img src="assets/Logo_small.png" alt="DABubble Logo" class="logo" />
     </div>
 
-    <!-- Nur bei breiten/höheren Screens -->
     <div class="register-top">
       <span>Neu bei DABubble?</span>
-      <a routerLink="/register" matTooltip="Neues Konto anlegen">Konto erstellen</a>
+      <a routerLink="/register" matTooltip="Neues Konto anlegen"
+        >Konto erstellen</a
+      >
     </div>
   </header>
 
-  <!-- Login-Karte -->
   <mat-card class="login-card">
     <h1>Anmeldung</h1>
     <p class="hint-text">
-      Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.
+      Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
+      verwendest.
     </p>
 
     <form (ngSubmit)="login()">
@@ -44,23 +44,24 @@
         />
       </mat-form-field>
 
-<a class="forgot-password" routerLink="/reset-password">
-  Passwort vergessen?
-</a>
-
-
+      <a class="forgot-password" routerLink="/reset-password">
+        Passwort vergessen?
+      </a>
 
       <div class="divider"><span>ODER</span></div>
 
-      <button mat-stroked-button type="button" class="google-btn" (click)="loginWithGoogle()">
+      <button
+        mat-stroked-button
+        type="button"
+        class="google-btn"
+        (click)="loginWithGoogle()"
+      >
         <img src="assets/google-icon.png" alt="Google" />
         <span>Anmelden mit Google</span>
       </button>
 
       <div class="login-actions">
-        <button mat-flat-button color="primary" type="submit">
-          Anmelden
-        </button>
+        <button mat-flat-button color="primary" type="submit">Anmelden</button>
         <button mat-stroked-button type="button" (click)="loginAsGuest()">
           Gäste-Login
         </button>
@@ -68,17 +69,13 @@
     </form>
   </mat-card>
 
-  <!-- Footer -->
-<footer class="footer">
-  <a routerLink="/impressum">Impressum</a>
-  <a routerLink="/datenschutz">Datenschutz</a>
-</footer>
+  <footer class="footer">
+    <a routerLink="/impressum">Impressum</a>
+    <a routerLink="/datenschutz">Datenschutz</a>
+  </footer>
 
-
-  <!-- Nur bei kleinen Screens -->
   <div class="register-bottom">
     <span>Neu bei DABubble?</span>
     <a routerLink="/register">Konto erstellen</a>
   </div>
 </div>
-

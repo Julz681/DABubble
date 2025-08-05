@@ -1,7 +1,7 @@
 .app-header {
   display: flex;
   flex-direction: column;
-  background: #ECEEFF;
+  background: #eceeff;
   padding: 0.8rem 1.2rem;
   position: fixed;
   top: 0;
@@ -58,60 +58,58 @@
     padding-left: 8px;
   }
 
- .search-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 1001;
-  padding: 4px 0;
+  .search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1001;
+    padding: 4px 0;
 
-  .search-result {
-    display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-
-    &:hover {
-      background-color: #f3f5f7;
-    }
-
-    img,
-    mat-icon.icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      margin-right: 12px;
-      flex-shrink: 0;
-    }
-
-    mat-icon.icon {
-      border-radius: 50%;
-      background-color: #ececec;
+    .search-result {
       display: flex;
-      justify-content: center;
       align-items: center;
-      font-size: 20px;
-      padding: 6px;
-    }
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.2s ease;
 
-    span {
-      font-size: 0.95rem;
-      color: #333;
+      &:hover {
+        background-color: #f3f5f7;
+      }
+
+      img,
+      mat-icon.icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        margin-right: 12px;
+        flex-shrink: 0;
+      }
+
+      mat-icon.icon {
+        border-radius: 50%;
+        background-color: #ececec;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        padding: 6px;
+      }
+
+      span {
+        font-size: 0.95rem;
+        color: #333;
+      }
     }
   }
 }
 
-}
-
-// Desktop-Suche sichtbar, Mobile-Suche ausblenden
 .desktop-search {
   width: 60%;
 }
@@ -166,9 +164,6 @@
   overflow-y: auto;
 }
 
-
-
-// 🔽 MOBILE ANPASSUNGEN
 @media (max-width: 900px) {
   .header-top {
     flex-direction: row;
@@ -341,12 +336,10 @@
     margin-top: 0.75rem;
   }
 
-  // Fallback für devspace-header (Chatansicht): verstecke die Suche trotzdem
   .devspace-header .mobile-search {
     display: none !important;
   }
 }
-
 
 .app-header,
 .devspace-header {
@@ -358,7 +351,7 @@
 }
 
 .devspace-header {
-  height: 60px; // falls speziell
+  height: 60px;
 }
 .hidden {
   opacity: 0 !important;

@@ -9,29 +9,25 @@
   animation: splashFadeOut 0.4s ease 2.8s forwards;
 }
 
-/* Animierter Container */
 .logo-wrapper {
   display: flex;
   align-items: center;
   gap: 12px;
   transform: scale(1.2);
   opacity: 0;
-  animation:
-    logoPopIn 0.6s ease-out 0.1s forwards,
+  animation: logoPopIn 0.6s ease-out 0.1s forwards,
     logoSlideLeft 0.6s ease-in-out 1.1s forwards,
     logoMoveTopLeft 0.6s ease-in-out 2.2s forwards;
 }
 
-/* Logo-Größe */
 .logo {
   width: 130px;
 }
 
-/* Titel während Splash */
 .title {
-  font-family: "Nunito", sans-serif!important;
+  font-family: "Nunito", sans-serif !important;
   font-size: 8rem;
-  font-weight: 700!important;
+  font-weight: 700 !important;
   color: white;
   opacity: 0;
   transform: translateX(-150%) scale(1.3);
@@ -41,9 +37,6 @@
   padding-left: 12px;
 }
 
-
-
-/* Nach dem Splash (klein + schwarz in Ecke) */
 .title.final {
   font-size: 1.25rem;
   font-weight: 600;
@@ -51,9 +44,6 @@
   transform: translate(0, 0) scale(0.5);
   opacity: 1;
 }
-
-
-/* ---------------- Keyframes ---------------- */
 
 @keyframes logoPopIn {
   to {
@@ -78,7 +68,6 @@
   0% {
     opacity: 0;
     transform: translateX(-150%) scale(1.3);
-    
   }
   60% {
     opacity: 0;
@@ -92,7 +81,6 @@
   }
 }
 
-
 @keyframes splashFadeOut {
   to {
     opacity: 0;
@@ -100,13 +88,6 @@
   }
 }
 
-
-
-/* -------------------------- */
-/* 📦 Angular Material Dialoge */
-/* -------------------------- */
-
-/* Einheitliches Dialog-Styling (z. B. Channel & Profile) */
 ::ng-deep .cdk-overlay-pane.custom-channel-dialog,
 ::ng-deep .cdk-overlay-pane.profile-dialog {
   padding: 0 !important;
@@ -133,16 +114,10 @@
   box-shadow: none !important;
 }
 
-/* Optional: Dialog-Inhalte nicht beschneiden */
 ::ng-deep .cdk-overlay-pane.profile-dialog .mat-mdc-dialog-surface {
   overflow: visible !important;
 }
 
-/* -------------------------- */
-/* 🧩 Angular Material Inputs */
-/* -------------------------- */
-
-/* Basis für runde, moderne Input-Felder */
 ::ng-deep .mat-mdc-form-field {
   border-radius: 999px !important;
   overflow: hidden;
@@ -176,10 +151,6 @@
   height: 5rem;
   border-radius: 1.5rem !important;
 }
-
-/* ------------------- */
-/* 🖼️ Sonstige Stile   */
-/* ------------------- */
 
 img {
   cursor: pointer;
@@ -234,7 +205,6 @@ body {
   box-shadow: none !important;
 }
 
-/* Globale Klasse */
 .custom-dialog-container .mat-mdc-dialog-surface {
   border-radius: 1.5rem !important;
   background-color: #fff !important;
@@ -243,7 +213,6 @@ body {
   font-family: "Nunito", sans-serif;
 }
 
-/* Hintergrund dimmen */
 ::ng-deep .cdk-overlay-backdrop {
   background-color: rgba(0, 0, 0, 0.5) !important;
 }
@@ -259,8 +228,7 @@ body {
 }
 @media (max-width: 600px) {
   .logo-wrapper {
-    animation:
-      logoPopIn 0.6s ease-out 0.1s forwards,
+    animation: logoPopIn 0.6s ease-out 0.1s forwards,
       logoMoveTopLeftMobile 0.6s ease-in-out 2.2s forwards;
   }
 
@@ -270,14 +238,11 @@ body {
     }
   }
 
-
- .title {
-  animation: none !important;
-  transform: scale(1);
-  opacity: 1 !important; // ✅ sichtbar machen
-}
-
-  
+  .title {
+    animation: none !important;
+    transform: scale(1);
+    opacity: 1 !important;
+  }
 
   .title.final {
     display: inline-block !important;
@@ -286,14 +251,11 @@ body {
   }
 }
 
-
-// Globale Dialog-Scroll-Regel
 ::ng-deep .mat-mdc-dialog-container {
   max-height: 100vh;
   overflow-y: auto;
   padding-bottom: 1rem;
 
-  // Scrollbar-Styling
   scrollbar-width: thin;
   scrollbar-color: #b0b0b0 transparent;
 
@@ -318,18 +280,15 @@ body {
   }
 }
 
-
 @keyframes logoMoveTopMobile {
   to {
     transform: translateY(-42vh) scale(0.5);
   }
 }
 
-
 @media (max-width: 900px) {
   .logo-wrapper {
-    animation:
-      logoPopIn 0.6s ease-out 0.1s forwards,
+    animation: logoPopIn 0.6s ease-out 0.1s forwards,
       logoMoveTopMobile 0.6s ease-in-out 2.2s forwards !important;
   }
 

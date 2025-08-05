@@ -4,7 +4,9 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class MobileViewService {
-  private mobileViewSubject = new BehaviorSubject<'sidebar' | 'main' | 'thread'>('sidebar');
+  private mobileViewSubject = new BehaviorSubject<
+    'sidebar' | 'main' | 'thread'
+  >('sidebar');
   mobileView$ = this.mobileViewSubject.asObservable();
 
   setView(view: 'sidebar' | 'main' | 'thread') {

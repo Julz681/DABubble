@@ -7,7 +7,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   updateProfile,
-  User
+  User,
 } from '@angular/fire/auth';
 
 @Injectable({ providedIn: 'root' })
@@ -21,7 +21,11 @@ export class AuthService {
   }
 
   async register(name: string, email: string, password: string) {
-    const cred = await createUserWithEmailAndPassword(this.auth, email, password);
+    const cred = await createUserWithEmailAndPassword(
+      this.auth,
+      email,
+      password
+    );
     await updateProfile(cred.user, { displayName: name });
     await cred.user.reload();
     return cred;

@@ -25,7 +25,7 @@ import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './channel-dialog.component.html',
   styleUrls: ['./channel-dialog.component.scss'],
@@ -43,28 +43,26 @@ export class ChannelDialogComponent {
     private dialog: MatDialog
   ) {}
 
-nextStep() {
-  if (!this.channelName.trim()) return;
+  nextStep() {
+    if (!this.channelName.trim()) return;
 
-const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
-  width: '500px',
-  panelClass: 'custom-dialog-container', // ➕ HIER
-  data: {
-    mode: 'creation',
-  },
-});
+    const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
+      width: '500px',
+      panelClass: 'custom-dialog-container', // ➕ HIER
+      data: {
+        mode: 'creation',
+      },
+    });
 
-
-  dialogRef.afterClosed().subscribe((members) => {
-    if (members) {
-      // Beschreibung mitgeben
-this.dialogRef.close({
-  name: this.channelName,
-  description: this.description,
-  members,
-  createdBy: this.currentUser.name  // 👈 HINZUGEFÜGT
-});
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe((members) => {
+      if (members) {
+        this.dialogRef.close({
+          name: this.channelName,
+          description: this.description,
+          members,
+          createdBy: this.currentUser.name,
+        });
+      }
+    });
+  }
 }

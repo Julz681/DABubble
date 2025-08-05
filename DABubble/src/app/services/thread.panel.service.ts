@@ -22,30 +22,18 @@ export class ThreadPanelService {
   private _threadReplies = new BehaviorSubject<ChatMessage[]>([]);
   private _initialReplyText = new BehaviorSubject<string>('');
 
-  /** Observable für das Root-Element (die ursprüngliche Nachricht) */
   threadRootMessage$ = this._threadRootMessage.asObservable();
 
-  /** Observable für die Antworten */
   threadReplies$ = this._threadReplies.asObservable();
 
-  /** Observable für vorbefüllten Nachrichtentext */
   initialReplyText$ = this._initialReplyText.asObservable();
 
-  /**
-   * Öffnet den Thread zu einer bestimmten Nachricht.
-   * @param rootMessage Die Ursprungsnachricht
-   * @param initialReply (optional) Vorbefüllter Nachrichtentext
-   */
   openThread(rootMessage: ChatMessage, initialReply: string = ''): void {
     this._threadRootMessage.next(rootMessage);
     this._threadReplies.next(rootMessage.replies || []);
     this._initialReplyText.next(initialReply);
   }
 
-  /**
-   * Fügt eine neue Antwort im Thread hinzu
-   * @param reply Die Antwortnachricht
-   */
   addReply(reply: ChatMessage): void {
     const updatedReplies = [...this._threadReplies.value, reply];
     this._threadReplies.next(updatedReplies);
@@ -56,16 +44,10 @@ export class ThreadPanelService {
     }
   }
 
-  /**
-   * Setzt den vorgefüllten Text manuell (z. B. bei "Antworten an")
-   */
   setInitialReplyText(text: string): void {
     this._initialReplyText.next(text);
   }
 
-  /**
-   * Schließt den Thread
-   */
   close(): void {
     this._threadRootMessage.next(null);
     this._threadReplies.next([]);

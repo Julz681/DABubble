@@ -1,12 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Storage, ref, uploadBytesResumable, getDownloadURL, UploadTaskSnapshot } from '@angular/fire/storage';
+import {
+  Storage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  UploadTaskSnapshot,
+} from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FileService {
   constructor(private storage: Storage) {}
 
-  uploadFile(file: File, path: string): { percent$: Observable<number>; url$: Observable<string> } {
+  uploadFile(
+    file: File,
+    path: string
+  ): { percent$: Observable<number>; url$: Observable<string> } {
     const storageRef = ref(this.storage, path);
     const task = uploadBytesResumable(storageRef, file);
 
@@ -14,7 +23,8 @@ export class FileService {
       task.on(
         'state_changed',
         (snapshot: UploadTaskSnapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           observer.next(progress);
         },
         (error: unknown) => observer.error(error),

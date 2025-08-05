@@ -95,7 +95,7 @@
   }
 }
 
-/* Mitgliederliste */
+
 .members {
   display: flex;
   flex-direction: column;
@@ -122,7 +122,7 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #10b981; // green
+      background: #10b981; 
     }
   }
 
@@ -145,7 +145,6 @@
   }
 }
 
-/* Responsive: unter 900px */
 @media (max-width: 900px) {
   :host {
     width: 100%;
@@ -195,7 +194,6 @@
   }
 }
 
-/* Dialogcontainer */
 ::ng-deep .custom-channel-dialog .mat-dialog-container {
   border-radius: 0 20px 20px 20px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
@@ -249,7 +247,7 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #10b981; // Grün
+      background: #10b981; 
     }
 
     &.self .name {
@@ -276,7 +274,7 @@
   }
 }
 
-/* Mobil-Optimierung */
+
 @media (max-width: 900px) {
   .members .member {
     font-size: 0.9rem;

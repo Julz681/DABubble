@@ -3,7 +3,6 @@ import { BehaviorSubject } from 'rxjs';
 import { CurrentUser } from './current.user.service';
 import { CurrentUserService } from './current.user.service';
 
-
 export interface ChatUser {
   id: string;
   name: string;
@@ -23,7 +22,7 @@ export class ChannelService {
   private channelsSubject = new BehaviorSubject<Channel[]>([]);
   channels$ = this.channelsSubject.asObservable();
 
-   users: CurrentUser[] = [];
+  users: CurrentUser[] = [];
 
   private activeChannelSubject = new BehaviorSubject<Channel | null>(null);
   activeChannel$ = this.activeChannelSubject.asObservable();
@@ -42,8 +41,6 @@ export class ChannelService {
   channelMessages: Record<string, any[]> = {};
 
   constructor(private currentUserService: CurrentUserService) {}
-
-  // CHANNELS
 
   getChannels(): Channel[] {
     return this.channels;
@@ -67,26 +64,19 @@ export class ChannelService {
     }
   }
 
-removeChannel(name: string) {
-  console.log('[DEBUG] ChannelService.removeChannel: Entferne Channel:', name);
+  removeChannel(name: string) {
+    this.channels = this.channels.filter((c) => c.name !== name);
+    this.channelsSubject.next(this.channels);
 
-  this.channels = this.channels.filter((c) => c.name !== name);
-  this.channelsSubject.next(this.channels);
+    if (this.getCurrentChannel()?.name === name) {
+      this.activeChannelSubject.next(null);
+    }
 
-  if (this.getCurrentChannel()?.name === name) {
-    console.log('[DEBUG] Der zu entfernende Channel ist gerade aktiv – setze aktiv auf null');
-    this.activeChannelSubject.next(null);
+    delete this.channelMessages[name];
+    delete this.channelMembers[name];
+    delete this.channelDescriptions[name];
+    delete this.channelCreators[name];
   }
-
-  delete this.channelMessages[name];
-  delete this.channelMembers[name];
-  delete this.channelDescriptions[name];
-  delete this.channelCreators[name];
-
-  console.log('[DEBUG] Channel erfolgreich entfernt:', name);
-}
-
-
 
   renameChannel(oldName: string, newName: string) {
     const channel = this.channels.find((c) => c.name === oldName);
@@ -120,54 +110,39 @@ removeChannel(name: string) {
     }
   }
 
-  // ACTIVE CHANNEL & USER
-
   getCurrentChannel(): Channel | null {
     return this.activeChannelSubject.value;
   }
 
-setActiveChannel(channel: Channel | null) {
-  const current = this.getCurrentChannel();
+  setActiveChannel(channel: Channel | null) {
+    const current = this.getCurrentChannel();
 
-  // Wenn es sich um denselben Channel handelt, trotzdem neu setzen (z. B. zur Reaktivierung nach Wechsel)
-  const isSame = current?.name === channel?.name;
+    this.activeChannelSubject.next(channel ?? null);
 
-  // Immer subject aktualisieren, auch wenn es der gleiche Name ist
-  this.activeChannelSubject.next(channel ?? null);
+    this.setActiveUser(null);
 
-  // DM beenden, wenn Channel aktiv gesetzt wird
-  this.setActiveUser(null);
+    if (!channel) {
+      this.messagesSubject.next([]);
+      return;
+    }
 
-  if (!channel) {
-    this.messagesSubject.next([]);
-    return;
+    if (channel.members) {
+      this.setMembersForChannel(channel.name, channel.members);
+    }
+    if (channel.description) {
+      this.setDescription(channel.name, channel.description);
+    }
+    if (channel.createdBy) {
+      this.setCreatedBy(channel.name, channel.createdBy);
+    }
+
+    this.updateMessagesForActiveTarget();
   }
-
-  // Optional: Metadaten speichern
-  if (channel.members) {
-    this.setMembersForChannel(channel.name, channel.members);
-  }
-  if (channel.description) {
-    this.setDescription(channel.name, channel.description);
-  }
-  if (channel.createdBy) {
-    this.setCreatedBy(channel.name, channel.createdBy);
-  }
-
-  // Nachrichten sicher nachladen, auch bei gleichem Channel-Namen
-  this.updateMessagesForActiveTarget();
-}
-
-
-
-
 
   setActiveUser(user: ChatUser | null) {
     this.activeUserSubject.next(user);
     this.updateMessagesForActiveTarget();
   }
-
-  // MESSAGES
 
   addMessage(targetId: string, message: any, isDM = false) {
     const store = isDM ? this.directMessages : this.channelMessages;
@@ -177,31 +152,27 @@ setActiveChannel(channel: Channel | null) {
   }
 
   updateMessagesForActiveTarget() {
-  const currentUser = this.currentUserService.getCurrentUser();
-  const user = this.activeUserSubject.value;
+    const currentUser = this.currentUserService.getCurrentUser();
+    const user = this.activeUserSubject.value;
 
-  let messages: any[] = [];
+    let messages: any[] = [];
 
-  if (user) {
-    messages = [...this.directMessages[user.id] || []];
-  } else {
-    const channel = this.getCurrentChannel()?.name;
-    if (channel) {
-      messages = [...this.channelMessages[channel] || []];
+    if (user) {
+      messages = [...(this.directMessages[user.id] || [])];
+    } else {
+      const channel = this.getCurrentChannel()?.name;
+      if (channel) {
+        messages = [...(this.channelMessages[channel] || [])];
+      }
     }
+
+    const processed = messages.map((msg) => ({
+      ...msg,
+      isSelf: msg.userId === currentUser?.id,
+    }));
+
+    this.messagesSubject.next(processed);
   }
-
-  // 👇 Setze isSelf auf Basis von currentUser.id
-  const processed = messages.map((msg) => ({
-    ...msg,
-    isSelf: msg.userId === currentUser?.id,
-  }));
-
-  this.messagesSubject.next(processed);
-}
-
-
-  // METADATEN (Beschreibung, Ersteller, Mitglieder)
 
   getDescription(name: string): string {
     return this.channelDescriptions[name] || '';
@@ -238,33 +209,32 @@ setActiveChannel(channel: Channel | null) {
       this.activeChannelSubject.next({ ...current, members });
     }
   }
-clearMessages() {
-  this.messagesSubject.next([]);
-}
+  clearMessages() {
+    this.messagesSubject.next([]);
+  }
 
   setActiveChannelByName(name: string) {
-  const channel = this.channels.find((c) => c.name === name);
-  if (channel) {
-    this.setActiveChannel(channel);
+    const channel = this.channels.find((c) => c.name === name);
+    if (channel) {
+      this.setActiveChannel(channel);
+    }
   }
-}
 
-setActiveUserById(id: string) {
-  const user = this.users.find((u) => u.id === id);
-  if (user) {
-    this.setActiveUser(user);
+  setActiveUserById(id: string) {
+    const user = this.users.find((u) => u.id === id);
+    if (user) {
+      this.setActiveUser(user);
+    }
   }
-}
 
-getDateKey(msg: any): string {
-  const date = msg.timestamp ? new Date(msg.timestamp) : new Date();
-  return isNaN(date.getTime()) ? 'unbekannt' : date.toISOString().split('T')[0];
-}
+  getDateKey(msg: any): string {
+    const date = msg.timestamp ? new Date(msg.timestamp) : new Date();
+    return isNaN(date.getTime())
+      ? 'unbekannt'
+      : date.toISOString().split('T')[0];
+  }
 
-getCurrentUser(): ChatUser | null {
-  return this.activeUserSubject.getValue();
-}
-
-
-
+  getCurrentUser(): ChatUser | null {
+    return this.activeUserSubject.getValue();
+  }
 }

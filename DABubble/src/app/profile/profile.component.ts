@@ -15,7 +15,6 @@ import { Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CurrentUser } from '../services/current.user.service';
 
-
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -27,7 +26,7 @@ import { CurrentUser } from '../services/current.user.service';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
@@ -56,16 +55,14 @@ export class ProfileComponent implements OnInit {
     private fileService: FileService
   ) {}
 
-ngOnInit(): void {
-  const currentUser = this.data ?? this.currentUserService.getCurrentUser();
+  ngOnInit(): void {
+    const currentUser = this.data ?? this.currentUserService.getCurrentUser();
 
-  this.fullName = currentUser.name;
-  this.editedName = currentUser.name;
-  this.selectedAvatar = currentUser.avatar;
-  this.isOnline = currentUser.isOnline === true;
-}
-
-
+    this.fullName = currentUser.name;
+    this.editedName = currentUser.name;
+    this.selectedAvatar = currentUser.avatar;
+    this.isOnline = currentUser.isOnline === true;
+  }
 
   get currentUserEmail(): string {
     return this.authService.currentUser?.email ?? 'Unbekannt';
@@ -120,5 +117,4 @@ ngOnInit(): void {
       });
     }
   }
-  
 }

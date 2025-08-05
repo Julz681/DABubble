@@ -22,9 +22,6 @@ import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { ChannelService } from '../services/channel.service';
 import { FileService } from '../services/file.service';
 
-
-
-
 import {
   CurrentUserService,
   CurrentUser,
@@ -66,7 +63,6 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   @ViewChild('mentionMenuRef') mentionMenuRef!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-
   currentUser!: CurrentUser;
   newMessage = '';
   showEmojis = false;
@@ -78,7 +74,6 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   emojiPopoverMessage: ChatMessage | null = null;
   selectedFileName: string | null = null;
 
-
   mentionMode: 'user' | null = null;
   allUsers: any[] = [];
   filteredUsers: any[] = [];
@@ -89,7 +84,18 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   emojis: string[] = [
-    '😀', '😂', '😅', '😍', '😎', '😢', '👍', '👎', '❤️', '🔥', '🎯', '👏',
+    '😀',
+    '😂',
+    '😅',
+    '😍',
+    '😎',
+    '😢',
+    '👍',
+    '👎',
+    '❤️',
+    '🔥',
+    '🎯',
+    '👏',
   ];
 
   constructor(
@@ -97,7 +103,7 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private currentUserService: CurrentUserService,
     private channelService: ChannelService,
-    private fileService: FileService,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -105,7 +111,7 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
       this.currentUserService.currentUser$.subscribe((user) => {
         this.currentUser = user;
         this.updateOwnAvatars(user.avatar);
-        this.loadUsers(); // ⬅ Nutzerliste initial laden
+        this.loadUsers();
       })
     );
 
@@ -131,17 +137,17 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
-loadUsers(): void {
-  const currentChannel = this.channelService.getCurrentChannel();
-  if (!currentChannel) {
-    this.allUsers = [];
-    return;
+  loadUsers(): void {
+    const currentChannel = this.channelService.getCurrentChannel();
+    if (!currentChannel) {
+      this.allUsers = [];
+      return;
+    }
+
+    this.allUsers = this.channelService.getMembersForChannel(
+      currentChannel.name
+    );
   }
-
-  this.allUsers = this.channelService.getMembersForChannel(currentChannel.name);
-}
-
-
 
   toggleEmojiPicker(): void {
     this.showEmojis = !this.showEmojis;
@@ -160,53 +166,51 @@ loadUsers(): void {
     }
   }
 
-@HostListener('document:click', ['$event'])
-onClickOutside(event: MouseEvent): void {
-  const target = event.target as HTMLElement;
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
 
-  // === MENTION ===
-  const clickedInsideMention =
-    this.mentionMenuRef?.nativeElement.contains(target);
-  const clickedMentionButton =
-    target.closest('button')?.innerText === '@' || target.closest('.mention-toggle-btn');
+    const clickedInsideMention =
+      this.mentionMenuRef?.nativeElement.contains(target);
+    const clickedMentionButton =
+      target.closest('button')?.innerText === '@' ||
+      target.closest('.mention-toggle-btn');
 
-  if (!clickedInsideMention && !clickedMentionButton && this.showUsers) {
-    this.showUsers = false;
-    this.mentionMode = null;
+    if (!clickedInsideMention && !clickedMentionButton && this.showUsers) {
+      this.showUsers = false;
+      this.mentionMode = null;
+    }
+
+    const isInPopover = !!target.closest('.emoji-picker.popover');
+    const isEmojiPlus = !!target.closest('.emoji-plus');
+
+    if (!isInPopover && !isEmojiPlus) {
+      this.emojiPopoverMessage = null;
+    }
   }
 
-  // === EMOJI POPOVER ===
-  const isInPopover = !!target.closest('.emoji-picker.popover');
-  const isEmojiPlus = !!target.closest('.emoji-plus');
-
-  if (!isInPopover && !isEmojiPlus) {
-    this.emojiPopoverMessage = null;
+  onMessageInput(): void {
+    const atIndex = this.newMessage.lastIndexOf('@');
+    if (
+      atIndex !== -1 &&
+      (atIndex === 0 || this.newMessage.charAt(atIndex - 1) === ' ')
+    ) {
+      const query = this.newMessage.substring(atIndex + 1).toLowerCase();
+      this.filteredUsers = this.allUsers.filter((user) =>
+        user.name.toLowerCase().startsWith(query)
+      );
+      this.showUsers = this.filteredUsers.length > 0;
+      this.mentionMode = this.showUsers ? 'user' : null;
+    } else {
+      this.showUsers = false;
+      this.mentionMode = null;
+    }
   }
-}
-
-
-
-onMessageInput(): void {
-  const atIndex = this.newMessage.lastIndexOf('@');
-  if (atIndex !== -1 && (atIndex === 0 || this.newMessage.charAt(atIndex - 1) === ' ')) {
-    const query = this.newMessage.substring(atIndex + 1).toLowerCase();
-    this.filteredUsers = this.allUsers.filter((user) =>
-      user.name.toLowerCase().startsWith(query)
-    );
-    this.showUsers = this.filteredUsers.length > 0;
-    this.mentionMode = this.showUsers ? 'user' : null;
-  } else {
-    this.showUsers = false;
-    this.mentionMode = null;
-  }
-}
-
 
   mentionUser(user: any): void {
     const atIndex = this.newMessage.lastIndexOf('@');
     if (atIndex !== -1) {
-      this.newMessage =
-        this.newMessage.slice(0, atIndex) + `@${user.name} `;
+      this.newMessage = this.newMessage.slice(0, atIndex) + `@${user.name} `;
     } else {
       this.newMessage += `@${user.name} `;
     }
@@ -384,76 +388,72 @@ onMessageInput(): void {
     this.emojiPopoverMessage = null;
   }
 
-onFileSelected(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    const file = input.files[0];
-    this.selectedFileName = file.name; // Vorschau anzeigen
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.selectedFileName = file.name;
 
-    const now = new Date();
-    const path = `uploads/${Date.now()}_${file.name}`;
-    const { url$ } = this.fileService.uploadFile(file, path);
+      const now = new Date();
+      const path = `uploads/${Date.now()}_${file.name}`;
+      const { url$ } = this.fileService.uploadFile(file, path);
 
-    url$.subscribe({
-      next: (downloadUrl: string) => {
-        const newReply: ChatMessage = {
-          id: Date.now(),
-          userId: this.currentUser.id,
-          author: `${this.currentUser.name} (Du)`,
-          time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          content: `[Datei: ${file.name}](${downloadUrl})`,
-          avatar: this.currentUser.avatar,
-          createdAt: now,
-          reactions: [],
-          isSelf: true,
-        };
+      url$.subscribe({
+        next: (downloadUrl: string) => {
+          const newReply: ChatMessage = {
+            id: Date.now(),
+            userId: this.currentUser.id,
+            author: `${this.currentUser.name} (Du)`,
+            time: now.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            content: `[Datei: ${file.name}](${downloadUrl})`,
+            avatar: this.currentUser.avatar,
+            createdAt: now,
+            reactions: [],
+            isSelf: true,
+          };
 
-        this.threadService.addReply(newReply);
+          this.threadService.addReply(newReply);
 
-        // Reset
-        this.selectedFileName = null;
-        this.fileInput.nativeElement.value = ''; // wichtig für gleiche Datei nochmal
-      },
-      error: (err) => {
-        console.error('Upload fehlgeschlagen:', err);
-      }
-    });
+          this.selectedFileName = null;
+          this.fileInput.nativeElement.value = '';
+        },
+        error: (err) => {
+          console.error('Upload fehlgeschlagen:', err);
+        },
+      });
+    }
   }
-}
 
+  isMarkdownLink(text: string): boolean {
+    return /\[.*?\]\((https?:\/\/.*?)\)/.test(text);
+  }
 
+  extractUrl(text: string): string {
+    const match = text.match(/\((https?:\/\/.*?)\)/);
+    return match ? match[1] : '';
+  }
 
-isMarkdownLink(text: string): boolean {
-  return /\[.*?\]\((https?:\/\/.*?)\)/.test(text);
-}
+  extractFileName(text: string): string {
+    const match = text.match(/\[Datei:\s*(.*?)\]/);
+    return match ? `Datei: ${match[1]}` : 'Datei öffnen';
+  }
 
-extractUrl(text: string): string {
-  const match = text.match(/\((https?:\/\/.*?)\)/);
-  return match ? match[1] : '';
-}
-
-extractFileName(text: string): string {
-  const match = text.match(/\[Datei:\s*(.*?)\]/);
-  return match ? `Datei: ${match[1]}` : 'Datei öffnen';
-}
-
-
-get currentUserId(): string {
-  return this.currentUser?.id;
-}
+  get currentUserId(): string {
+    return this.currentUser?.id;
+  }
 
   private updateOwnAvatars(newAvatar: string): void {
-  // Root Message prüfen
-  if (this.rootMessage && this.rootMessage.userId === this.currentUser?.id) {
-    this.rootMessage.avatar = newAvatar;
+    if (this.rootMessage && this.rootMessage.userId === this.currentUser?.id) {
+      this.rootMessage.avatar = newAvatar;
+    }
+
+    this.replies = this.replies.map((reply) =>
+      reply.userId === this.currentUser?.id
+        ? { ...reply, avatar: newAvatar }
+        : reply
+    );
   }
-
-  // Alle eigenen Antworten im Thread aktualisieren
-  this.replies = this.replies.map(reply =>
-    reply.userId === this.currentUser?.id
-      ? { ...reply, avatar: newAvatar }
-      : reply
-  );
-}
-
 }

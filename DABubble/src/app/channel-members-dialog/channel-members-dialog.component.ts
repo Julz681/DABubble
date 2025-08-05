@@ -1,7 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,10 +25,10 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatRadioModule,
     MatTooltipModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './channel-members-dialog.component.html',
-  styleUrls: ['./channel-members-dialog.component.scss']
+  styleUrls: ['./channel-members-dialog.component.scss'],
 })
 export class ChannelMembersDialogComponent {
   allUsers = [
@@ -32,7 +36,7 @@ export class ChannelMembersDialogComponent {
     { name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
     { name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
     { name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
-    { name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
+    { name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' },
   ];
 
   search = '';
@@ -57,32 +61,30 @@ export class ChannelMembersDialogComponent {
   filteredUsers() {
     const alreadyInChannel = this.data.existingMembers || [];
 
-return this.allUsers.filter(user =>
-  !alreadyInChannel.includes(user.name) &&
-  !this.selectedUsers.some(s => s.name === user.name) &&
-  user.name.toLowerCase().includes(this.search.toLowerCase())
-);
-
+    return this.allUsers.filter(
+      (user) =>
+        !alreadyInChannel.includes(user.name) &&
+        !this.selectedUsers.some((s) => s.name === user.name) &&
+        user.name.toLowerCase().includes(this.search.toLowerCase())
+    );
   }
 
   addUser(user: any) {
-    if (!this.selectedUsers.some(u => u.name === user.name)) {
+    if (!this.selectedUsers.some((u) => u.name === user.name)) {
       this.selectedUsers.push(user);
       this.search = '';
     }
   }
 
   confirm() {
-const result = this.mode === 'all'
-  ? this.allUsers
-  : this.selectedUsers;
-
+    const result = this.mode === 'all' ? this.allUsers : this.selectedUsers;
 
     this.dialogRef.close(result);
   }
 
   removeUser(userToRemove: any) {
-  this.selectedUsers = this.selectedUsers.filter(user => user !== userToRemove);
-}
-
+    this.selectedUsers = this.selectedUsers.filter(
+      (user) => user !== userToRemove
+    );
+  }
 }

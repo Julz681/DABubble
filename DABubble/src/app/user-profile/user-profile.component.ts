@@ -14,15 +14,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatCardModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss']
+  styleUrls: ['./user-profile.component.scss'],
 })
 export class UserProfileComponent {
   constructor(
     public dialogRef: MatDialogRef<UserProfileComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { id: string; name: string; email: string; avatar: string }
+    @Inject(MAT_DIALOG_DATA)
+    public data: { id: string; name: string; email: string; avatar: string }
   ) {}
 
   close() {

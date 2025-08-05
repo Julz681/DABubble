@@ -12,7 +12,6 @@
   </button>
 </h2>
 
-<!-- Channel-Name -->
 <div class="info-card">
   <div class="info-header">
     <span class="info-label">Channel-Name</span>
@@ -32,7 +31,6 @@
   </mat-form-field>
 </div>
 
-<!-- Beschreibung -->
 <div class="info-card">
   <div class="info-header">
     <span class="info-label">Beschreibung</span>
@@ -52,14 +50,11 @@
   </mat-form-field>
 </div>
 
-<!-- Erstellt von -->
 <div class="info-card">
   <span class="info-label">Erstellt von</span>
   <div class="creator-name">{{ createdBy }}</div>
 </div>
 
-<!-- Mitglieder -->
-<!-- Mitglieder -->
 <div class="info-card">
   <span class="info-label">Mitglieder</span>
   <div class="members">
@@ -68,7 +63,10 @@
       *ngFor="let member of members"
       [class.self]="member.name === currentUser.name"
     >
-      <img [src]="member.avatar || 'assets/unknown.png'" alt="{{ member.name }}" />
+      <img
+        [src]="member.avatar || 'assets/unknown.png'"
+        alt="{{ member.name }}"
+      />
       <span class="name">
         {{ member.name }}
         <span *ngIf="member.name === currentUser.name">(Du)</span>
@@ -83,9 +81,6 @@
   </div>
 </div>
 
-
-
-<!-- Aktionen -->
 <div class="actions">
   <button
     mat-button

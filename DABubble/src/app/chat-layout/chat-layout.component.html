@@ -1,52 +1,46 @@
-<!-- Toggle Sidebar (optional for desktop) -->
 <button *ngIf="!isMobile" class="sidebar-toggle" (click)="toggleSidebar()">
-  {{ isSidebarCollapsed ? 'Workspace Menü öffnen' : 'Workspace Menü schließen' }}
+  {{
+    isSidebarCollapsed ? "Workspace Menü öffnen" : "Workspace Menü schließen"
+  }}
 </button>
 
-<!-- Layout Container -->
-<div class="layout"
-     [ngClass]="{
-       'sidebar-collapsed': isSidebarCollapsed,
-       'thread-open': isThreadPanelOpen,
-       'thread-closed': !isThreadPanelOpen,
-       'message-composer-open': isComposingNewMessage,
-       'mobile-view-sidebar': isMobile && currentMobileView === 'sidebar',
-       'mobile-view-main': isMobile && currentMobileView === 'main',
-       'mobile-view-thread': isMobile && currentMobileView === 'thread'
-     }">
-
-  <!-- Sidebar -->
+<div
+  class="layout"
+  [ngClass]="{
+    'sidebar-collapsed': isSidebarCollapsed,
+    'thread-open': isThreadPanelOpen,
+    'thread-closed': !isThreadPanelOpen,
+    'message-composer-open': isComposingNewMessage,
+    'mobile-view-sidebar': isMobile && currentMobileView === 'sidebar',
+    'mobile-view-main': isMobile && currentMobileView === 'main',
+    'mobile-view-thread': isMobile && currentMobileView === 'thread'
+  }"
+>
   <aside class="sidebar">
-<app-sidebar
-  *ngIf="!isSidebarCollapsed"
-  (composeNewMessage)="startNewMessage()"
-  (chatSelected)="openChat()">
-</app-sidebar>
-
+    <app-sidebar
+      *ngIf="!isSidebarCollapsed"
+      (composeNewMessage)="startNewMessage()"
+      (chatSelected)="openChat()"
+    >
+    </app-sidebar>
   </aside>
 
-<main class="main">
-  <ng-container *ngIf="!isComposingNewMessage; else composerView">
-    <app-chat-window
-      [threadToggle]="openThreadPanel.bind(this)"
-      [setMobileViewToMain]="switchToMainView.bind(this)">
-    </app-chat-window>
-  </ng-container>
+  <main class="main">
+    <ng-container *ngIf="!isComposingNewMessage; else composerView">
+      <app-chat-window
+        [threadToggle]="openThreadPanel.bind(this)"
+        [setMobileViewToMain]="switchToMainView.bind(this)"
+      >
+      </app-chat-window>
+    </ng-container>
 
-  <ng-template #composerView>
-    <app-new-message
-      (cancel)="cancelNewMessage()"
-      class="composer">
-    </app-new-message>
-  </ng-template>
-</main>
+    <ng-template #composerView>
+      <app-new-message (cancel)="cancelNewMessage()" class="composer">
+      </app-new-message>
+    </ng-template>
+  </main>
 
-
-
-  <!-- Thread Panel -->
   <section class="thread" *ngIf="isThreadPanelOpen">
     <app-thread-panel (closePanel)="closeThreadPanel()"></app-thread-panel>
   </section>
 </div>
-
-

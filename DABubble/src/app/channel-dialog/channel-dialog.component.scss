@@ -1,17 +1,15 @@
 :host {
   display: block;
   width: 100%;
-  max-width: none; // damit nichts beschränkt wird
-  font-family: 'Inter', sans-serif;
+  max-width: none;
+  font-family: "Inter", sans-serif;
 }
 
-// 🖼️ Hintergrund abdunkeln & weichzeichnen
 ::ng-deep .cdk-overlay-backdrop {
   background-color: rgba(0, 0, 0, 0.5) !important;
   backdrop-filter: blur(2px);
 }
 
-// 💬 mat-dialog selbst: alle Ränder, Boxen entfernen
 ::ng-deep .custom-dialog-container .mat-mdc-dialog-container {
   background: transparent !important;
   padding: 0 !important;
@@ -21,18 +19,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: auto !important; // ⬅️ Wichtig!
+  width: auto !important;
   max-width: none !important;
 }
 
-// 🧱 Outer-Wrapper: sichtbarer Dialog
 .dialog-wrapper {
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   padding: 2rem;
   width: 100%;
-  max-width: 560px; // ⬅️ Breiter als vorher!
+  max-width: 560px;
   box-sizing: border-box;
 }
 
@@ -129,11 +126,13 @@
     }
   }
 }
- ::ng-deep .mat-mdc-form-field:not(.mat-form-field-disabled) .mat-mdc-floating-label.mdc-floating-label {
+::ng-deep
+  .mat-mdc-form-field:not(.mat-form-field-disabled)
+  .mat-mdc-floating-label.mdc-floating-label {
   padding-left: 12px;
- }
+}
 
- .field-label {
+.field-label {
   display: block;
   font-weight: 600;
   font-size: 0.95rem;
@@ -151,7 +150,8 @@
 ::ng-deep .mdc-notched-outline__trailing {
   border-radius: 9999px !important;
 }
-::ng-deep .mat-mdc-form-field:not(.mat-mdc-form-field-has-label)
+::ng-deep
+  .mat-mdc-form-field:not(.mat-mdc-form-field-has-label)
   .mdc-notched-outline__leading {
   display: none !important;
 }

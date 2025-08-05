@@ -159,7 +159,6 @@
   }
 }
 
-// Dialog-Wrapper vollständig stylen
 ::ng-deep .cdk-overlay-pane.profile-dialog {
   position: absolute !important;
   top: 70px !important;
@@ -183,7 +182,7 @@
   border-radius: 50%;
   display: inline-block;
   margin-right: 0.5rem;
-  background-color: #4caf50; // grün
+  background-color: #4caf50;
 
   &.offline {
     background-color: grey;

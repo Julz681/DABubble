@@ -52,25 +52,24 @@
     }
   }
 
-.back-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  cursor: pointer;
-  color: #3f51b5;
-  transition: background-color 0.2s ease;
-  margin-bottom: 1.5rem;
+  .back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: #3f51b5;
+    transition: background-color 0.2s ease;
+    margin-bottom: 1.5rem;
 
-  mat-icon {
-    font-size: 24px;
+    mat-icon {
+      font-size: 24px;
+    }
+
+    &:hover {
+      background-color: #f1f2ff;
+    }
   }
-
-  &:hover {
-    background-color: #f1f2ff;
-  }
-}
-
 }

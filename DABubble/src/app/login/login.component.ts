@@ -7,10 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service'; 
+import { AuthService } from '../services/auth.service';
 import { RouterModule } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
 
 @Component({
   selector: 'app-login',
@@ -24,10 +23,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   email = '';
@@ -43,21 +42,29 @@ export class LoginComponent {
       return;
     }
 
-    this.auth.login(this.email, this.password)
+    this.auth
+      .login(this.email, this.password)
       .then((cred) => {
-        localStorage.setItem('username', cred.user.displayName ?? cred.user.email ?? '');
+        localStorage.setItem(
+          'username',
+          cred.user.displayName ?? cred.user.email ?? ''
+        );
         this.router.navigate(['/app']);
       })
-      .catch((err) => this.errorMessage = err.message);
+      .catch((err) => (this.errorMessage = err.message));
   }
 
   loginWithGoogle() {
-    this.auth.loginWithGoogle()
+    this.auth
+      .loginWithGoogle()
       .then((cred) => {
-        localStorage.setItem('username', cred.user.displayName ?? cred.user.email ?? '');
+        localStorage.setItem(
+          'username',
+          cred.user.displayName ?? cred.user.email ?? ''
+        );
         this.router.navigate(['/app']);
       })
-      .catch((err) => this.errorMessage = err.message);
+      .catch((err) => (this.errorMessage = err.message));
   }
 
   resetPassword() {
@@ -68,7 +75,8 @@ export class LoginComponent {
       return;
     }
 
-    this.auth.resetPassword(this.email)
+    this.auth
+      .resetPassword(this.email)
       .then(() => {
         this.errorMessage = 'Passwort-Zurücksetzen-Link wurde gesendet.';
       })

@@ -4,7 +4,7 @@ import {
   HostListener,
   ViewChild,
   OnInit,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
@@ -15,7 +15,10 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { ChannelService } from '../services/channel.service';
-import { CurrentUserService, CurrentUser } from '../services/current.user.service';
+import {
+  CurrentUserService,
+  CurrentUser,
+} from '../services/current.user.service';
 import { ProfileComponent } from '../profile/profile.component';
 import { MobileViewService } from '../services/mobile-view.service';
 
@@ -61,32 +64,35 @@ export class ShellComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private channelService: ChannelService,
     private currentUserService: CurrentUserService,
-    private mobileViewService: MobileViewService,
+    private mobileViewService: MobileViewService
   ) {}
 
   ngOnInit(): void {
     this.isMobile = window.innerWidth <= 900;
 
     this.subscriptions.add(
-      this.mobileViewService.mobileView$.subscribe(view => {
+      this.mobileViewService.mobileView$.subscribe((view) => {
         this.currentMobileView = view;
       })
     );
 
     this.subscriptions.add(
-      this.currentUserService.currentUser$.subscribe(user => {
+      this.currentUserService.currentUser$.subscribe((user) => {
         this.currentUser = user;
       })
     );
 
     this.subscriptions.add(
-      this.currentUserService.users$.subscribe(users => {
+      this.currentUserService.users$.subscribe((users) => {
         this.users = users;
       })
     );
 
     const savedName = localStorage.getItem('username');
-    if (savedName && (!this.currentUser || this.currentUser.name !== savedName)) {
+    if (
+      savedName &&
+      (!this.currentUser || this.currentUser.name !== savedName)
+    ) {
       this.currentUserService.updateName(savedName);
     }
   }
@@ -130,66 +136,67 @@ export class ShellComponent implements OnInit, OnDestroy {
 
   @HostListener('document:click', ['$event.target'])
   onClickOutside(targetElement: HTMLElement) {
-    const clickedInside = this.dropdownRef?.nativeElement.contains(targetElement);
+    const clickedInside =
+      this.dropdownRef?.nativeElement.contains(targetElement);
     if (!clickedInside) {
       this.dropdownOpen = false;
       this.searchFocused = false;
     }
   }
 
- onSearch() {
-  const term = this.searchTerm.toLowerCase();
+  onSearch() {
+    const term = this.searchTerm.toLowerCase();
 
-  const channels: SearchResult[] = this.channelService.getChannels()
-    .filter(c => c.name.toLowerCase().includes(term))
-    .map(c => ({
-      type: 'channel',
-      name: c.name,
-      id: c.name,
-      display: `#${c.name}`
-    }));
+    const channels: SearchResult[] = this.channelService
+      .getChannels()
+      .filter((c) => c.name.toLowerCase().includes(term))
+      .map((c) => ({
+        type: 'channel',
+        name: c.name,
+        id: c.name,
+        display: `#${c.name}`,
+      }));
 
-  const users: SearchResult[] = this.users
-    .filter(u => u.name.toLowerCase().includes(term))
-    .map(u => ({
-      type: 'user',
-      name: u.name,
-      id: u.id,
-      avatar: u.avatar,
-      display: `@${u.name}`
-    }));
+    const users: SearchResult[] = this.users
+      .filter((u) => u.name.toLowerCase().includes(term))
+      .map((u) => ({
+        type: 'user',
+        name: u.name,
+        id: u.id,
+        avatar: u.avatar,
+        display: `@${u.name}`,
+      }));
 
-  this.filteredResults = [...channels, ...users];
-}
-
+    this.filteredResults = [...channels, ...users];
+  }
 
   onBlur() {
     setTimeout(() => (this.searchFocused = false), 150);
   }
 
-selectResult(result: { type: 'channel' | 'user'; id: string }) {
-  if (result.type === 'channel') {
-    const channel = this.channelService.getChannels().find(c => c.name === result.id);
-    if (channel) {
-      this.channelService.setActiveChannel(channel);
+  selectResult(result: { type: 'channel' | 'user'; id: string }) {
+    if (result.type === 'channel') {
+      const channel = this.channelService
+        .getChannels()
+        .find((c) => c.name === result.id);
+      if (channel) {
+        this.channelService.setActiveChannel(channel);
+      }
+    } else {
+      const user = this.users.find((u) => u.id === result.id);
+      if (user) {
+        this.channelService.setActiveUser(user);
+      }
     }
-  } else {
-    const user = this.users.find(u => u.id === result.id);
-    if (user) {
-      this.channelService.setActiveUser(user);
+
+    if (this.isMobile) {
+      this.setMobileView('main');
     }
+
+    this.searchTerm = '';
+    this.filteredResults = [];
+    this.searchFocused = false;
   }
-
-  // 📱 Mobile: automatisch in die Chatansicht wechseln
-  if (this.isMobile) {
-    this.setMobileView('main');
-  }
-
-  this.searchTerm = '';
-  this.filteredResults = [];
-  this.searchFocused = false;
-}
-
 
   setMobileView(view: 'sidebar' | 'main' | 'thread') {
     this.mobileViewService.setView(view);

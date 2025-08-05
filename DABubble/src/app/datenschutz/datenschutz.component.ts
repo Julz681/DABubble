@@ -9,7 +9,7 @@ import { MatCardModule } from '@angular/material/card';
   standalone: true,
   imports: [CommonModule, MatIconModule, MatTooltipModule, MatCardModule],
   templateUrl: './datenschutz.component.html',
-  styleUrls: ['./datenschutz.component.scss']
+  styleUrls: ['./datenschutz.component.scss'],
 })
 export class DatenschutzComponent {
   constructor(private location: Location) {}

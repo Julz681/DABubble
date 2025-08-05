@@ -21,10 +21,9 @@ import { MobileViewService } from '../services/mobile-view.service';
     RouterModule,
     MatTooltipModule,
     NewMessageComponent,
-
   ],
   templateUrl: './chat-layout.component.html',
-  styleUrls: ['./chat-layout.component.scss']
+  styleUrls: ['./chat-layout.component.scss'],
 })
 export class ChatLayoutComponent implements OnInit {
   isSidebarCollapsed = false;
@@ -44,8 +43,7 @@ export class ChatLayoutComponent implements OnInit {
     this.checkMobile();
     window.addEventListener('resize', this.checkMobile.bind(this));
 
-    // 🟢 Aktuellen mobilen View beobachten
-    this.mobileViewService.mobileView$.subscribe(view => {
+    this.mobileViewService.mobileView$.subscribe((view) => {
       this.currentMobileView = view;
       this.cdRef.detectChanges();
     });
@@ -54,7 +52,6 @@ export class ChatLayoutComponent implements OnInit {
   checkMobile() {
     this.isMobile = window.innerWidth <= 900;
 
-    // Optional: Initialer mobiler View beim ersten Laden
     if (this.isMobile && !this.currentMobileView) {
       this.mobileViewService.setView('sidebar');
     }
@@ -105,7 +102,7 @@ export class ChatLayoutComponent implements OnInit {
   }
 
   switchToMainView() {
-    console.log('[ChatLayout] switchToMainView called');
+    
     if (this.isMobile) {
       this.mobileViewService.setView('main');
     }

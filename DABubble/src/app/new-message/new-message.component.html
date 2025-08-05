@@ -1,46 +1,55 @@
 <div class="new-message-wrapper">
   <h2 class="headline">Neue Nachricht</h2>
 
-  <!-- 🧑‍🤝‍🧑 Empfänger-Auswahl -->
   <div class="recipient-bar">
-<div class="chip" *ngFor="let r of selectedRecipients">
-  <img
-  class="avatar"
-  [src]="r.type === 'channel' ? 'assets/channel.png' : (r.avatar || 'assets/default-avatar.png')"
-  alt="Avatar"
-/>
+    <div class="chip" *ngFor="let r of selectedRecipients">
+      <img
+        class="avatar"
+        [src]="
+          r.type === 'channel'
+            ? 'assets/channel.png'
+            : r.avatar || 'assets/default-avatar.png'
+        "
+        alt="Avatar"
+      />
 
-  <span class="name">{{ r.name }}</span>
-  <button mat-icon-button class="remove" (click)="removeRecipient(r)">
-    <mat-icon fontSize="small">close</mat-icon>
-  </button>
-</div>
-
-<input
-  [formControl]="recipientInput"
-  placeholder="An: Benutzer oder Channel"
-  (focus)="updateRecipientSuggestions(recipientInput.value || '')"
-
-/>
-
-<ul class="suggestions" *ngIf="showRecipientSuggestions">
-  <li *ngFor="let option of filteredRecipients" (click)="selectRecipient(option)">
-    <img
-  class="avatar"
-  [src]="option.type === 'channel' ? 'assets/channel.png' : (option.avatar || 'assets/default-avatar.png')"
-  alt="Avatar"
-/>
-
-    <div class="suggestion-label">
-      <div class="name">{{ option.name }}</div>
-      <div class="tag">{{ option.type === 'channel' ? '#' : '@' }}{{ option.name }}</div>
+      <span class="name">{{ r.name }}</span>
+      <button mat-icon-button class="remove" (click)="removeRecipient(r)">
+        <mat-icon fontSize="small">close</mat-icon>
+      </button>
     </div>
-  </li>
-</ul>
 
+    <input
+      [formControl]="recipientInput"
+      placeholder="An: Benutzer oder Channel"
+      (focus)="updateRecipientSuggestions(recipientInput.value || '')"
+    />
+
+    <ul class="suggestions" *ngIf="showRecipientSuggestions">
+      <li
+        *ngFor="let option of filteredRecipients"
+        (click)="selectRecipient(option)"
+      >
+        <img
+          class="avatar"
+          [src]="
+            option.type === 'channel'
+              ? 'assets/channel.png'
+              : option.avatar || 'assets/default-avatar.png'
+          "
+          alt="Avatar"
+        />
+
+        <div class="suggestion-label">
+          <div class="name">{{ option.name }}</div>
+          <div class="tag">
+            {{ option.type === "channel" ? "#" : "@" }}{{ option.name }}
+          </div>
+        </div>
+      </li>
+    </ul>
   </div>
 
-  <!-- ✍️ Nachrichteneingabe -->
   <div class="input-box">
     <textarea
       #textArea
@@ -49,50 +58,76 @@
       placeholder="Starte eine neue Nachricht"
     ></textarea>
 
-    <!-- 🎛️ Fußleiste mit Optionen -->
     <div class="input-footer">
       <div class="left-icons">
-        <button type="button" (click)="toggleEmoji()" matTooltip="Emoji einfügen">😊</button>
-        <button type="button" (click)="toggleMentionPicker()" matTooltip="Person erwähnen">&#64;</button>
-<button type="button" (click)="triggerFileInput()" matTooltip="Datei anhängen">
-  <mat-icon>attach_file</mat-icon>
-</button>
-<input type="file" hidden #fileInputRef (change)="onFileSelected($event)" multiple />
-
+        <button
+          type="button"
+          (click)="toggleEmoji()"
+          matTooltip="Emoji einfügen"
+        >
+          😊
+        </button>
+        <button
+          type="button"
+          (click)="toggleMentionPicker()"
+          matTooltip="Person erwähnen"
+        >
+          &#64;
+        </button>
+        <button
+          type="button"
+          (click)="triggerFileInput()"
+          matTooltip="Datei anhängen"
+        >
+          <mat-icon>attach_file</mat-icon>
+        </button>
+        <input
+          type="file"
+          hidden
+          #fileInputRef
+          (change)="onFileSelected($event)"
+          multiple
+        />
       </div>
 
       <div class="right-icons">
-        <button type="button" class="send" (click)="sendMessage()" matTooltip="Nachricht senden">
+        <button
+          type="button"
+          class="send"
+          (click)="sendMessage()"
+          matTooltip="Nachricht senden"
+        >
           <mat-icon>send</mat-icon>
         </button>
       </div>
     </div>
 
-    <!-- 😊 Emoji-Auswahl -->
     <div class="emoji-picker" *ngIf="showEmojis">
-      <span *ngFor="let emoji of emojis" class="emoji" (click)="addEmoji(emoji)">
+      <span
+        *ngFor="let emoji of emojis"
+        class="emoji"
+        (click)="addEmoji(emoji)"
+      >
         {{ emoji }}
       </span>
     </div>
 
-    <!-- 📇 Mentions -->
-<!-- 📇 Mentions -->
-<ul class="mention-suggestions" *ngIf="showMentionSuggestions">
-  <li *ngFor="let user of mentionSuggestions" (click)="insertMention(user)">
-    <img
-  class="avatar"
-  [src]="user.type === 'channel' ? 'assets/channel.png' : (user.avatar || 'assets/default-avatar.png')"
-  alt="Avatar"
-/>
+    <ul class="mention-suggestions" *ngIf="showMentionSuggestions">
+      <li *ngFor="let user of mentionSuggestions" (click)="insertMention(user)">
+        <img
+          class="avatar"
+          [src]="
+            user.type === 'channel'
+              ? 'assets/channel.png'
+              : user.avatar || 'assets/default-avatar.png'
+          "
+          alt="Avatar"
+        />
 
-    <span>{{ user.name }}</span>
-  </li>
-</ul>
+        <span>{{ user.name }}</span>
+      </li>
+    </ul>
 
-
-
-
-    <!-- 📎 Datei-Vorschau -->
     <div class="file-preview" *ngIf="selectedFiles.length > 0">
       <p>Dateien:</p>
       <ul>

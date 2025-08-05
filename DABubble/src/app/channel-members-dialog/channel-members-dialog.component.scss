@@ -1,9 +1,8 @@
 :host {
   display: block;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
-// 📦 Container
 ::ng-deep .custom-dialog-container .mat-mdc-dialog-container {
   background: transparent !important;
   padding: 0 !important;
@@ -17,7 +16,6 @@
   max-width: none !important;
 }
 
-// 💬 Sichtbarer Dialog
 .dialog-wrapper {
   background: #fff;
   border-radius: 20px;
@@ -28,7 +26,6 @@
   box-sizing: border-box;
 }
 
-// 🗂️ Titel + Close
 .dialog-header {
   display: flex;
   justify-content: space-between;
@@ -55,7 +52,6 @@
   }
 }
 
-// 📻 Radio Group
 ::ng-deep .mode-group {
   display: flex;
   flex-direction: column;
@@ -72,7 +68,6 @@
   }
 }
 
-// 🔍 Suchfeld
 ::ng-deep .full-width.mat-mdc-form-field {
   width: 100%;
   margin-bottom: 0.5rem;
@@ -97,7 +92,6 @@
   }
 }
 
-// 🔽 Dropdown
 .autocomplete {
   width: 100%;
   background: #fff;
@@ -132,7 +126,6 @@
   }
 }
 
-// 👤 Gewählte Nutzer als Chips
 .selected-users {
   display: flex;
   flex-wrap: wrap;
@@ -168,7 +161,6 @@
   }
 }
 
-// ✅ Button
 .actions {
   display: flex;
   justify-content: flex-end;

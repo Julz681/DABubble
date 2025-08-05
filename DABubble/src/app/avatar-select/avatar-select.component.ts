@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './avatar-select.component.html',
-  styleUrls: ['./avatar-select.component.scss']
+  styleUrls: ['./avatar-select.component.scss'],
 })
 export class AvatarSelectComponent {
   avatars: string[] = [
@@ -47,11 +47,10 @@ export class AvatarSelectComponent {
     }
   }
 
-continue(): void {
-  if (this.selectedAvatar) {
-    localStorage.setItem('selectedAvatar', this.selectedAvatar); // speichern
-    this.router.navigate(['/app']);
+  continue(): void {
+    if (this.selectedAvatar) {
+      localStorage.setItem('selectedAvatar', this.selectedAvatar);
+      this.router.navigate(['/app']);
+    }
   }
-}
-
 }

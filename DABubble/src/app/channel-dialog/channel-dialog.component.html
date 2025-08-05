@@ -7,33 +7,40 @@
   </div>
 
   <p class="description">
-    Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein <strong>#marketing</strong> zum Beispiel.
+    Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
+    themenbezogen sein <strong>#marketing</strong> zum Beispiel.
   </p>
 
-  <!-- Channel-Name -->
-<label class="field-label">Channel-Name</label>
-<mat-form-field appearance="outline" class="pill-field">
-  <span matPrefix>#&nbsp;</span>
-  <input
-    matInput
-    [(ngModel)]="channelName"
-    placeholder="z.B. Kooperationsprojekte"
-  />
-</mat-form-field>
+  <label class="field-label">Channel-Name</label>
+  <mat-form-field appearance="outline" class="pill-field">
+    <span matPrefix>#&nbsp;</span>
+    <input
+      matInput
+      [(ngModel)]="channelName"
+      placeholder="z.B. Kooperationsprojekte"
+    />
+  </mat-form-field>
 
-<!-- Beschreibung -->
-<label class="field-label">Beschreibung <span class="optional">(optional)</span></label>
-<mat-form-field appearance="outline" class="pill-field">
-  <textarea
-    matInput
-    [(ngModel)]="description"
-    placeholder="Dein Text hier"
-    rows="2"
-  ></textarea>
-</mat-form-field>
-
+  <label class="field-label"
+    >Beschreibung <span class="optional">(optional)</span></label
+  >
+  <mat-form-field appearance="outline" class="pill-field">
+    <textarea
+      matInput
+      [(ngModel)]="description"
+      placeholder="Dein Text hier"
+      rows="2"
+    ></textarea>
+  </mat-form-field>
 
   <div class="actions">
-    <button mat-flat-button color="primary" class="create-btn" (click)="nextStep()">Erstellen</button>
+    <button
+      mat-flat-button
+      color="primary"
+      class="create-btn"
+      (click)="nextStep()"
+    >
+      Erstellen
+    </button>
   </div>
 </div>

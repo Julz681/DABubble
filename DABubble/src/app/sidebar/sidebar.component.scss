@@ -24,7 +24,7 @@
 
   @media (max-width: 900px) {
     .edit-icon {
-      display: none; // nur Floating-Button in Mobile
+      display: none;
     }
   }
 }
@@ -127,7 +127,6 @@
   cursor: pointer;
 }
 
-/* Floating Action Button (nur im Mobile) */
 .fab-edit {
   display: none;
 
@@ -153,7 +152,6 @@
   }
 }
 
-/* Sichtbarkeitsklassen */
 .desktop-only {
   @media (max-width: 900px) {
     display: none !important;
@@ -168,13 +166,11 @@
   }
 }
 
-
 .sidebar-scroll-area {
   max-height: 100vh;
   overflow-y: auto;
-  padding-bottom: 1rem; // optional, damit Inhalte nicht abgeschnitten werden
+  padding-bottom: 1rem;
 
-  // Nur Scrollbar, wenn nötig
   scrollbar-width: thin;
   scrollbar-color: #b0b0b0 transparent;
 

@@ -20,8 +20,6 @@ import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FileService } from '../services/file.service';
 
-
-
 import {
   CurrentUserService,
   CurrentUser,
@@ -85,9 +83,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   private initialized = false;
   selectedFileName: string | null = null;
 
-
-
-
   activeUser: ChatUser | null = null;
   activeChannelName = '';
 
@@ -107,7 +102,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     },
   ];
 
- 
   currentUser!: CurrentUser;
 
   emojis = ['😀', '😄', '🚀', '❤️', '👍', '✅', '🎯', '😂'];
@@ -117,165 +111,165 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private threadPanelService: ThreadPanelService,
     private currentUserService: CurrentUserService,
-    private fileService: FileService, 
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
-  this.currentUserService.currentUser$.subscribe((user) => {
-    this.currentUser = user;
+    this.currentUserService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
 
-    const existing = this.allUsers.find((u) => u.id === user.id);
-    if (existing) {
-      existing.name = user.name;
-      existing.avatar = user.avatar;
-    } else {
-      this.allUsers.unshift(user);
-    }
-
-    const defaultChannel = 'Entwicklerteam';
-    const members: ChatUser[] = [
-      this.currentUser,
-      this.allUsers.find((u) => u.id === 'sofia')!,
-      this.allUsers.find((u) => u.id === 'noah')!,
-      this.allUsers.find((u) => u.id === 'elise')!,
-    ];
-
-    const alreadyExists = this.channelService
-      .getChannels()
-      .some((c) => c.name === defaultChannel);
-
-    if (!alreadyExists) {
-      this.channelService.setMembersForChannel(defaultChannel, members);
-
-      this.channelService.channelMessages[defaultChannel] = [
-        {
-          id: 1,
-          author: 'Noah Braun',
-          userId: 'noah',
-          time: '14:25 Uhr',
-          content: 'Welche Version ist aktuell von Angular?',
-          avatar: 'assets/Noah Braun.png',
-          reactions: [],
-          isSelf: false,
-          replies: [
-            {
-              id: 2,
-              author: 'Sofia Müller',
-              userId: 'sofia',
-              time: '14:26 Uhr',
-              content: 'Ich glaube 17.1, oder?',
-              avatar: 'assets/Sofia Müller.png',
-              reactions: [],
-              isSelf: false,
-              createdAt: new Date(),
-            },
-            {
-              id: 3,
-              author: this.currentUser.name,
-              userId: this.currentUser.id,
-              time: '14:27 Uhr',
-              content: 'Die aktuelle Version ist 17.2.1.',
-              avatar: this.currentUser.avatar,
-              reactions: [],
-              isSelf: true,
-              createdAt: new Date(),
-            },
-          ],
-          createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-        },
-      ];
-
-      this.channelService.addChannel({
-        name: defaultChannel,
-        description: 'Allgemeiner Entwickler-Austausch',
-        createdBy: this.currentUser.name,
-        members,
-      });
-    }
-
-    // Channel immer aktiv setzen – auch wenn schon vorhanden
-    this.channelService.setActiveChannel({
-      name: defaultChannel,
-      members,
-      description: 'Allgemeiner Entwickler-Austausch',
-      createdBy: this.currentUser.name,
-    });
-
-    this.channelService.updateMessagesForActiveTarget();
-
-    console.log('[DEBUG] Aktiver Channel gesetzt:', this.channelService.getCurrentChannel());
-  });
-
-  this.channelService.activeUser$.subscribe((user) => {
-    this.activeUser = user;
-
-    const currentChannel = this.channelService.getCurrentChannel();
-    const isValidChannel =
-      currentChannel &&
-      this.channelService.getChannels().some((c) => c.name === currentChannel.name);
-
-    this.activeChannelName = user
-      ? user.name
-      : isValidChannel
-      ? currentChannel!.name
-      : '';
-
-    this.currentChannelUsers = user
-      ? [this.currentUser, user]
-      : isValidChannel
-      ? this.channelService.getMembersForChannel(currentChannel!.name)
-      : [];
-  });
-
-  this.channelService.activeChannel$.subscribe((channel) => {
-    if (channel) {
-      this.activeUser = null;
-      this.activeChannelName = channel.name;
-      this.activeChannelDescription = channel.description || '';
-      this.activeChannelCreatedBy = channel.createdBy || '';
-      this.currentChannelUsers = this.channelService.getMembersForChannel(channel.name);
-    } else {
-      this.activeUser = null;
-      this.activeChannelName = '';
-      this.activeChannelDescription = '';
-      this.activeChannelCreatedBy = '';
-      this.currentChannelUsers = [];
-      this.currentChannelMessages = [];
-      this.groupedMessages = [];
-      this.newMessage = '';
-    }
-  });
-
-  this.channelService.messages$.subscribe((messages) => {
-    console.log('[DEBUG] Nachrichten empfangen:', messages);
-    this.currentChannelMessages = messages;
-    this.groupMessagesByDate();
-  });
-
-  this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
-    if (!updatedRoot) return;
-
-    const target = this.activeUser?.id ?? this.activeChannelName;
-    const messages = this.activeUser
-      ? this.channelService.directMessages[target] || []
-      : this.channelService.channelMessages[target] || [];
-
-    const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
-    if (index !== -1) {
-      messages[index] = updatedRoot;
-
-      if (this.activeUser) {
-        this.channelService.directMessages[target] = messages;
+      const existing = this.allUsers.find((u) => u.id === user.id);
+      if (existing) {
+        existing.name = user.name;
+        existing.avatar = user.avatar;
       } else {
-        this.channelService.channelMessages[target] = messages;
+        this.allUsers.unshift(user);
       }
 
-      this.channelService.updateMessagesForActiveTarget();
-    }
-  });
+      const defaultChannel = 'Entwicklerteam';
+      const members: ChatUser[] = [
+        this.currentUser,
+        this.allUsers.find((u) => u.id === 'sofia')!,
+        this.allUsers.find((u) => u.id === 'noah')!,
+        this.allUsers.find((u) => u.id === 'elise')!,
+      ];
 
-  window.addEventListener('startDirectChat', this.startDirectChatHandler);
-}
+      const alreadyExists = this.channelService
+        .getChannels()
+        .some((c) => c.name === defaultChannel);
+
+      if (!alreadyExists) {
+        this.channelService.setMembersForChannel(defaultChannel, members);
+
+        this.channelService.channelMessages[defaultChannel] = [
+          {
+            id: 1,
+            author: 'Noah Braun',
+            userId: 'noah',
+            time: '14:25 Uhr',
+            content: 'Welche Version ist aktuell von Angular?',
+            avatar: 'assets/Noah Braun.png',
+            reactions: [],
+            isSelf: false,
+            replies: [
+              {
+                id: 2,
+                author: 'Sofia Müller',
+                userId: 'sofia',
+                time: '14:26 Uhr',
+                content: 'Ich glaube 17.1, oder?',
+                avatar: 'assets/Sofia Müller.png',
+                reactions: [],
+                isSelf: false,
+                createdAt: new Date(),
+              },
+              {
+                id: 3,
+                author: this.currentUser.name,
+                userId: this.currentUser.id,
+                time: '14:27 Uhr',
+                content: 'Die aktuelle Version ist 17.2.1.',
+                avatar: this.currentUser.avatar,
+                reactions: [],
+                isSelf: true,
+                createdAt: new Date(),
+              },
+            ],
+            createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+          },
+        ];
+
+        this.channelService.addChannel({
+          name: defaultChannel,
+          description: 'Allgemeiner Entwickler-Austausch',
+          createdBy: this.currentUser.name,
+          members,
+        });
+      }
+
+      this.channelService.setActiveChannel({
+        name: defaultChannel,
+        members,
+        description: 'Allgemeiner Entwickler-Austausch',
+        createdBy: this.currentUser.name,
+      });
+
+      this.channelService.updateMessagesForActiveTarget();
+    });
+
+    this.channelService.activeUser$.subscribe((user) => {
+      this.activeUser = user;
+
+      const currentChannel = this.channelService.getCurrentChannel();
+      const isValidChannel =
+        currentChannel &&
+        this.channelService
+          .getChannels()
+          .some((c) => c.name === currentChannel.name);
+
+      this.activeChannelName = user
+        ? user.name
+        : isValidChannel
+        ? currentChannel!.name
+        : '';
+
+      this.currentChannelUsers = user
+        ? [this.currentUser, user]
+        : isValidChannel
+        ? this.channelService.getMembersForChannel(currentChannel!.name)
+        : [];
+    });
+
+    this.channelService.activeChannel$.subscribe((channel) => {
+      if (channel) {
+        this.activeUser = null;
+        this.activeChannelName = channel.name;
+        this.activeChannelDescription = channel.description || '';
+        this.activeChannelCreatedBy = channel.createdBy || '';
+        this.currentChannelUsers = this.channelService.getMembersForChannel(
+          channel.name
+        );
+      } else {
+        this.activeUser = null;
+        this.activeChannelName = '';
+        this.activeChannelDescription = '';
+        this.activeChannelCreatedBy = '';
+        this.currentChannelUsers = [];
+        this.currentChannelMessages = [];
+        this.groupedMessages = [];
+        this.newMessage = '';
+      }
+    });
+
+    this.channelService.messages$.subscribe((messages) => {
+      this.currentChannelMessages = messages;
+      this.groupMessagesByDate();
+    });
+
+    this.threadPanelService.threadRootMessage$.subscribe((updatedRoot) => {
+      if (!updatedRoot) return;
+
+      const target = this.activeUser?.id ?? this.activeChannelName;
+      const messages = this.activeUser
+        ? this.channelService.directMessages[target] || []
+        : this.channelService.channelMessages[target] || [];
+
+      const index = messages.findIndex((msg) => msg.id === updatedRoot.id);
+      if (index !== -1) {
+        messages[index] = updatedRoot;
+
+        if (this.activeUser) {
+          this.channelService.directMessages[target] = messages;
+        } else {
+          this.channelService.channelMessages[target] = messages;
+        }
+
+        this.channelService.updateMessagesForActiveTarget();
+      }
+    });
+
+    window.addEventListener('startDirectChat', this.startDirectChatHandler);
+  }
 
   sendMessage(): void {
     const content = this.newMessage.trim();
@@ -352,42 +346,36 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.showUsers = false;
   }
 
-toggleUserList() {
-  const lastChar = this.newMessage.slice(-1);
-  if (lastChar === '@') {
-    this.mentionMode = 'user';
-    this.filteredUsers = this.activeUser
-      ? [this.currentUser, this.activeUser]
-      : [...this.currentChannelUsers];
-    this.showUsers = true;
-    this.showEmojis = false;
-  } else {
-    this.mentionMode = 'user'; 
-    this.filteredUsers = this.activeUser
-      ? [this.currentUser, this.activeUser]
-      : [...this.currentChannelUsers];
-    this.showUsers = true;
-    this.showEmojis = false;
+  toggleUserList() {
+    const lastChar = this.newMessage.slice(-1);
+    if (lastChar === '@') {
+      this.mentionMode = 'user';
+      this.filteredUsers = this.activeUser
+        ? [this.currentUser, this.activeUser]
+        : [...this.currentChannelUsers];
+      this.showUsers = true;
+      this.showEmojis = false;
+    } else {
+      this.mentionMode = 'user';
+      this.filteredUsers = this.activeUser
+        ? [this.currentUser, this.activeUser]
+        : [...this.currentChannelUsers];
+      this.showUsers = true;
+      this.showEmojis = false;
+    }
   }
-}
-
 
   addEmoji(emoji: string) {
     this.newMessage += emoji;
     this.showEmojis = false;
   }
 
-replyTo(message: ChatMessage): void {
-  console.log('replyTo() called');
+  replyTo(message: ChatMessage): void {
+    const mention = `@${this.getUserNameFromId(message.userId)} `;
+    this.threadPanelService.openThread(message, mention);
 
-  const mention = `@${this.getUserNameFromId(message.userId)} `;
-  this.threadPanelService.openThread(message, mention);
-
-  this.threadToggle?.(); 
-}
-
-
-
+    this.threadToggle?.();
+  }
 
   toggleReaction(message: ChatMessage, emoji: string) {
     if (!message.reactions) message.reactions = [];
@@ -420,17 +408,16 @@ replyTo(message: ChatMessage): void {
       .map((u) => u.name);
   }
   getUserNameFromId(userId: string): string {
-  if (userId === this.currentUser.id) {
-    return this.currentUser.name;
+    if (userId === this.currentUser.id) {
+      return this.currentUser.name;
+    }
+
+    const user =
+      this.allUsers.find((u) => u.id === userId) ||
+      this.currentChannelUsers.find((u) => u.id === userId);
+
+    return user?.name || 'Unbekannt';
   }
-
-  const user =
-    this.allUsers.find(u => u.id === userId) ||
-    this.currentChannelUsers.find(u => u.id === userId);
-
-  return user?.name || 'Unbekannt';
-}
-
 
   toggleUserDropdown() {
     setTimeout(() => (this.showFullUserList = !this.showFullUserList));
@@ -441,40 +428,41 @@ replyTo(message: ChatMessage): void {
   @ViewChild('chatInput') chatInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
+  @HostListener('document:click', ['$event'])
+  handleGlobalClick(event: MouseEvent): void {
+    const clickedTarget = event.target as HTMLElement;
 
+    const clickedInsideUserDropdown =
+      this.userDropdownRef?.nativeElement.contains(clickedTarget);
 
+    if (!clickedInsideUserDropdown && this.showFullUserList) {
+      this.showFullUserList = false;
+    }
 
-@HostListener('document:click', ['$event'])
-handleGlobalClick(event: MouseEvent): void {
-  const clickedTarget = event.target as HTMLElement;
+    const clickedInsideMention =
+      this.mentionPickerRef?.nativeElement.contains(clickedTarget);
 
-  const clickedInsideUserDropdown =
-    this.userDropdownRef?.nativeElement.contains(clickedTarget);
+    const clickedInput = clickedTarget.closest('input');
+    const clickedMentionButton =
+      clickedTarget.closest('button')?.innerText === '@';
 
-  if (!clickedInsideUserDropdown && this.showFullUserList) {
-    this.showFullUserList = false;
+    if (
+      !clickedInsideMention &&
+      !clickedInput &&
+      !clickedMentionButton &&
+      this.showUsers
+    ) {
+      this.showUsers = false;
+      this.mentionMode = null;
+    }
+
+    const isInPopover = !!clickedTarget.closest('.emoji-picker.popover');
+    const isEmojiPlus = !!clickedTarget.closest('.emoji-plus');
+
+    if (!isInPopover && !isEmojiPlus) {
+      this.emojiPopoverMessage = null;
+    }
   }
-
-  const clickedInsideMention =
-    this.mentionPickerRef?.nativeElement.contains(clickedTarget);
-
-  const clickedInput = clickedTarget.closest('input');
-  const clickedMentionButton = clickedTarget.closest('button')?.innerText === '@';
-
-  if (!clickedInsideMention && !clickedInput && !clickedMentionButton && this.showUsers) {
-    this.showUsers = false;
-    this.mentionMode = null;
-  }
-
-  
-  const isInPopover = !!clickedTarget.closest('.emoji-picker.popover');
-  const isEmojiPlus = !!clickedTarget.closest('.emoji-plus');
-
-  if (!isInPopover && !isEmojiPlus) {
-    this.emojiPopoverMessage = null;
-  }
-}
-
 
   openAddUserDialog() {
     const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
@@ -519,67 +507,60 @@ handleGlobalClick(event: MouseEvent): void {
     this.cancelEdit();
   }
 
-onMessageInput() {
-  const cursorPos = this.newMessage.length;
+  onMessageInput() {
+    const cursorPos = this.newMessage.length;
 
-  // Match für @... am Ende oder mitten im Text
-  const match = this.newMessage.slice(0, cursorPos).match(/@([\wäöüß\-]*)$/i);
+    const match = this.newMessage.slice(0, cursorPos).match(/@([\wäöüß\-]*)$/i);
 
-  if (match) {
-    const term = match[1].toLowerCase();
-    this.mentionMode = 'user';
+    if (match) {
+      const term = match[1].toLowerCase();
+      this.mentionMode = 'user';
 
-    const availableUsers = this.activeUser
-      ? [this.currentUser, this.activeUser]
-      : [...this.currentChannelUsers];
+      const availableUsers = this.activeUser
+        ? [this.currentUser, this.activeUser]
+        : [...this.currentChannelUsers];
 
-    // Filter: Nach Vornamen, Nachnamen oder beidem
-    this.filteredUsers = availableUsers.filter((user) =>
-      user.name.toLowerCase().includes(term)
-    );
+      this.filteredUsers = availableUsers.filter((user) =>
+        user.name.toLowerCase().includes(term)
+      );
 
-    // Optional: Eigener Benutzer mit (Du) ergänzen
-    this.filteredUsers = this.filteredUsers.map((user) => ({
-      ...user,
-      name:
-        user.id === this.currentUser.id && !user.name.includes('(Du)')
-          ? `${user.name} (Du)`
-          : user.name,
-    }));
+      this.filteredUsers = this.filteredUsers.map((user) => ({
+        ...user,
+        name:
+          user.id === this.currentUser.id && !user.name.includes('(Du)')
+            ? `${user.name} (Du)`
+            : user.name,
+      }));
 
-    this.showUsers = this.filteredUsers.length > 0;
-  } else {
+      this.showUsers = this.filteredUsers.length > 0;
+    } else {
+      this.showUsers = false;
+      this.mentionMode = null;
+    }
+  }
+
+  mentionUser(user: ChatUser) {
+    const atPattern = /@[^@\s]*$/;
+    const insertText = `@${user.name}`;
+
+    if (atPattern.test(this.newMessage)) {
+      this.newMessage = this.newMessage.replace(atPattern, insertText + ' ');
+    } else {
+      this.newMessage += insertText + ' ';
+    }
+
     this.showUsers = false;
     this.mentionMode = null;
+
+    setTimeout(() => {
+      const input = document.querySelector('input');
+      if (input instanceof HTMLInputElement) {
+        input.focus();
+        const pos = this.newMessage.length;
+        input.setSelectionRange(pos, pos);
+      }
+    }, 0);
   }
-}
-
-
-
-mentionUser(user: ChatUser) {
-  const atPattern = /@[^@\s]*$/;
-  const insertText = `@${user.name}`;
-
-  if (atPattern.test(this.newMessage)) {
-    this.newMessage = this.newMessage.replace(atPattern, insertText + ' ');
-  } else {
-    this.newMessage += insertText + ' ';
-  }
-
-  this.showUsers = false;
-  this.mentionMode = null;
-
-  
-  setTimeout(() => {
-    const input = document.querySelector('input');
-    if (input instanceof HTMLInputElement) {
-      input.focus();
-      const pos = this.newMessage.length;
-      input.setSelectionRange(pos, pos);
-    }
-  }, 0);
-}
-
 
   mentionChannel(name: string) {
     this.newMessage = this.newMessage.replace(/#\w*$/, `#${name} `);
@@ -592,7 +573,6 @@ mentionUser(user: ChatUser) {
   }
 
   openUserProfile(message: ChatMessage) {
-    // Öffne kein Profil vom aktuellen Benutzer selbst
     if (message.userId === this.currentUser.id) return;
 
     const dialogRef = this.dialog.open(UserProfileComponent, {
@@ -655,163 +635,173 @@ mentionUser(user: ChatUser) {
     return userId === this.currentUser.id ? `${name} (Du)` : name;
   }
 
-openChannelInfo() {
-  const channel = this.channelService.getCurrentChannel();
-  if (!channel) return;
+  openChannelInfo() {
+    const channel = this.channelService.getCurrentChannel();
+    if (!channel) return;
 
-  const description = this.channelService.getDescription(channel.name) || 'Keine Beschreibung';
-  const createdBy = this.channelService.getCreatedBy(channel.name) || 'Unbekannt';
+    const description =
+      this.channelService.getDescription(channel.name) || 'Keine Beschreibung';
+    const createdBy =
+      this.channelService.getCreatedBy(channel.name) || 'Unbekannt';
 
-  const isSystemChannel = channel.name === 'Entwicklerteam';
+    const isSystemChannel = channel.name === 'Entwicklerteam';
 
-const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
-  width: '500px',
-  panelClass: 'custom-channel-dialog',
-  data: {
-    name: channel.name,
-    description,
-    createdBy,
-    isSystemChannel
-  }
-});
+    const dialogRef = this.dialog.open(ChannelInfoDialogComponent, {
+      width: '500px',
+      panelClass: 'custom-channel-dialog',
+      data: {
+        name: channel.name,
+        description,
+        createdBy,
+        isSystemChannel,
+      },
+    });
 
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) return;
 
-  dialogRef.afterClosed().subscribe((result) => {
-    console.log('[DEBUG] Dialog geschlossen mit:', result);
-    if (!result) return;
+      if (result.leave) {
+        const wasActive =
+          this.channelService.getCurrentChannel()?.name === channel.name;
 
+        this.channelService.removeChannel(channel.name);
 
-    if (result.leave) {
-      console.log('[DEBUG] Channel verlassen wurde gewählt:', channel.name);
-
-      const wasActive = this.channelService.getCurrentChannel()?.name === channel.name;
-
-      this.channelService.removeChannel(channel.name);
-
-      if (wasActive) {
-        this.channelService.setActiveUser(null);
-        this.channelService.setActiveChannel(null);
-      }
-
-      const remainingChannels = this.channelService.getChannels();
-
-      if (remainingChannels.length > 0) {
-        console.log('[DEBUG] Fallback zu anderem Channel:', remainingChannels[0].name);
-        this.channelService.setActiveChannel(remainingChannels[0]);
-      } else {
-
-        const fallbackUsers = [
-  
-          { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/Sofia Müller.png' },
-          { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
-          { id: 'elise', name: 'Elise Roth', avatar: 'assets/Elise Roth.png' },
-          { id: 'elias', name: 'Elias Neumann', avatar: 'assets/Elias Neumann.png' },
-          { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/Steffen Hoffmann.png' }
-        ];
-
-        if (fallbackUsers.length > 0) {
-          console.log('[DEBUG] Keine Channels mehr – Fallback zur Direktnachricht mit:', fallbackUsers[0].name);
-          this.channelService.setActiveUser(fallbackUsers[0]);
-        } else {
-          console.log('[DEBUG] Kein Channel, keine User – leere Ansicht');
+        if (wasActive) {
           this.channelService.setActiveUser(null);
           this.channelService.setActiveChannel(null);
-          this.channelService.clearMessages?.(); 
         }
+
+        const remainingChannels = this.channelService.getChannels();
+
+        if (remainingChannels.length > 0) {
+          this.channelService.setActiveChannel(remainingChannels[0]);
+        } else {
+          const fallbackUsers = [
+            {
+              id: 'sofia',
+              name: 'Sofia Müller',
+              avatar: 'assets/Sofia Müller.png',
+            },
+            { id: 'noah', name: 'Noah Braun', avatar: 'assets/Noah Braun.png' },
+            {
+              id: 'elise',
+              name: 'Elise Roth',
+              avatar: 'assets/Elise Roth.png',
+            },
+            {
+              id: 'elias',
+              name: 'Elias Neumann',
+              avatar: 'assets/Elias Neumann.png',
+            },
+            {
+              id: 'steffen',
+              name: 'Steffen Hoffmann',
+              avatar: 'assets/Steffen Hoffmann.png',
+            },
+          ];
+
+          if (fallbackUsers.length > 0) {
+            this.channelService.setActiveUser(fallbackUsers[0]);
+          } else {
+            this.channelService.setActiveUser(null);
+            this.channelService.setActiveChannel(null);
+            this.channelService.clearMessages?.();
+          }
+        }
+
+        return;
       }
 
-      return;
-    }
+      if (result.updated && !isSystemChannel) {
+        this.channelService.renameChannel(channel.name, result.data.name);
+        this.channelService.setDescription(
+          result.data.name,
+          result.data.description
+        );
+        this.channelService.setCreatedBy(
+          result.data.name,
+          result.data.createdBy
+        );
 
-    // === CHANNEL AKTUALISIEREN ===
-if (result.updated && !isSystemChannel) {
-  console.log('[DEBUG] Channel wurde aktualisiert:', result.data);
+        const updatedChannel = {
+          ...channel,
+          name: result.data.name,
+          description: result.data.description,
+          createdBy: result.data.createdBy,
+        };
 
-  this.channelService.renameChannel(channel.name, result.data.name);
-  this.channelService.setDescription(result.data.name, result.data.description);
-  this.channelService.setCreatedBy(result.data.name, result.data.createdBy);
+        this.channelService.setActiveChannel(updatedChannel);
+      } else if (result.updated && isSystemChannel) {
+        console.warn(
+          '[WARN] Systemchannel darf nicht bearbeitet werden:',
+          channel.name
+        );
+      }
+    });
+  }
 
-  const updatedChannel = {
-    ...channel,
-    name: result.data.name,
-    description: result.data.description,
-    createdBy: result.data.createdBy
-  };
+  toggleEmojiPopover(message: ChatMessage) {
+    this.emojiPopoverMessage =
+      this.emojiPopoverMessage === message ? null : message;
+  }
 
-  this.channelService.setActiveChannel(updatedChannel);
-} else if (result.updated && isSystemChannel) {
-  console.warn('[WARN] Systemchannel darf nicht bearbeitet werden:', channel.name);
-}
+  addReaction(message: ChatMessage, emoji: string) {
+    this.toggleReaction(message, emoji);
+    this.emojiPopoverMessage = null;
+  }
 
-  });
-}
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
 
-toggleEmojiPopover(message: ChatMessage) {
-  this.emojiPopoverMessage =
-    this.emojiPopoverMessage === message ? null : message;
-}
+    this.selectedFileName = file.name;
 
-addReaction(message: ChatMessage, emoji: string) {
-  this.toggleReaction(message, emoji);
-  this.emojiPopoverMessage = null; 
-}
+    const path = `chat-files/${Date.now()}_${file.name}`;
+    const { percent$, url$ } = this.fileService.uploadFile(file, path);
 
-onFileSelected(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0];
-  if (!file) return;
+    percent$.subscribe((pct) => console.log(`Hochladen: ${pct.toFixed(0)}%`));
 
-  this.selectedFileName = file.name; // 👈 Vorschau setzen
+    url$.subscribe((url) => {
+      const msg = {
+        id: Date.now(),
+        author: this.currentUser.name,
+        userId: this.currentUser.id,
+        time: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        content: `Datei: ${file.name}`,
+        url,
+        avatar: this.currentUser.avatar,
+        isSelf: true,
+        createdAt: new Date(),
+      };
 
-  const path = `chat-files/${Date.now()}_${file.name}`;
-  const { percent$, url$ } = this.fileService.uploadFile(file, path);
+      const target = this.activeUser
+        ? this.activeUser.id
+        : this.activeChannelName;
+      this.channelService.addMessage(target, msg, !!this.activeUser);
 
-  percent$.subscribe(pct =>
-    console.log(`Hochladen: ${pct.toFixed(0)}%`)
-  );
+      this.selectedFileName = null;
+      this.fileInput.nativeElement.value = '';
+    });
+  }
 
-  url$.subscribe(url => {
-    const msg = {
-      id: Date.now(),
-      author: this.currentUser.name,
-      userId: this.currentUser.id,
-      time: new Date().toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      content: `Datei: ${file.name}`,
-      url,
-      avatar: this.currentUser.avatar,
-      isSelf: true,
-      createdAt: new Date(),
-    };
+  isImageUrl(url: string): boolean {
+    return /\.(jpe?g|png)$/i.test(url);
+  }
 
-    const target = this.activeUser ? this.activeUser.id : this.activeChannelName;
-    this.channelService.addMessage(target, msg, !!this.activeUser);
+  isFileUrl(url: string): boolean {
+    return !!url && !this.isImageUrl(url);
+  }
 
-    this.selectedFileName = null; // 👈 Vorschau zurücksetzen
-    this.fileInput.nativeElement.value = ''; // 👈 Reset für gleiche Datei nochmal
-  });
-}
+  getAvatarFromId(userId: string): string {
+    if (userId === this.currentUser.id) return this.currentUser.avatar;
 
+    const user =
+      this.allUsers.find((u) => u.id === userId) ||
+      this.currentChannelUsers.find((u) => u.id === userId);
 
-
-isImageUrl(url: string): boolean {
-  return /\.(jpe?g|png)$/i.test(url);
-}
-
-isFileUrl(url: string): boolean {
-  return !!url && !this.isImageUrl(url);
-}
-
-getAvatarFromId(userId: string): string {
-  if (userId === this.currentUser.id) return this.currentUser.avatar;
-
-  const user =
-    this.allUsers.find(u => u.id === userId) ||
-    this.currentChannelUsers.find(u => u.id === userId);
-
-  return user?.avatar || 'assets/default-avatar.png';
-}
-
-
+    return user?.avatar || 'assets/default-avatar.png';
+  }
 }

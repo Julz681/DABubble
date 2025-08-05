@@ -26,7 +26,7 @@ import { RouterModule } from '@angular/router';
     RouterModule,
   ],
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.scss']
+  styleUrls: ['./reset-password.component.scss'],
 })
 export class ResetPasswordComponent {
   email = '';
@@ -45,11 +45,12 @@ export class ResetPasswordComponent {
       return;
     }
 
-    this.auth.resetPassword(this.email)
+    this.auth
+      .resetPassword(this.email)
       .then(() => {
         this.message = 'Eine E-Mail zum Zurücksetzen wurde versendet.';
       })
-      .catch(err => {
+      .catch((err) => {
         this.message = err.message;
         this.isError = true;
       });

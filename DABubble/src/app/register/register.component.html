@@ -1,10 +1,8 @@
 <div class="register-page">
-  <!-- Logo oben links -->
   <div class="top-left">
     <img src="assets/Logo_small.png" alt="DABubble Logo" />
   </div>
 
-  <!-- Registrierungs-Karte -->
   <mat-card class="register-card">
     <div class="header">
       <button
@@ -20,7 +18,8 @@
     </div>
 
     <p class="description">
-      Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.
+      Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues
+      DABubble-Konto.
     </p>
 
     <form (ngSubmit)="register()">
@@ -67,8 +66,11 @@
         name="datenschutz"
         matTooltip="Du musst der Datenschutzerklärung zustimmen"
       >
-        Ich stimme der <a routerLink="/datenschutz" (click)="$event.stopPropagation()">Datenschutzerklärung</a>
- zu.
+        Ich stimme der
+        <a routerLink="/datenschutz" (click)="$event.stopPropagation()"
+          >Datenschutzerklärung</a
+        >
+        zu.
       </mat-checkbox>
 
       <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
@@ -84,15 +86,16 @@
       </button>
     </form>
   </mat-card>
-<!-- Nur bei kleinen Screens -->
-<div class="register-bottom">
-  <span>Schon ein Konto?</span>
-  <a routerLink="/login">Zur Anmeldung</a>
-</div>
 
-  <!-- Footer -->
+  <div class="register-bottom">
+    <span>Schon ein Konto?</span>
+    <a routerLink="/login">Zur Anmeldung</a>
+  </div>
+
   <footer class="footer">
     <a routerLink="/impressum" matTooltip="Angaben zum Betreiber">Impressum</a>
-    <a routerLink="/datenschutz" matTooltip="Informationen zum Datenschutz">Datenschutz</a>
+    <a routerLink="/datenschutz" matTooltip="Informationen zum Datenschutz"
+      >Datenschutz</a
+    >
   </footer>
 </div>

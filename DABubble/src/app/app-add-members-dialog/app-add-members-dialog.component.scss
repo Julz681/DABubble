@@ -1,10 +1,9 @@
 :host {
   display: block;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   padding: 1rem;
 }
 
-// 💬 Container-Wrapper im Overlay
 ::ng-deep .cdk-overlay-pane.bottom-dialog {
   position: fixed !important;
   bottom: 0 !important;
@@ -15,14 +14,13 @@
   display: flex !important;
   justify-content: center;
   align-items: flex-end !important;
-  pointer-events: none; // Overlay selbst nicht klickbar
+  pointer-events: none;
   z-index: 1000;
   height: 50vh;
 }
 
-// 🎯 Der sichtbare Dialog
 ::ng-deep .bottom-dialog .mat-mdc-dialog-container {
-  pointer-events: all; // Klickbar
+  pointer-events: all;
   background: #fff;
   border-radius: 20px 20px 0 0 !important;
   width: 100vw;
@@ -33,7 +31,6 @@
   animation: slideUp 0.25s ease-out;
 }
 
-// 🎞️ Slide-In Animation
 @keyframes slideUp {
   from {
     transform: translateY(100%);
@@ -43,7 +40,6 @@
   }
 }
 
-// 🧭 Header mit Titel + X
 .dialog-header {
   display: flex;
   justify-content: space-between;
@@ -62,7 +58,6 @@
   }
 }
 
-// 🔤 Eingabefeld + Chips in einer Linie
 .input-area {
   display: flex;
   flex-wrap: wrap;
@@ -83,7 +78,6 @@
   }
 }
 
-// 👤 User-Chip mit Avatar & Remove
 .user-chip {
   display: flex;
   align-items: center;
@@ -111,7 +105,6 @@
   }
 }
 
-// 📋 Dropdown Vorschläge
 .autocomplete {
   margin-top: 8px;
   border-radius: 12px;

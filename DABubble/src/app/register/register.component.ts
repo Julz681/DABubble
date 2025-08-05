@@ -27,10 +27,9 @@ import { RouterModule } from '@angular/router';
     MatCheckboxModule,
     MatTooltipModule,
     RouterModule,
-    
   ],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
   name = '';
@@ -53,18 +52,17 @@ export class RegisterComponent {
       return;
     }
 
-    this.auth.register(this.name, this.email, this.password)
+    this.auth
+      .register(this.name, this.email, this.password)
       .then((cred) => {
         this.currentUserService.refreshCurrentUser();
         localStorage.setItem('username', this.name);
         this.router.navigate(['/avatar-select']);
-
       })
-      .catch((err) => this.errorMessage = err.message);
+      .catch((err) => (this.errorMessage = err.message));
   }
 
   goBack() {
-  window.history.back();
-}
-
+    window.history.back();
+  }
 }
