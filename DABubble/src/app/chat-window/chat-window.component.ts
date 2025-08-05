@@ -19,6 +19,8 @@ import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FileService } from '../services/file.service';
+import { AddMembersDialogComponent } from '../app-add-members-dialog/app-add-members-dialog.component';
+
 
 import {
   CurrentUserService,
@@ -464,29 +466,31 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     }
   }
 
-  openAddUserDialog() {
-    const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
-      width: '500px',
-      data: {
-        mode: 'add',
-        channelName: this.activeChannelName,
-        existingMembers: this.currentChannelUsers.map((u) => u.name),
-      },
-    });
+openAddUserDialog() {
+  const dialogRef = this.dialog.open(AddMembersDialogComponent, {
+    panelClass: ['add-members-dialog-panel'],
+    width: 'auto', 
+    maxWidth: 'none', 
+    autoFocus: false,
+    data: {
+      existingMembers: this.currentChannelUsers.map((u) => u.name),
+    },
+  });
 
-    dialogRef.afterClosed().subscribe((newUsers: ChatUser[]) => {
-      if (newUsers?.length) {
-        const filtered = newUsers.filter(
-          (u) => !this.currentChannelUsers.find((m) => m.id === u.id)
-        );
-        this.currentChannelUsers = [...this.currentChannelUsers, ...filtered];
-        this.channelService.setMembersForChannel(
-          this.activeChannelName,
-          this.currentChannelUsers
-        );
-      }
-    });
-  }
+  dialogRef.afterClosed().subscribe((newUsers: ChatUser[]) => {
+    if (newUsers?.length) {
+      const filtered = newUsers.filter(
+        (u) => !this.currentChannelUsers.find((m) => m.id === u.id)
+      );
+      this.currentChannelUsers = [...this.currentChannelUsers, ...filtered];
+      this.channelService.setMembersForChannel(
+        this.activeChannelName,
+        this.currentChannelUsers
+      );
+    }
+  });
+}
+
 
   startEditing(message: ChatMessage) {
     this.editingMessageId = message.id;

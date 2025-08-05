@@ -1,13 +1,15 @@
 .app-header {
   display: flex;
   flex-direction: column;
-  background: #eceeff;
+  background: #ECEEFF;
   padding: 0.8rem 1.2rem;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
+  max-width: 1920px;
+  margin: 0 auto; 
 }
 
 .header-top {
@@ -58,57 +60,59 @@
     padding-left: 8px;
   }
 
-  .search-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 16px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    max-height: 300px;
-    overflow-y: auto;
-    z-index: 1001;
-    padding: 4px 0;
+ .search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1001;
+  padding: 4px 0;
 
-    .search-result {
+  .search-result {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background-color: #f3f5f7;
+    }
+
+    img,
+    mat-icon.icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    mat-icon.icon {
+      border-radius: 50%;
+      background-color: #ececec;
       display: flex;
+      justify-content: center;
       align-items: center;
-      padding: 10px 14px;
-      cursor: pointer;
-      transition: background 0.2s ease;
+      font-size: 20px;
+      padding: 6px;
+    }
 
-      &:hover {
-        background-color: #f3f5f7;
-      }
-
-      img,
-      mat-icon.icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        margin-right: 12px;
-        flex-shrink: 0;
-      }
-
-      mat-icon.icon {
-        border-radius: 50%;
-        background-color: #ececec;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-        padding: 6px;
-      }
-
-      span {
-        font-size: 0.95rem;
-        color: #333;
-      }
+    span {
+      font-size: 0.95rem;
+      color: #333;
     }
   }
 }
+
+}
+
 
 .desktop-search {
   width: 60%;
@@ -163,6 +167,9 @@
   height: calc(100vh - 40px);
   overflow-y: auto;
 }
+
+
+
 
 @media (max-width: 900px) {
   .header-top {
@@ -336,10 +343,12 @@
     margin-top: 0.75rem;
   }
 
+
   .devspace-header .mobile-search {
     display: none !important;
   }
 }
+
 
 .app-header,
 .devspace-header {
@@ -351,10 +360,16 @@
 }
 
 .devspace-header {
-  height: 60px;
+  height: 60px; 
 }
 .hidden {
   opacity: 0 !important;
   pointer-events: none !important;
   visibility: hidden !important;
+}
+
+body {
+  max-width: 1920px;
+  width: 100%;
+  margin: 0 auto; 
 }

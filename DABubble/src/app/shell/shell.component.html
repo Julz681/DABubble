@@ -1,8 +1,8 @@
-<header
-  class="app-header"
-  [class.hidden]="isMobile && currentMobileView !== 'sidebar'"
->
+<body>
+<header class="app-header" [class.hidden]="isMobile && currentMobileView !== 'sidebar'">
+
   <div class="header-top">
+    
     <div class="logo-group">
       <img
         src="assets/Logo.png"
@@ -13,10 +13,8 @@
       <span class="title">DABubble</span>
     </div>
 
-    <div
-      class="search-container desktop-search"
-      (click)="$event.stopPropagation()"
-    >
+    
+    <div class="search-container desktop-search" (click)="$event.stopPropagation()">
       <input
         type="text"
         [(ngModel)]="searchTerm"
@@ -28,10 +26,8 @@
       />
       <mat-icon>search</mat-icon>
 
-      <div
-        class="search-dropdown"
-        *ngIf="searchFocused && filteredResults.length"
-      >
+      
+      <div class="search-dropdown" *ngIf="searchFocused && filteredResults.length">
         <div
           class="search-result"
           *ngFor="let result of filteredResults"
@@ -39,23 +35,20 @@
         >
           <img
             class="avatar"
-            [src]="
-              result.type === 'channel'
-                ? 'assets/channel.png'
-                : result.avatar || 'assets/default-avatar.png'
-            "
+            [src]="result.type === 'channel' ? 'assets/channel.png' : (result.avatar || 'assets/default-avatar.png')"
             alt="Avatar"
           />
           <div class="info">
             <div class="name">{{ result.name }}</div>
             <div class="tag">
-              {{ result.type === "channel" ? "#" : "@" }}{{ result.name }}
+              {{ result.type === 'channel' ? '#' : '@' }}{{ result.name }}
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    
     <div class="user-profile" #dropdownContainer (click)="toggleDropdown()">
       <span class="user-name" matTooltip="Angemeldet als {{ userName }}">
         {{ userName }}
@@ -63,6 +56,7 @@
       <mat-icon class="user-icon">expand_more</mat-icon>
       <img [src]="currentUser?.avatar" class="avatar" alt="Avatar" />
 
+      
       <div
         class="dropdown-menu"
         *ngIf="dropdownOpen"
@@ -74,6 +68,7 @@
     </div>
   </div>
 
+ 
   <div
     class="search-container mobile-search"
     *ngIf="isMobile && currentMobileView === 'sidebar'"
@@ -90,10 +85,7 @@
     />
     <mat-icon>search</mat-icon>
 
-    <div
-      class="search-dropdown"
-      *ngIf="searchFocused && filteredResults.length"
-    >
+    <div class="search-dropdown" *ngIf="searchFocused && filteredResults.length">
       <div
         class="search-result"
         *ngFor="let result of filteredResults"
@@ -102,10 +94,10 @@
       >
         <mat-icon class="icon" *ngIf="result.type === 'channel'">tag</mat-icon>
         <img
-          *ngIf="result.type === 'user'"
-          [src]="result.avatar || 'assets/default-avatar.png'"
-          class="avatar"
-        />
+  *ngIf="result.type === 'user'"
+  [src]="result.avatar || 'assets/default-avatar.png'"
+  class="avatar"
+/>
 
         <span>{{ result.display }}</span>
       </div>
@@ -113,20 +105,23 @@
   </div>
 </header>
 
-<header
-  class="app-header devspace-header"
-  [class.hidden]="!isMobile || currentMobileView === 'sidebar'"
->
+
+
+<header class="app-header devspace-header" [class.hidden]="!isMobile || currentMobileView === 'sidebar'">
+
   <div class="header-top">
+    
     <button class="back-button" (click)="setMobileView('sidebar')">
       <mat-icon>arrow_back</mat-icon>
     </button>
 
+    
     <div class="logo-group">
       <img src="assets/Dev.png" alt="Devspace Logo" class="logo" />
       <span class="title">Devspace</span>
     </div>
 
+    
     <div class="user-profile" #dropdownContainer (click)="toggleDropdown()">
       <img [src]="currentUser?.avatar" class="avatar" alt="Avatar" />
       <mat-icon class="user-icon">expand_more</mat-icon>
@@ -143,6 +138,9 @@
   </div>
 </header>
 
+
+
 <main class="app-main">
   <router-outlet></router-outlet>
 </main>
+</body>

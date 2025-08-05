@@ -304,3 +304,35 @@ body {
     opacity: 1;
   }
 }
+
+::ng-deep .cdk-overlay-pane.add-members-dialog-panel {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+::ng-deep .cdk-overlay-pane.add-members-dialog-panel .mat-mdc-dialog-container {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+::ng-deep .cdk-overlay-pane.add-members-dialog-panel .mat-mdc-dialog-surface {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  width: auto !important;
+  max-width: none !important;
+}
+

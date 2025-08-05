@@ -8,6 +8,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
 
 @Component({
   selector: 'app-add-members-dialog',
@@ -18,6 +23,10 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
+    MatFormFieldModule,
+    MatChipsModule,
+    MatInputModule,
+    MatAutocompleteModule,
   ],
   templateUrl: './app-add-members-dialog.component.html',
   styleUrls: ['./app-add-members-dialog.component.scss'],
