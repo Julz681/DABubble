@@ -34,6 +34,7 @@ export const routes: Routes = [
         children: [
           { path: '', component: ChatWindowComponent },
           { path: 'chat/:user', component: ChatWindowComponent },
+          { path: 'channels/:channel', component: ChatWindowComponent },
         ],
       },
       { path: 'profile', component: ProfileComponent },

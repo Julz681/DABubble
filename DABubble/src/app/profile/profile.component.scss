@@ -1,7 +1,8 @@
 :host {
   display: block;
   max-height: 90vh;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   border-radius: 20px 0px 20px 20px !important;
   background: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -188,4 +189,17 @@
     background-color: grey;
     opacity: 0.6;
   }
+}
+
+:host::-webkit-scrollbar {
+  width: 6px;
+}
+
+:host::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+:host::-webkit-scrollbar-track {
+  background-color: transparent;
 }

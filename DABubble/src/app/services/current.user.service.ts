@@ -13,7 +13,6 @@ export interface CurrentUser {
 export class CurrentUserService {
   private readonly STORAGE_NAME_KEY = 'username';
   private readonly STORAGE_AVATAR_KEY = 'selectedAvatar';
-
   private readonly defaultAvatar = 'assets/unknown.png';
 
   private readonly initialUsers: CurrentUser[] = [
@@ -80,6 +79,7 @@ export class CurrentUserService {
 
       this.currentUserSubject.next(user);
       this.addOrUpdateUser(user);
+
       localStorage.setItem(this.STORAGE_NAME_KEY, displayName);
     }
   }
@@ -121,6 +121,21 @@ export class CurrentUserService {
     this.currentUserSubject.next(updatedUser);
     this.addOrUpdateUser(updatedUser);
     localStorage.setItem(this.STORAGE_AVATAR_KEY, newAvatar);
+  }
+
+  updateUser(data: Partial<CurrentUser>): void {
+    const current = this.currentUserSubject.value;
+    const updated: CurrentUser = { ...current, ...data };
+
+    this.currentUserSubject.next(updated);
+    this.addOrUpdateUser(updated);
+
+    if (data.name) {
+      localStorage.setItem(this.STORAGE_NAME_KEY, data.name);
+    }
+    if (data.avatar) {
+      localStorage.setItem(this.STORAGE_AVATAR_KEY, data.avatar);
+    }
   }
 
   private addOrUpdateUser(updatedUser: CurrentUser): void {

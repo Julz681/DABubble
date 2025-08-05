@@ -5,14 +5,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-import {
-  MatDialogModule,
-  MatDialog,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+
 import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel-members-dialog.component';
+import { CurrentUserService, CurrentUser } from '../services/current.user.service';
 
 @Component({
   selector: 'app-channel-dialog',
@@ -33,33 +30,38 @@ import { ChannelMembersDialogComponent } from '../channel-members-dialog/channel
 export class ChannelDialogComponent {
   channelName = '';
   description = '';
-  currentUser = {
-    name: 'Frederik Beck (Du)',
-    avatar: 'assets/Frederik Beck.png',
-  };
+  currentUser: CurrentUser;
 
   constructor(
     private dialogRef: MatDialogRef<ChannelDialogComponent>,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private currentUserService: CurrentUserService
+  ) {
+    this.currentUser = this.currentUserService.getCurrentUser();
+  }
 
   nextStep() {
     if (!this.channelName.trim()) return;
 
     const dialogRef = this.dialog.open(ChannelMembersDialogComponent, {
       width: '500px',
-      panelClass: 'custom-dialog-container', // ➕ HIER
+      panelClass: 'custom-dialog-container',
       data: {
         mode: 'creation',
       },
     });
 
-    dialogRef.afterClosed().subscribe((members) => {
+    dialogRef.afterClosed().subscribe((members: CurrentUser[]) => {
       if (members) {
+        const allMembers: CurrentUser[] = [
+          this.currentUser,
+          ...members.filter((m) => m.id !== this.currentUser.id),
+        ];
+
         this.dialogRef.close({
           name: this.channelName,
           description: this.description,
-          members,
+          members: allMembers,
           createdBy: this.currentUser.name,
         });
       }

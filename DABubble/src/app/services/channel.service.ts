@@ -214,16 +214,31 @@ export class ChannelService {
   }
 
   setActiveChannelByName(name: string) {
+    if (this.channels.length === 0) {
+    }
+
     const channel = this.channels.find((c) => c.name === name);
+
     if (channel) {
       this.setActiveChannel(channel);
+    } else {
+      console.warn('Channel mit Namen nicht gefunden:', name);
+      this.setActiveChannel(null);
     }
   }
 
   setActiveUserById(id: string) {
+    if (this.users.length === 0) {
+      this.users = this.currentUserService.getAllUsers();
+    }
+
     const user = this.users.find((u) => u.id === id);
+
     if (user) {
       this.setActiveUser(user);
+    } else {
+      console.warn('User mit ID nicht gefunden:', id);
+      this.setActiveUser(null);
     }
   }
 

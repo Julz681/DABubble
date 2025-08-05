@@ -1,66 +1,44 @@
 <div class="thread-container">
+  
   <div class="thread-header">
     <div class="title">
       <strong>Thread</strong>
-      <span class="channel"
-        ># {{ rootMessage?.userId ? "Entwicklerteam" : "" }}</span
-      >
+      <span class="channel"># {{ rootMessage?.userId ? 'Entwicklerteam' : '' }}</span>
     </div>
-    <button
-      mat-icon-button
-      (click)="closeThreadPanel()"
-      matTooltip="Thread schließen"
-    >
+    <button mat-icon-button (click)="closeThreadPanel()" matTooltip="Thread schließen">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
+  
   <div class="thread-body" *ngIf="rootMessage">
+    
     <div
       class="message"
       [ngClass]="{ own: rootMessage.userId === currentUserId }"
       (mouseenter)="hoveredMessageId = rootMessage.id"
       (mouseleave)="hoveredMessageId = null"
     >
+      
       <div
         class="emoji-picker popover"
         *ngIf="emojiPopoverMessage?.id === rootMessage.id"
         (click)="$event.stopPropagation()"
       >
-        <span
-          *ngFor="let emoji of emojis"
-          (click)="addReaction(rootMessage, emoji)"
-          matTooltip="Reaktion hinzufügen"
-        >
+        <span *ngFor="let emoji of emojis" (click)="addReaction(rootMessage, emoji)" matTooltip="Reaktion hinzufügen">
           {{ emoji }}
         </span>
       </div>
 
+      
       <div class="reaction-toolbar" *ngIf="hoveredMessageId === rootMessage.id">
-        <span
-          *ngFor="let emoji of emojis.slice(4, 7)"
-          (click)="toggleReaction(rootMessage, emoji)"
-          matTooltip="Reaktion wählen"
-        >
+        <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(rootMessage, emoji)" matTooltip="Reaktion wählen">
           {{ emoji }}
         </span>
-        <span
-          class="emoji-plus"
-          (click)="toggleEmojiPopover(rootMessage)"
-          matTooltip="Weitere Emojis"
-          >➕</span
-        >
-        <span
-          class="reply-icon"
-          (click)="replyTo(getUserNameFromId(rootMessage.userId))"
-          matTooltip="Antworten"
-          >💬</span
-        >
+        <span class="emoji-plus" (click)="toggleEmojiPopover(rootMessage)" matTooltip="Weitere Emojis">➕</span>
+        <span class="reply-icon" (click)="replyTo(getUserNameFromId(rootMessage.userId))" matTooltip="Antworten">💬</span>
         <button
-          *ngIf="
-            rootMessage.userId === currentUserId &&
-            editingMessageId !== rootMessage.id
-          "
+          *ngIf="rootMessage.userId === currentUserId && editingMessageId !== rootMessage.id"
           class="message-menu-button"
           (click)="startEditing(rootMessage)"
           matTooltip="Nachricht bearbeiten"
@@ -70,67 +48,44 @@
       </div>
 
       <div class="message-content">
-        <img
-          [src]="rootMessage.avatar"
-          class="avatar"
-          (click)="openUserProfile(rootMessage)"
-          matTooltip="Profil öffnen"
-        />
+        <img [src]="rootMessage.avatar" class="avatar" (click)="openUserProfile(rootMessage)" matTooltip="Profil öffnen" />
         <div class="bubble">
           <div class="author-time">
-            <span
-              class="author"
-              (click)="openUserProfile(rootMessage)"
-              matTooltip="Profil anzeigen"
-            >
+            <span class="author" (click)="openUserProfile(rootMessage)" matTooltip="Profil anzeigen">
               {{ getUserNameFromId(rootMessage.userId) }}
             </span>
             <span class="time">
-              <span *ngIf="rootMessage.edited" class="edited-flag"
-                >bearbeitet</span
-              >
+              <span *ngIf="rootMessage.edited" class="edited-flag">bearbeitet</span>
             </span>
           </div>
 
-          <div
-            *ngIf="editingMessageId === rootMessage.id; else rootText"
-            class="edit-form"
-          >
+          <div *ngIf="editingMessageId === rootMessage.id; else rootText" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
-            <button (click)="saveEdit(rootMessage)" matTooltip="Speichern">
-              Speichern
-            </button>
-            <button (click)="cancelEdit()" matTooltip="Abbrechen">
-              Abbrechen
-            </button>
+            <button (click)="saveEdit(rootMessage)" matTooltip="Speichern">Speichern</button>
+            <button (click)="cancelEdit()" matTooltip="Abbrechen">Abbrechen</button>
           </div>
-          <ng-template #rootText>
-            <ng-container
-              *ngIf="extractUrl(rootMessage.content); else normalRootText"
-            >
-              <img
-                *ngIf="isImageUrl(extractUrl(rootMessage.content))"
-                [src]="extractUrl(rootMessage.content)"
-                style="max-width: 200px; margin-top: 8px"
-              />
-              <a
-                *ngIf="!isImageUrl(extractUrl(rootMessage.content))"
-                [href]="extractUrl(rootMessage.content)"
-                target="_blank"
-                >Datei öffnen</a
-              >
-            </ng-container>
+<ng-template #rootText>
+  
+  <ng-container *ngIf="extractUrl(rootMessage.content); else normalRootText">
+    <img
+      *ngIf="isImageUrl(extractUrl(rootMessage.content))"
+      [src]="extractUrl(rootMessage.content)"
+      style="max-width: 200px; margin-top: 8px"
+    />
+    <a
+      *ngIf="!isImageUrl(extractUrl(rootMessage.content))"
+      [href]="extractUrl(rootMessage.content)"
+      target="_blank"
+    >Datei öffnen</a>
+  </ng-container>
 
-            <ng-template #normalRootText>
-              <div class="text">{{ rootMessage.content }}</div>
-            </ng-template>
-          </ng-template>
+  <ng-template #normalRootText>
+    <div class="text">{{ rootMessage.content }}</div>
+  </ng-template>
+</ng-template>
 
           <div class="reactions" *ngIf="rootMessage.reactions?.length">
-            <span
-              *ngFor="let r of rootMessage.reactions"
-              [matTooltip]="getUserNamesFromIds(r.users).join(', ')"
-            >
+            <span *ngFor="let r of rootMessage.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
               {{ r.emoji }} {{ r.count }}
             </span>
           </div>
@@ -138,13 +93,14 @@
       </div>
     </div>
 
+   
     <div class="reply-info" *ngIf="replies.length > 0">
-      <a href="#" matTooltip="Thread anzeigen"
-        >{{ replies.length }} Antworten</a
-      >
+      <span class="reply-count-text">{{ replies.length }} Antworten</span>
+
       <span>Letzte Antwort {{ getLastReplyTime() }}</span>
     </div>
 
+    
     <div
       *ngFor="let msg of replies"
       class="message"
@@ -152,40 +108,24 @@
       (mouseenter)="hoveredMessageId = msg.id"
       (mouseleave)="hoveredMessageId = null"
     >
+      
       <div
         class="emoji-picker popover"
         *ngIf="emojiPopoverMessage?.id === msg.id"
         (click)="$event.stopPropagation()"
       >
-        <span
-          *ngFor="let emoji of emojis"
-          (click)="addReaction(msg, emoji)"
-          matTooltip="Reaktion hinzufügen"
-        >
+        <span *ngFor="let emoji of emojis" (click)="addReaction(msg, emoji)" matTooltip="Reaktion hinzufügen">
           {{ emoji }}
         </span>
       </div>
 
+  
       <div class="reaction-toolbar" *ngIf="hoveredMessageId === msg.id">
-        <span
-          *ngFor="let emoji of emojis.slice(4, 7)"
-          (click)="toggleReaction(msg, emoji)"
-          matTooltip="Reaktion wählen"
-        >
+        <span *ngFor="let emoji of emojis.slice(4, 7)" (click)="toggleReaction(msg, emoji)" matTooltip="Reaktion wählen">
           {{ emoji }}
         </span>
-        <span
-          class="emoji-plus"
-          (click)="toggleEmojiPopover(msg)"
-          matTooltip="Weitere Emojis"
-          >➕</span
-        >
-        <span
-          class="reply-icon"
-          (click)="replyTo(getUserNameFromId(msg.userId))"
-          matTooltip="Antworten"
-          >💬</span
-        >
+        <span class="emoji-plus" (click)="toggleEmojiPopover(msg)" matTooltip="Weitere Emojis">➕</span>
+        <span class="reply-icon" (click)="replyTo(getUserNameFromId(msg.userId))" matTooltip="Antworten">💬</span>
         <button
           *ngIf="msg.userId === currentUserId && editingMessageId !== msg.id"
           class="message-menu-button"
@@ -197,63 +137,43 @@
       </div>
 
       <div class="message-content">
-        <img
-          [src]="msg.avatar"
-          class="avatar"
-          (click)="openUserProfile(msg)"
-          matTooltip="Profil öffnen"
-        />
+        <img [src]="msg.avatar" class="avatar" (click)="openUserProfile(msg)" matTooltip="Profil öffnen" />
         <div class="bubble">
           <div class="author-time">
-            <span
-              class="author"
-              (click)="openUserProfile(msg)"
-              matTooltip="Profil anzeigen"
-            >
+            <span class="author" (click)="openUserProfile(msg)" matTooltip="Profil anzeigen">
               {{ getUserNameFromId(msg.userId) }}
             </span>
             <span class="time">{{ msg.time }}</span>
           </div>
 
-          <div
-            *ngIf="editingMessageId === msg.id; else msgText"
-            class="edit-form"
-          >
+          <div *ngIf="editingMessageId === msg.id; else msgText" class="edit-form">
             <input [(ngModel)]="editedMessageContent" />
-            <button (click)="saveEdit(msg)" matTooltip="Speichern">
-              Speichern
-            </button>
-            <button (click)="cancelEdit()" matTooltip="Abbrechen">
-              Abbrechen
-            </button>
+            <button (click)="saveEdit(msg)" matTooltip="Speichern">Speichern</button>
+            <button (click)="cancelEdit()" matTooltip="Abbrechen">Abbrechen</button>
           </div>
-          <ng-template #msgText>
-            <ng-container *ngIf="isMarkdownLink(msg.content); else normalText">
-              <div class="text">
-                <span>{{ extractFileName(msg.content) }}</span
-                ><br />
-                <a
-                  [href]="extractUrl(msg.content)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style="font-size: 0.85rem; color: #5c6bc0"
-                  matTooltip="Datei öffnen"
-                >
-                  Datei öffnen
-                </a>
-              </div>
-            </ng-container>
+<ng-template #msgText>
+  <ng-container *ngIf="isMarkdownLink(msg.content); else normalText">
+    <div class="text">
+      <span>{{ extractFileName(msg.content) }}</span><br />
+      <a
+        [href]="extractUrl(msg.content)"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="font-size: 0.85rem; color: #5c6bc0"
+        matTooltip="Datei öffnen"
+      >
+        Datei öffnen
+      </a>
+    </div>
+  </ng-container>
 
-            <ng-template #normalText>
-              <div class="text">{{ msg.content }}</div>
-            </ng-template>
-          </ng-template>
+  <ng-template #normalText>
+    <div class="text">{{ msg.content }}</div>
+  </ng-template>
+</ng-template>
 
           <div class="reactions" *ngIf="msg.reactions?.length">
-            <span
-              *ngFor="let r of msg.reactions"
-              [matTooltip]="getUserNamesFromIds(r.users).join(', ')"
-            >
+            <span *ngFor="let r of msg.reactions" [matTooltip]="getUserNamesFromIds(r.users).join(', ')">
               {{ r.emoji }} {{ r.count }}
             </span>
           </div>
@@ -262,87 +182,57 @@
     </div>
   </div>
 
-  <div class="thread-input">
-    <div class="input-box">
-      <input
-        #messageInput
-        [(ngModel)]="newMessage"
-        placeholder="Antworten…"
-        (keyup.enter)="sendMessage()"
-        (input)="onMessageInput()"
-      />
 
-      <div *ngIf="selectedFileName" class="file-preview">
-        <span>{{ selectedFileName }}</span>
-      </div>
+<div class="thread-input">
+  <div class="input-box">
+    <input
+      #messageInput
+      [(ngModel)]="newMessage"
+      placeholder="Antworten…"
+      (keyup.enter)="sendMessage()"
+      (input)="onMessageInput()"
+    />
 
-      <div class="input-footer">
-        <div class="left-icons">
-          <button
-            type="button"
-            (click)="toggleEmojiPicker()"
-            matTooltip="Emoji-Picker öffnen"
-          >
-            😊
-          </button>
-          <button
-            type="button"
-            (click)="toggleUserList()"
-            matTooltip="Nutzer erwähnen"
-          >
-            &#64;
-          </button>
-          <button
-            type="button"
-            (click)="fileInput.click()"
-            matTooltip="Datei anhängen"
-          >
-            <mat-icon>attach_file</mat-icon>
-          </button>
-          <input
-            #fileInput
-            type="file"
-            hidden
-            (change)="onFileSelected($event)"
-          />
-        </div>
+<div *ngIf="selectedFileName" class="file-preview">
+  <span>{{ selectedFileName }}</span>
+</div>
 
-        <div class="right-icons">
-          <button
-            type="button"
-            class="send"
-            (click)="sendMessage()"
-            matTooltip="Nachricht senden"
-          >
-            <mat-icon>send</mat-icon>
-          </button>
-        </div>
-      </div>
-    </div>
 
+<div class="input-footer">
+  <div class="left-icons">
+    <button type="button" (click)="toggleEmojiPicker()" matTooltip="Emoji-Picker öffnen">😊</button>
+    <button type="button" (click)="toggleUserList()" matTooltip="Nutzer erwähnen">&#64;</button>
+    <button type="button" (click)="fileInput.click()" matTooltip="Datei anhängen">
+      <mat-icon>attach_file</mat-icon>
+    </button>
+    <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
+  </div>
+
+  <div class="right-icons">
+    <button type="button" class="send" (click)="sendMessage()" matTooltip="Nachricht senden">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</div>
+
+  </div>
+
+  
+  <div class="emoji-picker" *ngIf="showEmojis" (click)="$event.stopPropagation()">
+    <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)" matTooltip="Emoji einfügen">{{ emoji }}</span>
+  </div>
+
+  <div class="mention-picker" *ngIf="showUsers" #mentionMenuRef>
     <div
-      class="emoji-picker"
-      *ngIf="showEmojis"
-      (click)="$event.stopPropagation()"
+      class="user-option"
+      *ngFor="let user of filteredUsers"
+      (click)="mentionUser(user)"
+      matTooltip="@{{ user.name }} einfügen"
     >
-      <span
-        *ngFor="let emoji of emojis"
-        (click)="addEmoji(emoji)"
-        matTooltip="Emoji einfügen"
-        >{{ emoji }}</span
-      >
-    </div>
-
-    <div class="mention-picker" *ngIf="showUsers" #mentionMenuRef>
-      <div
-        class="user-option"
-        *ngFor="let user of filteredUsers"
-        (click)="mentionUser(user)"
-        matTooltip="@{{ user.name }} einfügen"
-      >
-        <img [src]="user.avatar" />
-        <span>{{ user.name }}</span>
-      </div>
+      <img [src]="user.avatar" />
+      <span>{{ user.name }}</span>
     </div>
   </div>
+</div>
+
 </div>

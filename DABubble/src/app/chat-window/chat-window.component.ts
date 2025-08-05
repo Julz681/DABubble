@@ -109,7 +109,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   constructor(
     private channelService: ChannelService,
     private dialog: MatDialog,
-    private threadPanelService: ThreadPanelService,
+    public threadPanelService: ThreadPanelService,
     private currentUserService: CurrentUserService,
     private fileService: FileService
   ) {}
@@ -804,4 +804,10 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
 
     return user?.avatar || 'assets/default-avatar.png';
   }
+
+  openThreadFromMessage(message: ChatMessage): void {
+  this.threadPanelService.openThread(message);
+  this.threadToggle?.(); 
+}
+
 }

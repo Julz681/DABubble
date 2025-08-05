@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { ChannelService } from './channel.service';
 
 export interface ChatMessage {
   id: number;
@@ -23,15 +24,18 @@ export class ThreadPanelService {
   private _initialReplyText = new BehaviorSubject<string>('');
 
   threadRootMessage$ = this._threadRootMessage.asObservable();
-
   threadReplies$ = this._threadReplies.asObservable();
-
   initialReplyText$ = this._initialReplyText.asObservable();
+
+  public isThreadView = false;
+
+  constructor(private channelService: ChannelService) {}
 
   openThread(rootMessage: ChatMessage, initialReply: string = ''): void {
     this._threadRootMessage.next(rootMessage);
     this._threadReplies.next(rootMessage.replies || []);
     this._initialReplyText.next(initialReply);
+    this.isThreadView = true;
   }
 
   addReply(reply: ChatMessage): void {
@@ -41,6 +45,29 @@ export class ThreadPanelService {
     const root = this._threadRootMessage.value;
     if (root) {
       root.replies = updatedReplies;
+      this._threadRootMessage.next({ ...root });
+
+      const isDirect = !this.channelService.getCurrentChannel();
+      const target = isDirect
+        ? this.channelService.getCurrentUser()?.id
+        : this.channelService.getCurrentChannel()?.name;
+
+      if (!target) return;
+
+      const store = isDirect
+        ? this.channelService.directMessages
+        : this.channelService.channelMessages;
+
+      const messages = store[target] || [];
+
+      const index = messages.findIndex((m: ChatMessage) => m.id === root.id);
+      if (index !== -1) {
+        messages[index] = { ...root };
+
+        store[target] = messages;
+
+        this.channelService.updateMessagesForActiveTarget();
+      }
     }
   }
 
@@ -52,5 +79,6 @@ export class ThreadPanelService {
     this._threadRootMessage.next(null);
     this._threadReplies.next([]);
     this._initialReplyText.next('');
+    this.isThreadView = false;
   }
 }

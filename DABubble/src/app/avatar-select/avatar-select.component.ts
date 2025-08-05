@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { CurrentUserService } from '../services/current.user.service';
 
 @Component({
   selector: 'app-avatar-select',
@@ -23,7 +24,10 @@ export class AvatarSelectComponent {
   defaultAvatar: string = 'assets/unknown.png';
   userName: string = 'Nutzer';
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private currentUserService: CurrentUserService
+  ) {
     const storedName = localStorage.getItem('username');
     if (storedName) {
       this.userName = storedName;
@@ -40,16 +44,25 @@ export class AvatarSelectComponent {
     if (input.files?.length) {
       const file = input.files[0];
       const reader = new FileReader();
+
       reader.onload = () => {
         this.selectedAvatar = reader.result as string;
       };
+
       reader.readAsDataURL(file);
     }
   }
 
   continue(): void {
     if (this.selectedAvatar) {
-      localStorage.setItem('selectedAvatar', this.selectedAvatar);
+      const storedName = localStorage.getItem('username') || 'Unbekannt';
+
+      
+      this.currentUserService.updateUser({
+        name: storedName,
+        avatar: this.selectedAvatar,
+      });
+
       this.router.navigate(['/app']);
     }
   }
